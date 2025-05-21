@@ -1,0 +1,125 @@
+// src/context/SearchContext.tsx
+import React, { createContext, useContext, useState, useCallback } from "react";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+var SearchContext = createContext(void 0);
+var SearchProvider = ({ children, email, password }) => {
+  const [state, setState] = useState({
+    query: "",
+    results: null,
+    isLoading: false
+  });
+  const [token, setToken] = useState(null);
+  const [showFacets] = useState(true);
+  const setQuery = useCallback((query) => {
+    setState((prev) => ({ ...prev, query }));
+  }, []);
+  const search = useCallback(async () => {
+    if (!token)
+      return;
+    setState((prev) => ({ ...prev, isLoading: true }));
+    try {
+      const searchResponse = await fetch("http://localhost:38171/api/Search/pokedex", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          text: state.query,
+          maxNumberOfRecordsToReturn: 10,
+          ...showFacets ? { enableFacets: true } : {}
+        })
+      });
+      const searchData = await searchResponse.json();
+      const keys = (searchData.records || []).map((record) => record.documentKey);
+      const jsonResponse = await fetch("http://localhost:38171/api/GetJson/pokedex", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(keys)
+      });
+      const documents = await jsonResponse.json();
+      setState((prev) => ({
+        ...prev,
+        results: documents,
+        facets: searchData.facets || null,
+        isLoading: false
+      }));
+    } catch (error) {
+      console.error("Search failed:", error);
+      setState((prev) => ({
+        ...prev,
+        results: null,
+        isLoading: false
+      }));
+    }
+  }, [state.query, token, showFacets]);
+  React.useEffect(() => {
+    if (state.query.trim()) {
+      search();
+    } else {
+      setState((prev) => ({ ...prev, results: null }));
+    }
+  }, [state.query, search]);
+  React.useEffect(() => {
+    const login = async () => {
+      try {
+        if (!email || !password) {
+          throw new Error("Missing email or password in props");
+        }
+        const response = await fetch(
+          `http://localhost:38171/api/Login?userEmail=${encodeURIComponent(email)}&userPassWord=${encodeURIComponent(password)}`,
+          {
+            method: "POST",
+            headers: { accept: "*/*" },
+            body: ""
+          }
+        );
+        const data = await response.json();
+        console.log("Token:", data.token);
+        setToken(data.token);
+      } catch (err) {
+        console.error("Login failed:", err);
+      }
+    };
+    login();
+  }, [email, password]);
+  return /* @__PURE__ */ jsxs(Fragment, { children: [
+    /* @__PURE__ */ jsx(
+      SearchContext.Provider,
+      {
+        value: {
+          state,
+          setQuery
+        },
+        children
+      }
+    ),
+    state.facets && typeof state.facets === "object" && /* @__PURE__ */ jsx(Fragment, { children: Object.entries(state.facets).map(([facetName, values]) => {
+      if (!Array.isArray(values))
+        return null;
+      return /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx("strong", { children: facetName }),
+        /* @__PURE__ */ jsx("ul", { children: values.map((v, i) => /* @__PURE__ */ jsxs("li", { children: [
+          v.key,
+          ": ",
+          v.value
+        ] }, i)) })
+      ] }, facetName);
+    }) })
+  ] });
+};
+var useSearchContext = () => {
+  const context = useContext(SearchContext);
+  if (!context) {
+    throw new Error("useSearchContext must be used within a SearchProvider");
+  }
+  return context;
+};
+export {
+  SearchProvider,
+  useSearchContext as useSearch
+};
+//# sourceMappingURL=index.mjs.map
