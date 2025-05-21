@@ -1,12 +1,5 @@
-# === Monorepo Root ===
-
-# Node & package managers
+# Dependencies
 node_modules/
-.pnpm-debug.log*
-npm-debug.log*
-yarn-debug.log*
-
-# Yarn
 .pnp
 .pnp.*
 .yarn/*
@@ -15,16 +8,29 @@ yarn-debug.log*
 !.yarn/releases
 !.yarn/versions
 
-# Next.js app
+# Testing
+coverage/
+
+# Next.js (for apps/demo)
 apps/demo/.next/
 apps/demo/out/
-apps/demo/.env*
-apps/demo/.vercel
 apps/demo/next-env.d.ts
 apps/demo/*.tsbuildinfo
 
-# General
-*.pem
+# Environment
+apps/demo/.env.local
+apps/demo/node_modules/
+.env*
+apps/demo/.env.local
+
+# Misc
 .DS_Store
-coverage/
-build/
+*.pem
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Vercel
+apps/demo/.vercel
