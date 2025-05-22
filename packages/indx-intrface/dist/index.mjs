@@ -124,6 +124,7 @@ var SearchProvider = ({ children, email, password, url, dataset }) => {
       const allFilters = [...valueFilterResponses, ...rangeFilterResponses].filter(
         (f) => f && typeof f.hashString === "string"
       );
+      console.log("\u{1F9EA} All filters being combined:", JSON.stringify(allFilters, null, 2));
       if (allFilters.length === 0) {
         console.log("No valid filters found.");
       }

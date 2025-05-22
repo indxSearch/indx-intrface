@@ -166,6 +166,9 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
         f => f && typeof f.hashString === 'string'
       );
 
+      // Debug log to verify filters being passed into combineFilters
+      console.log('🧪 All filters being combined:', JSON.stringify(allFilters, null, 2));
+
       if (allFilters.length === 0) {
         console.log('No valid filters found.');
       }
