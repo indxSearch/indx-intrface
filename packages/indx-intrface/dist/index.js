@@ -30,10 +30,11 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.tsx
 var src_exports = {};
 __export(src_exports, {
-  FilterPanel: () => FilterPanel,
+  RangeFilterPanel: () => RangeFilterPanel,
   SearchInput: () => SearchInput,
   SearchProvider: () => SearchProvider,
   SearchResults: () => SearchResults,
+  ValueFilterPanel: () => ValueFilterPanel,
   useSearch: () => useSearchContext
 });
 module.exports = __toCommonJS(src_exports);
@@ -413,21 +414,139 @@ var SearchResults = ({ fields, customLabels }) => {
   }) });
 };
 
-// src/components/FilterPanel.tsx
+// src/components/RangeFilterPanel.tsx
 var import_react_range = require("react-range");
-var import_react2 = __toESM(require("react"));
 var import_jsx_runtime4 = require("react/jsx-runtime");
-var FilterPanel = ({
+var RangeFilterPanel = ({
   field,
   label,
-  filterType,
-  displayType,
+  displayType = "input"
+}) => {
+  const {
+    state: { rangeFilters, rangeBounds },
+    setRangeFilter
+  } = useSearchContext();
+  const actualMin = rangeBounds?.[field]?.min ?? 0;
+  const actualMax = rangeBounds?.[field]?.max ?? 1e3;
+  const currentMin = rangeFilters?.[field]?.min ?? actualMin;
+  const currentMax = rangeFilters?.[field]?.max ?? actualMax;
+  const handleRangeChange = (values) => {
+    const [min, max] = values;
+    if (!isNaN(min) && !isNaN(max) && min <= max) {
+      if (min !== actualMin || max !== actualMax) {
+        setRangeFilter(field, min, max);
+      } else {
+        setRangeFilter(field, actualMin, actualMax);
+      }
+    }
+  };
+  if (displayType === "slider") {
+    return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("fieldset", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("legend", { children: label || field }),
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { style: { padding: "1rem 0" }, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+          import_react_range.Range,
+          {
+            step: 1,
+            min: actualMin,
+            max: actualMax,
+            values: [currentMin, currentMax],
+            onChange: handleRangeChange,
+            renderTrack: ({ props, children }) => /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+              "div",
+              {
+                ...props,
+                style: {
+                  ...props.style,
+                  height: "6px",
+                  width: "100%",
+                  backgroundColor: "#ccc"
+                },
+                children
+              }
+            ),
+            renderThumb: ({ props, index }) => {
+              const { key, ...rest } = props;
+              return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+                "div",
+                {
+                  ...rest,
+                  style: {
+                    ...props.style,
+                    height: "20px",
+                    width: "20px",
+                    backgroundColor: "#999",
+                    borderRadius: "50%"
+                  }
+                },
+                key
+              );
+            }
+          }
+        ),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "0.85rem" }, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("span", { children: currentMin }),
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("span", { children: currentMax })
+        ] })
+      ] })
+    ] });
+  }
+  const handleMinChange = (e) => {
+    const input = e.target.value;
+    if (input === "")
+      return;
+    const value = Number(input);
+    if (!isNaN(value) && value <= currentMax) {
+      setRangeFilter(field, value, currentMax);
+    }
+  };
+  const handleMaxChange = (e) => {
+    const input = e.target.value;
+    if (input === "")
+      return;
+    const value = Number(input);
+    if (!isNaN(value) && value >= currentMin) {
+      setRangeFilter(field, currentMin, value);
+    }
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("fieldset", { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("legend", { children: label || field }),
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("label", { children: [
+      "Min:",
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+        "input",
+        {
+          type: "number",
+          value: currentMin,
+          onChange: handleMinChange
+        }
+      )
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("label", { children: [
+      "Max:",
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+        "input",
+        {
+          type: "number",
+          value: currentMax,
+          onChange: handleMaxChange
+        }
+      )
+    ] })
+  ] });
+};
+
+// src/components/ValueFilterPanel.tsx
+var import_react2 = __toESM(require("react"));
+var import_jsx_runtime5 = require("react/jsx-runtime");
+var ValueFilterPanel = ({
+  field,
+  label,
   preserveBlankFacetState = false
 }) => {
   const {
-    state: { facets, filterableFields, facetableFields, filters, rangeFilters, facetStats, rangeBounds },
-    toggleFilter,
-    setRangeFilter
+    state: { facets, filterableFields, facetableFields, filters },
+    toggleFilter
   } = useSearchContext();
   const preservedFacetValuesRef = import_react2.default.useRef(null);
   if (!filterableFields?.includes(field) || !facetableFields?.includes(field)) {
@@ -436,7 +555,7 @@ var FilterPanel = ({
       missing.push("filterable");
     if (!facetableFields?.includes(field))
       missing.push("facetable");
-    return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { style: { color: "red" }, children: [
+    return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { style: { color: "red" }, children: [
       'Cannot render filter for "',
       field,
       '": missing ',
@@ -444,167 +563,55 @@ var FilterPanel = ({
       "."
     ] });
   }
-  if (filterType === "value") {
-    const facetValues = facets?.[field];
-    if (!facetValues || !Array.isArray(facetValues))
-      return null;
-    const selectedValues = filters?.[field] ?? [];
-    if (preserveBlankFacetState && !preservedFacetValuesRef.current && facetValues.length > 0) {
-      preservedFacetValuesRef.current = facetValues.reduce((acc, f) => {
-        acc[f.key] = f.value;
-        return acc;
-      }, {});
-    }
-    const mergedValuesMap = /* @__PURE__ */ new Map();
-    if (preserveBlankFacetState && preservedFacetValuesRef.current) {
-      for (const key in preservedFacetValuesRef.current) {
-        mergedValuesMap.set(key, 0);
-      }
-      for (const f of facetValues) {
-        mergedValuesMap.set(f.key, f.value);
-      }
-    } else {
-      for (const f of facetValues) {
-        mergedValuesMap.set(f.key, f.value);
-      }
-    }
-    return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("fieldset", { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("legend", { children: label || field }),
-      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("ul", { children: Array.from(mergedValuesMap.entries()).map(([key, count], index) => /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("label", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
-          "input",
-          {
-            type: "checkbox",
-            checked: selectedValues.includes(key),
-            onChange: () => toggleFilter(field, key),
-            disabled: count === 0
-          }
-        ),
-        key,
-        " (",
-        count,
-        ")"
-      ] }) }, index)) })
-    ] });
+  const facetValues = facets?.[field];
+  if (!facetValues || !Array.isArray(facetValues))
+    return null;
+  const selectedValues = filters?.[field] ?? [];
+  if (preserveBlankFacetState && !preservedFacetValuesRef.current && facetValues.length > 0) {
+    preservedFacetValuesRef.current = facetValues.reduce((acc, f) => {
+      acc[f.key] = f.value;
+      return acc;
+    }, {});
   }
-  if (filterType === "range") {
-    const actualMin = rangeBounds?.[field]?.min ?? 0;
-    const actualMax = rangeBounds?.[field]?.max ?? 1e3;
-    const currentMin = rangeFilters?.[field]?.min ?? actualMin;
-    const currentMax = rangeFilters?.[field]?.max ?? actualMax;
-    const handleRangeChange = (values) => {
-      const [min, max] = values;
-      if (!isNaN(min) && !isNaN(max) && min <= max) {
-        if (min !== actualMin || max !== actualMax) {
-          setRangeFilter(field, min, max);
-        } else {
-          setRangeFilter(field, actualMin, actualMax);
+  const mergedValuesMap = /* @__PURE__ */ new Map();
+  if (preserveBlankFacetState && preservedFacetValuesRef.current) {
+    for (const key in preservedFacetValuesRef.current) {
+      mergedValuesMap.set(key, 0);
+    }
+    for (const f of facetValues) {
+      mergedValuesMap.set(f.key, f.value);
+    }
+  } else {
+    for (const f of facetValues) {
+      mergedValuesMap.set(f.key, f.value);
+    }
+  }
+  return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("fieldset", { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("legend", { children: label || field }),
+    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("ul", { children: Array.from(mergedValuesMap.entries()).map(([key, count], index) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("label", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+        "input",
+        {
+          type: "checkbox",
+          checked: selectedValues.includes(key),
+          onChange: () => toggleFilter(field, key),
+          disabled: count === 0
         }
-      }
-    };
-    if (displayType === "slider") {
-      return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("fieldset", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("legend", { children: label || field }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { style: { padding: "1rem 0" }, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
-            import_react_range.Range,
-            {
-              step: 1,
-              min: actualMin,
-              max: actualMax,
-              values: [currentMin, currentMax],
-              onChange: handleRangeChange,
-              renderTrack: ({ props, children }) => /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
-                "div",
-                {
-                  ...props,
-                  style: {
-                    ...props.style,
-                    height: "6px",
-                    width: "100%",
-                    backgroundColor: "#ccc"
-                  },
-                  children
-                }
-              ),
-              renderThumb: ({ props, index }) => {
-                const { key, ...rest } = props;
-                return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
-                  "div",
-                  {
-                    ...rest,
-                    style: {
-                      ...props.style,
-                      height: "20px",
-                      width: "20px",
-                      backgroundColor: "#999",
-                      borderRadius: "50%"
-                    }
-                  },
-                  key
-                );
-              }
-            }
-          ),
-          /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "0.85rem" }, children: [
-            /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("span", { children: currentMin }),
-            /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("span", { children: currentMax })
-          ] })
-        ] })
-      ] });
-    }
-    const handleMinChange = (e) => {
-      const input = e.target.value;
-      if (input === "")
-        return;
-      const value = Number(input);
-      if (!isNaN(value) && value <= currentMax) {
-        setRangeFilter(field, value, currentMax);
-      }
-    };
-    const handleMaxChange = (e) => {
-      const input = e.target.value;
-      if (input === "")
-        return;
-      const value = Number(input);
-      if (!isNaN(value) && value >= currentMin) {
-        setRangeFilter(field, currentMin, value);
-      }
-    };
-    return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("fieldset", { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("legend", { children: label || field }),
-      /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("label", { children: [
-        "Min:",
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
-          "input",
-          {
-            type: "number",
-            value: currentMin,
-            onChange: handleMinChange
-          }
-        )
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("label", { children: [
-        "Max:",
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
-          "input",
-          {
-            type: "number",
-            value: currentMax,
-            onChange: handleMaxChange
-          }
-        )
-      ] })
-    ] });
-  }
-  return null;
+      ),
+      key,
+      " (",
+      count,
+      ")"
+    ] }) }, index)) })
+  ] });
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  FilterPanel,
+  RangeFilterPanel,
   SearchInput,
   SearchProvider,
   SearchResults,
+  ValueFilterPanel,
   useSearch
 });
 //# sourceMappingURL=index.js.map

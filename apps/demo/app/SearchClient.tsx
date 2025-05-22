@@ -1,6 +1,6 @@
 'use client';
 
-import { SearchProvider, SearchInput, SearchResults, FilterPanel } from 'indx-intrface';
+import { SearchProvider, SearchInput, SearchResults, RangeFilterPanel, ValueFilterPanel } from 'indx-intrface';
 
 export function SearchClient({ dataset }: { dataset: string }) {
   const url = process.env.NEXT_PUBLIC_INDX_URL!;
@@ -36,11 +36,11 @@ function SearchUI() {
         />
       </div>
       <div style={{ width: '40%' }}>
-        {/* <FilterPanel label="speed" field="speed" filterType="range" displayType="slider" /> */}
-        <FilterPanel label="primary type" field="type1" filterType="value" displayType="checkbox" preserveBlankFacetState={true} />
-        <FilterPanel label="speed" field="speed" filterType="value" displayType="checkbox" />
-        <FilterPanel label="attack" field="attack" filterType="value" displayType="checkbox" />
-        <FilterPanel label="hp" field="hp" filterType="value" displayType="checkbox" />
+        <RangeFilterPanel label="speed" field="speed" displayType="input" />
+        <ValueFilterPanel label="primary type" field="type1" preserveBlankFacetState={true} />
+        <ValueFilterPanel label="speed" field="speed" />
+        <ValueFilterPanel label="attack" field="attack" />
+        <ValueFilterPanel label="hp" field="hp" />
       </div>
     </div>
   );

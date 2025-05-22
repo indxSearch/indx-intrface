@@ -50,13 +50,18 @@ interface SearchResultsProps {
 }
 declare const SearchResults: React.FC<SearchResultsProps>;
 
-interface FilterPanelProps {
+interface RangeFilterPanelProps {
     field: string;
     label?: string;
-    filterType: 'value' | 'range';
-    displayType?: 'checkbox' | 'slider';
+    displayType?: 'slider' | 'input';
+}
+declare const RangeFilterPanel: React.FC<RangeFilterPanelProps>;
+
+interface ValueFilterPanelProps {
+    field: string;
+    label?: string;
     preserveBlankFacetState?: boolean;
 }
-declare const FilterPanel: React.FC<FilterPanelProps>;
+declare const ValueFilterPanel: React.FC<ValueFilterPanelProps>;
 
-export { FilterPanel, SearchInput, SearchProvider, SearchResults, useSearchContext as useSearch };
+export { RangeFilterPanel, SearchInput, SearchProvider, SearchResults, ValueFilterPanel, useSearchContext as useSearch };
