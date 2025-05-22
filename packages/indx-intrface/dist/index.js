@@ -296,7 +296,6 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
         setFilterableFields(filterable || []);
         setFacetableFields(facetable || []);
         setSortableFields(sortable || []);
-        console.log("\u{1F4CA} Sortable fields fetched:", sortable || []);
         const blankSearchResponse = await fetch(`${url}/api/Search/${dataset}`, {
           method: "POST",
           headers: {
