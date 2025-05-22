@@ -8,6 +8,7 @@ interface SearchState {
     facets?: any | null;
     filterableFields?: string[];
     facetableFields?: string[];
+    sortableFields?: string[];
     filters: Record<string, string[]>;
     rangeFilters: Record<string, {
         min: number;

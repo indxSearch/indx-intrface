@@ -53,11 +53,11 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
     facetStats: {}
   });
   const [initialFacetStats, setInitialFacetStats] = (0, import_react.useState)({});
+  const [initialFacetKeys, setInitialFacetKeys] = (0, import_react.useState)({});
   const [fixedFacetStats, setFixedFacetStats] = (0, import_react.useState)({});
   const [lastQueryText, setLastQueryText] = (0, import_react.useState)("");
   const [rangeBounds, setRangeBounds] = (0, import_react.useState)({});
   const [lastValueFilters, setLastValueFilters] = (0, import_react.useState)({});
-  const [initialFacetKeys, setInitialFacetKeys] = (0, import_react.useState)({});
   const setRangeFilter = (0, import_react.useCallback)((field, min, max) => {
     setState((prev) => ({
       ...prev,
@@ -71,6 +71,7 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
   const [showFacets] = (0, import_react.useState)(true);
   const [filterableFields, setFilterableFields] = (0, import_react.useState)([]);
   const [facetableFields, setFacetableFields] = (0, import_react.useState)([]);
+  const [sortableFields, setSortableFields] = (0, import_react.useState)([]);
   const setQuery = (0, import_react.useCallback)((query) => {
     setState((prev) => ({
       ...prev,
@@ -266,7 +267,7 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
         );
         const data = await response.json();
         setToken(data.token);
-        const [filterableRes, facetableRes] = await Promise.all([
+        const [filterableRes, facetableRes, sortableRes] = await Promise.all([
           fetch(`${url}/api/GetFilterableFields/${dataset}`, {
             method: "GET",
             headers: {
@@ -280,12 +281,22 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
               "accept": "text/plain",
               "Authorization": `Bearer ${data.token}`
             }
+          }),
+          fetch(`${url}/api/GetSortableFields/${dataset}`, {
+            method: "GET",
+            headers: {
+              "accept": "text/plain",
+              "Authorization": `Bearer ${data.token}`
+            }
           })
         ]);
         const filterable = await filterableRes.json();
         const facetable = await facetableRes.json();
+        const sortable = await sortableRes.json();
         setFilterableFields(filterable || []);
         setFacetableFields(facetable || []);
+        setSortableFields(sortable || []);
+        console.log("\u{1F4CA} Sortable fields fetched:", sortable || []);
         const blankSearchResponse = await fetch(`${url}/api/Search/${dataset}`, {
           method: "POST",
           headers: {
@@ -342,6 +353,7 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
           ...state,
           filterableFields,
           facetableFields,
+          sortableFields,
           rangeBounds
         },
         setQuery,

@@ -8,6 +8,7 @@ export interface SearchState {
   facets?: any | null;
   filterableFields?: string[];
   facetableFields?: string[];
+  sortableFields?: string[]; // Optional: list of fields that can be used for sorting
   filters: Record<string, string[]>;
   rangeFilters: Record<string, { min: number; max: number }>;
   facetStats?: Record<string, { min: number; max: number }>; // live
@@ -53,6 +54,8 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
   const [showFacets] = useState(true); // Controls whether to enable facets in the search query (currently always true)
   const [filterableFields, setFilterableFields] = useState<string[]>([]); // Stores list of fields that can be used for value filtering
   const [facetableFields, setFacetableFields] = useState<string[]>([]); // Stores list of fields that can return facet histograms
+  const [sortableFields, setSortableFields] = useState<string[]>([]); // Stores list of fields that can be used for sorting
+  
 
   const setQuery = useCallback((query: string) => {
     setState(prev => ({
@@ -285,8 +288,8 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
         const data = await response.json();
         setToken(data.token);
 
-        // fetch filterable and facetable fields
-        const [filterableRes, facetableRes] = await Promise.all([
+        // fetch filterable, facetable and sortable fields
+        const [filterableRes, facetableRes, sortableRes] = await Promise.all([
           fetch(`${url}/api/GetFilterableFields/${dataset}`, {
             method: 'GET',
             headers: {
@@ -301,13 +304,22 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
               'Authorization': `Bearer ${data.token}`,
             },
           }),
+          fetch(`${url}/api/GetSortableFields/${dataset}`, {
+            method: 'GET',
+            headers: {
+              'accept': 'text/plain',
+              'Authorization': `Bearer ${data.token}`,
+            },
+          }),
         ]);
 
         const filterable = await filterableRes.json();
         const facetable = await facetableRes.json();
+        const sortable = await sortableRes.json();
 
         setFilterableFields(filterable || []);
         setFacetableFields(facetable || []);
+        setSortableFields(sortable || []);
 
         const blankSearchResponse = await fetch(`${url}/api/Search/${dataset}`, {
           method: 'POST',
@@ -373,6 +385,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
             ...state,
             filterableFields,
             facetableFields,
+            sortableFields,
             rangeBounds,
           },
           setQuery,
