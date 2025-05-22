@@ -7,7 +7,7 @@ export function SearchClient({ dataset }: { dataset: string }) {
   const email = process.env.NEXT_PUBLIC_INDX_EMAIL!;
   const password = process.env.NEXT_PUBLIC_INDX_PASSWORD!;
   return (
-    <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={true}>
+    <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={true} maxResults={20}>
       <SearchUI />
     </SearchProvider>
   );
@@ -15,7 +15,7 @@ export function SearchClient({ dataset }: { dataset: string }) {
 
 function SearchUI() {
   return (
-    <div style={{ padding: '2rem', width: '100%', display: 'flex' }}>
+    <div style={{ padding: '30px', width: '100%', display: 'flex' }}>
       <div style={{ width: '60%', paddingRight: '1rem' }}>
         <SearchInput
           placeholder="Search..."

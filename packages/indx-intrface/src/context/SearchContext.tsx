@@ -10,8 +10,8 @@ export interface SearchState {
   facetableFields?: string[];
   filters: Record<string, string[]>;
   rangeFilters: Record<string, { min: number; max: number }>;
-  facetStats?: Record<string, { min: number; max: number }>;
-  rangeBounds?: Record<string, { min: number; max: number }>;
+  facetStats?: Record<string, { min: number; max: number }>; // live
+  rangeBounds?: Record<string, { min: number; max: number }>; // init only
 }
 
 export interface SearchContextType {
@@ -32,13 +32,12 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
     rangeFilters: {},
     facetStats: {},
   });
-  const [initialFacetStats, setInitialFacetStats] = useState<Record<string, { min: number; max: number }>>({});
-  const [fixedFacetStats, setFixedFacetStats] = useState<Record<string, { min: number; max: number }>>({});
-  const [lastQueryText, setLastQueryText] = useState<string>('');
-  const [rangeBounds, setRangeBounds] = useState<Record<string, { min: number; max: number }>>({});
-  const [lastValueFilters, setLastValueFilters] = useState<Record<string, string[]>>({});
-
-  const [initialFacetKeys, setInitialFacetKeys] = useState<Record<string, string[]>>({});
+  const [initialFacetStats, setInitialFacetStats] = useState<Record<string, { min: number; max: number }>>({}); // Stores min/max values for each faceted field from the initial blank search
+  const [initialFacetKeys, setInitialFacetKeys] = useState<Record<string, string[]>>({}); // Stores list of facet keys (strings) from the initial blank search. Used later for non-coverage hits
+  const [fixedFacetStats, setFixedFacetStats] = useState<Record<string, { min: number; max: number }>>({}); // Tracks fixed facet stats that remain stable until query changes
+  const [lastQueryText, setLastQueryText] = useState<string>(''); // Caches the previous query string to detect changes
+  const [rangeBounds, setRangeBounds] = useState<Record<string, { min: number; max: number }>>({}); // Remembers range slider bounds from the initial or recent searches
+  const [lastValueFilters, setLastValueFilters] = useState<Record<string, string[]>>({}); // Stores previous value filters to detect when they change
 
   const setRangeFilter = useCallback((field: string, min: number, max: number) => {
     setState(prev => ({
@@ -50,12 +49,10 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
     }));
   }, []);
 
-  const [token, setToken] = useState<string | null>(null);
-
-  const [showFacets] = useState(true);
-
-  const [filterableFields, setFilterableFields] = useState<string[]>([]);
-  const [facetableFields, setFacetableFields] = useState<string[]>([]);
+  const [token, setToken] = useState<string | null>(null); // Holds the authentication token after login
+  const [showFacets] = useState(true); // Controls whether to enable facets in the search query (currently always true)
+  const [filterableFields, setFilterableFields] = useState<string[]>([]); // Stores list of fields that can be used for value filtering
+  const [facetableFields, setFacetableFields] = useState<string[]>([]); // Stores list of fields that can return facet histograms
 
   const setQuery = useCallback((query: string) => {
     setState(prev => ({
