@@ -6,10 +6,27 @@ interface SearchState {
     isLoading: boolean;
     error?: string;
     facets?: any | null;
+    filterableFields?: string[];
+    facetableFields?: string[];
+    filters: Record<string, string[]>;
+    rangeFilters: Record<string, {
+        min: number;
+        max: number;
+    }>;
+    facetStats?: Record<string, {
+        min: number;
+        max: number;
+    }>;
+    rangeBounds?: Record<string, {
+        min: number;
+        max: number;
+    }>;
 }
 interface SearchContextType {
     state: SearchState;
     setQuery: (query: string) => void;
+    toggleFilter: (field: string, value: string) => void;
+    setRangeFilter: (field: string, min: number, max: number) => void;
 }
 declare const SearchProvider: React.FC<{
     children: React.ReactNode;
@@ -30,4 +47,12 @@ interface SearchResultsProps {
 }
 declare const SearchResults: React.FC<SearchResultsProps>;
 
-export { SearchInput, SearchProvider, SearchResults, useSearchContext as useSearch };
+interface FilterPanelProps {
+    field: string;
+    label?: string;
+    filterType: 'value' | 'range';
+    displayType?: 'checkbox' | 'slider';
+}
+declare const FilterPanel: React.FC<FilterPanelProps>;
+
+export { FilterPanel, SearchInput, SearchProvider, SearchResults, useSearchContext as useSearch };

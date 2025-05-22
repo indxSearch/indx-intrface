@@ -1,6 +1,6 @@
 'use client';
 
-import { SearchProvider, SearchInput, SearchResults } from 'indx-intrface';
+import { SearchProvider, SearchInput, SearchResults, FilterPanel } from 'indx-intrface';
 
 export function SearchClient({ dataset }: { dataset: string }) {
   const url = process.env.NEXT_PUBLIC_INDX_URL!;
@@ -21,13 +21,16 @@ function SearchUI() {
         className="search-input"
         style={{ padding: '0.5rem', width: '100%', maxWidth: '300px' }}
       />
+      <FilterPanel field="speed" filterType="range" displayType='slider' />
+      <FilterPanel field="speed" filterType="value" />
       <SearchResults
-        fields={['name', 'type1', 'type2', 'hp', 'baretull']}
+        fields={['name', 'type1', 'type2', 'hp', 'speed']}
         customLabels={{
           name: '',
           type1: 'Primary Type: ',
           type2: 'Secondary Type: ',
           hp: 'HP: ',
+          speed: 'Speed: '
         }}
       />
     </div> 

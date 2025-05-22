@@ -6,18 +6,106 @@ var SearchProvider = ({ children, email, password, url, dataset }) => {
   const [state, setState] = useState({
     query: "",
     results: null,
-    isLoading: false
+    isLoading: false,
+    filters: {},
+    rangeFilters: {},
+    facetStats: {}
   });
+  const [initialFacetStats, setInitialFacetStats] = useState({});
+  const [fixedFacetStats, setFixedFacetStats] = useState({});
+  const [lastQueryText, setLastQueryText] = useState("");
+  const [rangeBounds, setRangeBounds] = useState({});
+  const [lastValueFilters, setLastValueFilters] = useState({});
+  const setRangeFilter = useCallback((field, min, max) => {
+    console.log(`setRangeFilter for field: ${field}, min: ${min}, max: ${max}`);
+    setState((prev) => ({
+      ...prev,
+      rangeFilters: {
+        ...prev.rangeFilters,
+        [field]: { min, max }
+      }
+    }));
+  }, []);
   const [token, setToken] = useState(null);
   const [showFacets] = useState(true);
+  const [filterableFields, setFilterableFields] = useState([]);
+  const [facetableFields, setFacetableFields] = useState([]);
   const setQuery = useCallback((query) => {
-    setState((prev) => ({ ...prev, query }));
+    setState((prev) => ({
+      ...prev,
+      query,
+      filters: {},
+      // reset value filters
+      rangeFilters: {}
+      // reset range filters
+    }));
+  }, []);
+  const toggleFilter = useCallback((field, value) => {
+    setState((prev) => {
+      const currentValues = prev.filters?.[field] || [];
+      const updatedValues = currentValues.includes(value) ? currentValues.filter((v) => v !== value) : [...currentValues, value];
+      return {
+        ...prev,
+        filters: {
+          ...prev.filters,
+          [field]: updatedValues
+        }
+      };
+    });
   }, []);
   const search = useCallback(async () => {
     if (!token)
       return;
+    console.log("Triggering search...");
     setState((prev) => ({ ...prev, isLoading: true }));
     try {
+      let filterProxy = null;
+      const filterEntries = Object.entries(state.filters ?? {});
+      const valueFilterResponses = await Promise.all(
+        filterEntries.flatMap(
+          ([field, values]) => values.map(
+            (value) => fetch(`${url}/api/CreateValueFilter/${dataset}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+              },
+              body: JSON.stringify({ FieldName: field, Value: value })
+            }).then((res) => res.json())
+          )
+        )
+      );
+      const rangeFilterEntries = Object.entries(state.rangeFilters ?? {});
+      console.log("Applying range filters:", JSON.stringify(state.rangeFilters, null, 2));
+      const rangeFilterResponses = await Promise.all(
+        rangeFilterEntries.map(
+          ([field, { min, max }]) => fetch(`${url}/api/CreateRangeFilter/${dataset}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ FieldName: field, LowerLimit: min, UpperLimit: max })
+          }).then((res) => res.json())
+        )
+      );
+      const allFilters = [...valueFilterResponses, ...rangeFilterResponses];
+      if (allFilters.length === 1) {
+        filterProxy = allFilters[0];
+      } else if (allFilters.length > 1) {
+        const combinedResponse = await fetch(`${url}/api/CombineFilters/${dataset}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            Filters: allFilters,
+            AndMode: true
+          })
+        });
+        filterProxy = await combinedResponse.json();
+      }
       const searchResponse = await fetch(`${url}/api/Search/${dataset}`, {
         method: "POST",
         headers: {
@@ -27,8 +115,13 @@ var SearchProvider = ({ children, email, password, url, dataset }) => {
         body: JSON.stringify({
           text: state.query,
           maxNumberOfRecordsToReturn: 10,
+          ...filterProxy ? { filter: filterProxy } : {},
           ...showFacets ? { enableFacets: true } : {}
         })
+      });
+      console.log("Final search body:", {
+        text: state.query,
+        filter: filterProxy
       });
       const searchData = await searchResponse.json();
       const keys = (searchData.records || []).map((record) => record.documentKey);
@@ -41,10 +134,43 @@ var SearchProvider = ({ children, email, password, url, dataset }) => {
         body: JSON.stringify(keys)
       });
       const documents = await jsonResponse.json();
+      let newFacetStats = {};
+      if (searchData.facets) {
+        for (const [field, values] of Object.entries(searchData.facets)) {
+          if (Array.isArray(values) && values.length > 0) {
+            const numericValues = values.map((v) => Number(v.key)).filter((v) => !isNaN(v));
+            if (numericValues.length > 0) {
+              newFacetStats[field] = {
+                min: Math.min(...numericValues),
+                max: Math.max(...numericValues)
+              };
+            }
+          }
+        }
+      }
+      const queryChanged = state.query !== lastQueryText;
+      const valueFiltersChanged = JSON.stringify(state.filters) !== JSON.stringify(lastValueFilters);
+      let mergedFacetStats;
+      if (queryChanged) {
+        mergedFacetStats = { ...initialFacetStats, ...newFacetStats };
+        setFixedFacetStats(mergedFacetStats);
+        setLastQueryText(state.query);
+      } else {
+        mergedFacetStats = { ...fixedFacetStats, ...newFacetStats };
+      }
+      if (queryChanged || valueFiltersChanged) {
+        const updatedBounds = { ...rangeBounds };
+        for (const [field, stats] of Object.entries(newFacetStats)) {
+          updatedBounds[field] = stats;
+        }
+        setRangeBounds(updatedBounds);
+        setLastValueFilters(state.filters);
+      }
       setState((prev) => ({
         ...prev,
         results: documents,
         facets: searchData.facets || null,
+        facetStats: mergedFacetStats,
         isLoading: false
       }));
     } catch (error) {
@@ -55,14 +181,14 @@ var SearchProvider = ({ children, email, password, url, dataset }) => {
         isLoading: false
       }));
     }
-  }, [state.query, token, showFacets, url, dataset]);
+  }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds]);
   React.useEffect(() => {
     if (state.query.trim()) {
       search();
     } else {
       setState((prev) => ({ ...prev, results: null }));
     }
-  }, [state.query, search]);
+  }, [state.query, state.filters, state.rangeFilters, search]);
   React.useEffect(() => {
     const login = async () => {
       try {
@@ -78,21 +204,80 @@ var SearchProvider = ({ children, email, password, url, dataset }) => {
           }
         );
         const data = await response.json();
-        console.log("Token:", data.token);
         setToken(data.token);
+        const [filterableRes, facetableRes] = await Promise.all([
+          fetch(`${url}/api/GetFilterableFields/${dataset}`, {
+            method: "GET",
+            headers: {
+              "accept": "text/plain",
+              "Authorization": `Bearer ${data.token}`
+            }
+          }),
+          fetch(`${url}/api/GetFacetableFields/${dataset}`, {
+            method: "GET",
+            headers: {
+              "accept": "text/plain",
+              "Authorization": `Bearer ${data.token}`
+            }
+          })
+        ]);
+        const filterable = await filterableRes.json();
+        const facetable = await facetableRes.json();
+        setFilterableFields(filterable || []);
+        setFacetableFields(facetable || []);
+        const blankSearchResponse = await fetch(`${url}/api/Search/${dataset}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${data.token}`
+          },
+          body: JSON.stringify({
+            text: "",
+            maxNumberOfRecordsToReturn: 0,
+            enableFacets: true
+          })
+        });
+        const blankSearchData = await blankSearchResponse.json();
+        const newFacetStats = {};
+        if (blankSearchData.facets) {
+          for (const [field, values] of Object.entries(blankSearchData.facets)) {
+            if (Array.isArray(values) && values.length > 0) {
+              const numericValues = values.map((v) => Number(v.key)).filter((v) => !isNaN(v));
+              if (numericValues.length > 0) {
+                newFacetStats[field] = {
+                  min: Math.min(...numericValues),
+                  max: Math.max(...numericValues)
+                };
+              }
+            }
+          }
+        }
+        setInitialFacetStats(newFacetStats);
+        setRangeBounds(newFacetStats);
+        setState((prev) => ({
+          ...prev,
+          facetStats: newFacetStats
+        }));
       } catch (err) {
         console.error("Login failed:", err);
       }
     };
     login();
-  }, [email, password, url]);
+  }, [email, password, url, dataset]);
   return /* @__PURE__ */ jsxs(Fragment, { children: [
     /* @__PURE__ */ jsx(
       SearchContext.Provider,
       {
         value: {
-          state,
-          setQuery
+          state: {
+            ...state,
+            filterableFields,
+            facetableFields,
+            rangeBounds
+          },
+          setQuery,
+          toggleFilter,
+          setRangeFilter
         },
         children
       }
@@ -172,7 +357,163 @@ var SearchResults = ({ fields, customLabels }) => {
     }) }) }, index);
   }) });
 };
+
+// src/components/FilterPanel.tsx
+import { Range } from "react-range";
+import { jsx as jsx4, jsxs as jsxs3 } from "react/jsx-runtime";
+var FilterPanel = ({ field, label, filterType, displayType }) => {
+  const {
+    state: { facets, filterableFields, facetableFields, filters, rangeFilters, facetStats, rangeBounds },
+    toggleFilter,
+    setRangeFilter
+  } = useSearchContext();
+  if (!filterableFields?.includes(field) || !facetableFields?.includes(field)) {
+    const missing = [];
+    if (!filterableFields?.includes(field))
+      missing.push("filterable");
+    if (!facetableFields?.includes(field))
+      missing.push("facetable");
+    return /* @__PURE__ */ jsxs3("div", { style: { color: "red" }, children: [
+      'Cannot render filter for "',
+      field,
+      '": missing ',
+      missing.join(" and "),
+      "."
+    ] });
+  }
+  if (filterType === "value") {
+    const facetValues = facets?.[field];
+    if (!facetValues || !Array.isArray(facetValues))
+      return null;
+    const selectedValues = filters?.[field] ?? [];
+    return /* @__PURE__ */ jsxs3("fieldset", { children: [
+      /* @__PURE__ */ jsx4("legend", { children: label || field }),
+      /* @__PURE__ */ jsx4("ul", { children: facetValues.map((facet, index) => /* @__PURE__ */ jsx4("li", { children: /* @__PURE__ */ jsxs3("label", { children: [
+        /* @__PURE__ */ jsx4(
+          "input",
+          {
+            type: "checkbox",
+            checked: selectedValues.includes(facet.key),
+            onChange: () => toggleFilter(field, facet.key)
+          }
+        ),
+        facet.key,
+        " (",
+        facet.value,
+        ")"
+      ] }) }, index)) })
+    ] });
+  }
+  if (filterType === "range") {
+    const actualMin = rangeBounds?.[field]?.min ?? 0;
+    const actualMax = rangeBounds?.[field]?.max ?? 1e3;
+    const currentMin = rangeFilters?.[field]?.min ?? actualMin;
+    const currentMax = rangeFilters?.[field]?.max ?? actualMax;
+    const handleRangeChange = (values) => {
+      const [min, max] = values;
+      if (!isNaN(min) && !isNaN(max) && min <= max) {
+        setRangeFilter(field, min, max);
+      }
+    };
+    if (displayType === "slider") {
+      return /* @__PURE__ */ jsxs3("fieldset", { children: [
+        /* @__PURE__ */ jsx4("legend", { children: label || field }),
+        /* @__PURE__ */ jsxs3("div", { style: { padding: "1rem 0" }, children: [
+          /* @__PURE__ */ jsx4(
+            Range,
+            {
+              step: 1,
+              min: actualMin,
+              max: actualMax,
+              values: [currentMin, currentMax],
+              onChange: handleRangeChange,
+              renderTrack: ({ props, children }) => /* @__PURE__ */ jsx4(
+                "div",
+                {
+                  ...props,
+                  style: {
+                    ...props.style,
+                    height: "6px",
+                    width: "100%",
+                    backgroundColor: "#ccc"
+                  },
+                  children
+                }
+              ),
+              renderThumb: ({ props, index }) => {
+                const { key, ...rest } = props;
+                return /* @__PURE__ */ jsx4(
+                  "div",
+                  {
+                    ...rest,
+                    style: {
+                      ...props.style,
+                      height: "20px",
+                      width: "20px",
+                      backgroundColor: "#999",
+                      borderRadius: "50%"
+                    }
+                  },
+                  key
+                );
+              }
+            }
+          ),
+          /* @__PURE__ */ jsxs3("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "0.85rem" }, children: [
+            /* @__PURE__ */ jsx4("span", { children: currentMin }),
+            /* @__PURE__ */ jsx4("span", { children: currentMax })
+          ] })
+        ] })
+      ] });
+    }
+    const handleMinChange = (e) => {
+      const input = e.target.value;
+      if (input === "")
+        return;
+      const value = Number(input);
+      if (!isNaN(value) && value <= currentMax) {
+        setRangeFilter(field, value, currentMax);
+      }
+    };
+    const handleMaxChange = (e) => {
+      const input = e.target.value;
+      if (input === "")
+        return;
+      const value = Number(input);
+      if (!isNaN(value) && value >= currentMin) {
+        setRangeFilter(field, currentMin, value);
+      }
+    };
+    return /* @__PURE__ */ jsxs3("fieldset", { children: [
+      /* @__PURE__ */ jsx4("legend", { children: label || field }),
+      /* @__PURE__ */ jsxs3("label", { children: [
+        "Min:",
+        /* @__PURE__ */ jsx4(
+          "input",
+          {
+            type: "number",
+            value: currentMin,
+            onChange: handleMinChange
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs3("label", { children: [
+        "Max:",
+        /* @__PURE__ */ jsx4(
+          "input",
+          {
+            type: "number",
+            value: currentMax,
+            onChange: handleMaxChange
+          }
+        )
+      ] })
+    ] });
+  }
+  return null;
+};
 export {
+  FilterPanel,
   SearchInput,
   SearchProvider,
   SearchResults,
