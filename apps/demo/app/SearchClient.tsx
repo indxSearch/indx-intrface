@@ -21,16 +21,18 @@ function SearchUI() {
         className="search-input"
         style={{ padding: '0.5rem', width: '100%', maxWidth: '300px' }}
       />
-      <FilterPanel field="speed" filterType="range" displayType='slider' />
-      <FilterPanel field="speed" filterType="value" />
+      <FilterPanel label="speed" field="speed" filterType="range" displayType="slider" />
+      {/* <FilterPanel label="speed" field="speed" filterType="value" displayType="checkbox" /> */}
+      <FilterPanel label="attack" field="attack" filterType="value" displayType="checkbox" />
       <SearchResults
-        fields={['name', 'type1', 'type2', 'hp', 'speed']}
+        fields={['name', 'type1', 'type2', 'hp', 'speed', 'attack']}
         customLabels={{
           name: '',
           type1: 'Primary Type: ',
           type2: 'Secondary Type: ',
           hp: 'HP: ',
-          speed: 'Speed: '
+          speed: 'Speed: ',
+          attack: 'Attack: '
         }}
       />
     </div> 

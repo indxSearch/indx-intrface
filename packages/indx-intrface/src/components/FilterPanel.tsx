@@ -63,7 +63,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({ field, label, filterTy
     const handleRangeChange = (values: number[]) => {
       const [min, max] = values;
       if (!isNaN(min) && !isNaN(max) && min <= max) {
-        setRangeFilter(field, min, max);
+        if (min !== actualMin || max !== actualMax) {
+          setRangeFilter(field, min, max);
+        } else {
+          setRangeFilter(field, actualMin, actualMax); // reset to full bounds
+        }
       }
     };
 

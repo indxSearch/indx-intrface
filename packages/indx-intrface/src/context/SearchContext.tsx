@@ -92,19 +92,45 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
       let filterProxy: any = null;
 
       const filterEntries = Object.entries(state.filters ?? {});
+      // For each field, combine multiple values with OR, then combine all with AND
       const valueFilterResponses: any[] = await Promise.all(
-        filterEntries.flatMap(([field, values]) =>
-          values.map(value =>
-            fetch(`${url}/api/CreateValueFilter/${dataset}`, {
+        filterEntries.map(async ([field, values]) => {
+          if (values.length === 1) {
+            return await fetch(`${url}/api/CreateValueFilter/${dataset}`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
               },
-              body: JSON.stringify({ FieldName: field, Value: value }),
-            }).then(res => res.json())
-          )
-        )
+              body: JSON.stringify({ FieldName: field, Value: values[0] }),
+            }).then(res => res.json());
+          }
+
+          const orFilters = await Promise.all(
+            values.map(value =>
+              fetch(`${url}/api/CreateValueFilter/${dataset}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ FieldName: field, Value: value }),
+              }).then(res => res.json())
+            )
+          );
+
+          return await fetch(`${url}/api/CombineFilters/${dataset}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              Filters: orFilters,
+              AndMode: false,
+            }),
+          }).then(res => res.json());
+        })
       );
 
       // Range filter logic
@@ -123,8 +149,14 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
         )
       );
 
-      // Combine value and range filters
-      const allFilters = [...valueFilterResponses, ...rangeFilterResponses];
+      // Combine value and range filters, validating filter objects
+      const allFilters = [...valueFilterResponses, ...rangeFilterResponses].filter(
+        f => f && typeof f.hashString === 'string'
+      );
+
+      if (allFilters.length === 0) {
+        console.log('No valid filters found.');
+      }
 
       if (allFilters.length === 1) {
         filterProxy = allFilters[0];
@@ -136,12 +168,23 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
             'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify({
-            Filters: allFilters,
-            AndMode: true,
+            A: allFilters[0],
+            B: allFilters[1],
+            AndMode: false,
           }),
         });
+
+        if (!combinedResponse.ok) {
+          const err = await combinedResponse.json();
+          console.error('CombineFilters failed:', err);
+          throw new Error('CombineFilters failed');
+        }
+
         filterProxy = await combinedResponse.json();
       }
+
+      // Log filterProxy before search
+      console.log('Sending search filterProxy:', filterProxy);
 
       const searchResponse = await fetch(`${url}/api/Search/${dataset}`, {
         method: 'POST',
