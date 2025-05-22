@@ -30,7 +30,9 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.tsx
 var src_exports = {};
 __export(src_exports, {
+  SearchInput: () => SearchInput,
   SearchProvider: () => SearchProvider,
+  SearchResults: () => SearchResults,
   useSearch: () => useSearchContext
 });
 module.exports = __toCommonJS(src_exports);
@@ -155,9 +157,65 @@ var useSearchContext = () => {
   }
   return context;
 };
+
+// src/components/SearchInput.tsx
+var import_jsx_runtime2 = require("react/jsx-runtime");
+var SearchInput = ({
+  className,
+  placeholder = "Search...",
+  autoFocus = false,
+  onKeyDown,
+  ...rest
+}) => {
+  const { state: { query }, setQuery } = useSearchContext();
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+    "input",
+    {
+      type: "text",
+      value: query,
+      onChange: (e) => setQuery(e.target.value),
+      placeholder,
+      autoFocus,
+      onKeyDown,
+      className,
+      ...rest
+    }
+  );
+};
+
+// src/components/SearchResults.tsx
+var import_jsx_runtime3 = require("react/jsx-runtime");
+var SearchResults = ({ fields, customLabels }) => {
+  const { state: { results } } = useSearchContext();
+  if (!results || results.length === 0) {
+    return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "No results found." });
+  }
+  return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { children: results.map((item, index) => {
+    let parsed;
+    try {
+      parsed = typeof item === "string" ? JSON.parse(item) : item;
+    } catch {
+      return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "Invalid JSON" }) }, index);
+    }
+    const displayData = fields?.length ? fields.reduce((obj, key) => {
+      if (key in parsed)
+        obj[key] = parsed[key];
+      return obj;
+    }, {}) : parsed;
+    return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("ul", { children: Object.entries(displayData).map(([key, value]) => {
+      const label = customLabels?.[key];
+      return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("li", { children: [
+        label === "" ? "" : label ?? `${key}: `,
+        String(value)
+      ] }, key);
+    }) }) }, index);
+  }) });
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  SearchInput,
   SearchProvider,
+  SearchResults,
   useSearch
 });
 //# sourceMappingURL=index.js.map

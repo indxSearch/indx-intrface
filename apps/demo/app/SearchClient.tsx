@@ -1,7 +1,6 @@
-// apps/demo/app/SearchClient.tsx
 'use client';
 
-import { SearchProvider, useSearch } from 'indx-intrface';
+import { SearchProvider, useSearch, SearchInput, SearchResults } from 'indx-intrface';
 
 export function SearchClient({ email, password }: { email: string; password: string }) {
   return (
@@ -12,25 +11,26 @@ export function SearchClient({ email, password }: { email: string; password: str
 }
 
 function SearchUI() {
-  const { state: { query, isLoading, results, facets }, setQuery } = useSearch();
+  const { isLoading, results, facets } = useSearch().state;
 
   return (
     <div style={{ padding: '2rem' }}>
-      <input
-        type="text"
-        value={query}
-        onChange={e => setQuery(e.target.value)}
+      <SearchInput
         placeholder="Search..."
+        className="search-input"
         style={{ padding: '0.5rem', width: '100%', maxWidth: '300px' }}
       />
       {isLoading && <p>Loading...</p>}
-      {results && (
-        <ul>
-          {results.map((doc: any, index: number) => (
-            <li key={index}>{doc.title || JSON.stringify(doc)}</li>
-          ))}
-        </ul>
-      )}
+      <SearchResults
+        fields={['name', 'type1', 'type2', 'hp']}
+        customLabels={{
+          name: '',
+          type1: 'Primary Type: ',
+          type2: 'Secondary Type: ',
+          hp: 'HP: ',
+        }}
+      />
+      {/* 
       {facets && typeof facets === 'object' && (
         <div style={{ marginTop: '2rem' }}>
           <h3>Facets</h3>
@@ -50,7 +50,7 @@ function SearchUI() {
             );
           })}
         </div>
-      )}
-    </div>
+      )} */}
+    </div> 
   );
 }

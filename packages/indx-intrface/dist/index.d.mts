@@ -18,4 +18,14 @@ declare const SearchProvider: React.FC<{
 }>;
 declare const useSearchContext: () => SearchContextType;
 
-export { SearchProvider, useSearchContext as useSearch };
+interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+}
+declare const SearchInput: React.FC<SearchInputProps>;
+
+interface SearchResultsProps {
+    fields?: string[];
+    customLabels?: Record<string, string>;
+}
+declare const SearchResults: React.FC<SearchResultsProps>;
+
+export { SearchInput, SearchProvider, SearchResults, useSearchContext as useSearch };

@@ -118,8 +118,64 @@ var useSearchContext = () => {
   }
   return context;
 };
+
+// src/components/SearchInput.tsx
+import { jsx as jsx2 } from "react/jsx-runtime";
+var SearchInput = ({
+  className,
+  placeholder = "Search...",
+  autoFocus = false,
+  onKeyDown,
+  ...rest
+}) => {
+  const { state: { query }, setQuery } = useSearchContext();
+  return /* @__PURE__ */ jsx2(
+    "input",
+    {
+      type: "text",
+      value: query,
+      onChange: (e) => setQuery(e.target.value),
+      placeholder,
+      autoFocus,
+      onKeyDown,
+      className,
+      ...rest
+    }
+  );
+};
+
+// src/components/SearchResults.tsx
+import { jsx as jsx3, jsxs as jsxs2 } from "react/jsx-runtime";
+var SearchResults = ({ fields, customLabels }) => {
+  const { state: { results } } = useSearchContext();
+  if (!results || results.length === 0) {
+    return /* @__PURE__ */ jsx3("p", { children: "No results found." });
+  }
+  return /* @__PURE__ */ jsx3("div", { children: results.map((item, index) => {
+    let parsed;
+    try {
+      parsed = typeof item === "string" ? JSON.parse(item) : item;
+    } catch {
+      return /* @__PURE__ */ jsx3("div", { children: /* @__PURE__ */ jsx3("p", { children: "Invalid JSON" }) }, index);
+    }
+    const displayData = fields?.length ? fields.reduce((obj, key) => {
+      if (key in parsed)
+        obj[key] = parsed[key];
+      return obj;
+    }, {}) : parsed;
+    return /* @__PURE__ */ jsx3("div", { children: /* @__PURE__ */ jsx3("ul", { children: Object.entries(displayData).map(([key, value]) => {
+      const label = customLabels?.[key];
+      return /* @__PURE__ */ jsxs2("li", { children: [
+        label === "" ? "" : label ?? `${key}: `,
+        String(value)
+      ] }, key);
+    }) }) }, index);
+  }) });
+};
 export {
+  SearchInput,
   SearchProvider,
+  SearchResults,
   useSearchContext as useSearch
 };
 //# sourceMappingURL=index.mjs.map
