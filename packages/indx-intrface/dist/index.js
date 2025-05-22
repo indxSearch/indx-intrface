@@ -56,6 +56,7 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
   const [lastQueryText, setLastQueryText] = (0, import_react.useState)("");
   const [rangeBounds, setRangeBounds] = (0, import_react.useState)({});
   const [lastValueFilters, setLastValueFilters] = (0, import_react.useState)({});
+  const [initialFacetKeys, setInitialFacetKeys] = (0, import_react.useState)({});
   const setRangeFilter = (0, import_react.useCallback)((field, min, max) => {
     setState((prev) => ({
       ...prev,
@@ -217,10 +218,18 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
         setRangeBounds(updatedBounds);
         setLastValueFilters(state.filters);
       }
+      const currentFacets = searchData.facets;
+      let displayFacets = currentFacets;
+      if (!currentFacets || Object.keys(currentFacets).length === 0) {
+        displayFacets = {};
+        for (const [field, keys2] of Object.entries(initialFacetKeys)) {
+          displayFacets[field] = keys2.map((key) => ({ key, value: null }));
+        }
+      }
       setState((prev) => ({
         ...prev,
         results: documents,
-        facets: searchData.facets || null,
+        facets: displayFacets,
         facetStats: mergedFacetStats,
         isLoading: false
       }));
@@ -232,7 +241,7 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
         isLoading: false
       }));
     }
-  }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds, maxResults]);
+  }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds, maxResults, initialFacetKeys]);
   import_react.default.useEffect(() => {
     if (state.query.trim() || allowEmptySearch) {
       search();
@@ -304,6 +313,15 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
           }
         }
         setInitialFacetStats(newFacetStats);
+        const extractedFacetKeys = {};
+        if (blankSearchData.facets) {
+          for (const [field, values] of Object.entries(blankSearchData.facets)) {
+            if (Array.isArray(values)) {
+              extractedFacetKeys[field] = values.map((v) => v.key);
+            }
+          }
+        }
+        setInitialFacetKeys(extractedFacetKeys);
         setRangeBounds(newFacetStats);
         setState((prev) => ({
           ...prev,

@@ -38,6 +38,8 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
   const [rangeBounds, setRangeBounds] = useState<Record<string, { min: number; max: number }>>({});
   const [lastValueFilters, setLastValueFilters] = useState<Record<string, string[]>>({});
 
+  const [initialFacetKeys, setInitialFacetKeys] = useState<Record<string, string[]>>({});
+
   const setRangeFilter = useCallback((field: string, min: number, max: number) => {
     setState(prev => ({
       ...prev,
@@ -232,10 +234,20 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
         setLastValueFilters(state.filters);
       }
 
+      const currentFacets = searchData.facets;
+      let displayFacets = currentFacets;
+
+      if (!currentFacets || Object.keys(currentFacets).length === 0) {
+        displayFacets = {};
+        for (const [field, keys] of Object.entries(initialFacetKeys)) {
+          displayFacets[field] = keys.map(key => ({ key, value: null }));
+        }
+      }
+
       setState(prev => ({
         ...prev,
         results: documents,
-        facets: searchData.facets || null,
+        facets: displayFacets,
         facetStats: mergedFacetStats,
         isLoading: false,
       }));
@@ -247,7 +259,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
         isLoading: false,
       }));
     }
-  }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds, maxResults]);
+  }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds, maxResults, initialFacetKeys]);
 
   React.useEffect(() => {
     if (state.query.trim() || allowEmptySearch) {
@@ -333,6 +345,16 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
         }
 
         setInitialFacetStats(newFacetStats);
+        const extractedFacetKeys: Record<string, string[]> = {};
+        if (blankSearchData.facets) {
+          for (const [field, values] of Object.entries(blankSearchData.facets)) {
+            if (Array.isArray(values)) {
+              extractedFacetKeys[field] = values.map((v: any) => v.key);
+            }
+          }
+        }
+        setInitialFacetKeys(extractedFacetKeys);
+
         setRangeBounds(newFacetStats);
         setState(prev => ({
           ...prev,
