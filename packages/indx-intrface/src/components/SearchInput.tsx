@@ -1,7 +1,9 @@
 import React from 'react';
 import { useSearchContext } from '../context/SearchContext';
 
-export interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+export interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
+}
 
 export const SearchInput: React.FC<SearchInputProps> = ({
   className,

@@ -15,26 +15,32 @@ export function SearchClient({ dataset }: { dataset: string }) {
 
 function SearchUI() {
   return (
-    <div style={{ padding: '2rem' }}>
-      <SearchInput
-        placeholder="Search..."
-        className="search-input"
-        style={{ padding: '0.5rem', width: '100%', maxWidth: '300px' }}
-      />
-      <FilterPanel label="speed" field="speed" filterType="range" displayType="slider" />
-      {/* <FilterPanel label="speed" field="speed" filterType="value" displayType="checkbox" /> */}
-      <FilterPanel label="attack" field="attack" filterType="value" displayType="checkbox" />
-      <SearchResults
-        fields={['name', 'type1', 'type2', 'hp', 'speed', 'attack']}
-        customLabels={{
-          name: '',
-          type1: 'Primary Type: ',
-          type2: 'Secondary Type: ',
-          hp: 'HP: ',
-          speed: 'Speed: ',
-          attack: 'Attack: '
-        }}
-      />
-    </div> 
+    <div style={{ padding: '2rem', width: '100%', display: 'flex' }}>
+      <div style={{ width: '60%', paddingRight: '1rem' }}>
+        <SearchInput
+          placeholder="Search..."
+          className="search-input"
+          style={{ padding: '0.5rem', width: '100%', maxWidth: '300px' }}
+        />
+        <SearchResults
+          fields={['name', 'type1', 'type2', 'hp', 'speed', 'attack']}
+          customLabels={{
+            name: '',
+            type1: 'Primary Type: ',
+            type2: 'Secondary Type: ',
+            hp: 'HP: ',
+            speed: 'Speed: ',
+            attack: 'Attack: '
+          }}
+        />
+      </div>
+      <div style={{ width: '40%' }}>
+        {/* <FilterPanel label="speed" field="speed" filterType="range" displayType="slider" /> */}
+        <FilterPanel label="speed" field="speed" filterType="value" displayType="checkbox" />
+        <FilterPanel label="attack" field="attack" filterType="value" displayType="checkbox" />
+        <FilterPanel label="hp" field="hp" filterType="value" displayType="checkbox" />
+        <FilterPanel label="primary type" field="type1" filterType="value" displayType="checkbox" />
+      </div>
+    </div>
   );
 }

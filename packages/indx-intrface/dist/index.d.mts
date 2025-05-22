@@ -38,6 +38,7 @@ declare const SearchProvider: React.FC<{
 declare const useSearchContext: () => SearchContextType;
 
 interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
 }
 declare const SearchInput: React.FC<SearchInputProps>;
 

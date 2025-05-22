@@ -81,6 +81,40 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
     });
   }, []);
 
+  async function combineFilters(filters: any[], url: string, dataset: string, token: string): Promise<any> {
+    if (filters.length === 0) return null;
+    if (filters.length === 1) return filters[0];
+
+    let current = filters[0];
+
+    for (let i = 1; i < filters.length; i++) {
+      const response = await fetch(`${url}/api/CombineFilters/${dataset}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          A: current,
+          B: filters[i],
+          AndMode: true,
+        }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        console.error('CombineFilters failed:', err);
+        throw new Error('CombineFilters failed');
+      }
+
+      current = await response.json();
+      // Add logging to inspect the output of the CombineFilters call
+      console.log('Intermediate combined filter result:', current);
+    }
+
+    return current;
+  }
+
   const search = useCallback(async () => {
     if (!token) return;
 
@@ -92,21 +126,10 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
       let filterProxy: any = null;
 
       const filterEntries = Object.entries(state.filters ?? {});
-      // For each field, combine multiple values with OR, then combine all with AND
-      const valueFilterResponses: any[] = await Promise.all(
+      // For each field, create a value filter for each value; flatten all into a single array
+      const valueFilterResponsesNested: any[][] = await Promise.all(
         filterEntries.map(async ([field, values]) => {
-          if (values.length === 1) {
-            return await fetch(`${url}/api/CreateValueFilter/${dataset}`, {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-              },
-              body: JSON.stringify({ FieldName: field, Value: values[0] }),
-            }).then(res => res.json());
-          }
-
-          const orFilters = await Promise.all(
+          return await Promise.all(
             values.map(value =>
               fetch(`${url}/api/CreateValueFilter/${dataset}`, {
                 method: 'PUT',
@@ -118,20 +141,9 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
               }).then(res => res.json())
             )
           );
-
-          return await fetch(`${url}/api/CombineFilters/${dataset}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              Filters: orFilters,
-              AndMode: false,
-            }),
-          }).then(res => res.json());
         })
       );
+      const valueFilterResponses = valueFilterResponsesNested.flat();
 
       // Range filter logic
       const rangeFilterEntries = Object.entries(state.rangeFilters ?? {});
@@ -158,30 +170,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
         console.log('No valid filters found.');
       }
 
-      if (allFilters.length === 1) {
-        filterProxy = allFilters[0];
-      } else if (allFilters.length > 1) {
-        const combinedResponse = await fetch(`${url}/api/CombineFilters/${dataset}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            A: allFilters[0],
-            B: allFilters[1],
-            AndMode: false,
-          }),
-        });
-
-        if (!combinedResponse.ok) {
-          const err = await combinedResponse.json();
-          console.error('CombineFilters failed:', err);
-          throw new Error('CombineFilters failed');
-        }
-
-        filterProxy = await combinedResponse.json();
-      }
+      filterProxy = await combineFilters(allFilters, url, dataset, token);
 
       // Log filterProxy before search
       console.log('Sending search filterProxy:', filterProxy);

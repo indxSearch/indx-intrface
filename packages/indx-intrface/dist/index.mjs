@@ -53,6 +53,35 @@ var SearchProvider = ({ children, email, password, url, dataset }) => {
       };
     });
   }, []);
+  async function combineFilters(filters, url2, dataset2, token2) {
+    if (filters.length === 0)
+      return null;
+    if (filters.length === 1)
+      return filters[0];
+    let current = filters[0];
+    for (let i = 1; i < filters.length; i++) {
+      const response = await fetch(`${url2}/api/CombineFilters/${dataset2}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token2}`
+        },
+        body: JSON.stringify({
+          A: current,
+          B: filters[i],
+          AndMode: true
+        })
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        console.error("CombineFilters failed:", err);
+        throw new Error("CombineFilters failed");
+      }
+      current = await response.json();
+      console.log("Intermediate combined filter result:", current);
+    }
+    return current;
+  }
   const search = useCallback(async () => {
     if (!token)
       return;
@@ -61,19 +90,9 @@ var SearchProvider = ({ children, email, password, url, dataset }) => {
     try {
       let filterProxy = null;
       const filterEntries = Object.entries(state.filters ?? {});
-      const valueFilterResponses = await Promise.all(
+      const valueFilterResponsesNested = await Promise.all(
         filterEntries.map(async ([field, values]) => {
-          if (values.length === 1) {
-            return await fetch(`${url}/api/CreateValueFilter/${dataset}`, {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-              },
-              body: JSON.stringify({ FieldName: field, Value: values[0] })
-            }).then((res) => res.json());
-          }
-          const orFilters = await Promise.all(
+          return await Promise.all(
             values.map(
               (value) => fetch(`${url}/api/CreateValueFilter/${dataset}`, {
                 method: "PUT",
@@ -85,19 +104,9 @@ var SearchProvider = ({ children, email, password, url, dataset }) => {
               }).then((res) => res.json())
             )
           );
-          return await fetch(`${url}/api/CombineFilters/${dataset}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              Filters: orFilters,
-              AndMode: false
-            })
-          }).then((res) => res.json());
         })
       );
+      const valueFilterResponses = valueFilterResponsesNested.flat();
       const rangeFilterEntries = Object.entries(state.rangeFilters ?? {});
       console.log("Applying range filters:", JSON.stringify(state.rangeFilters, null, 2));
       const rangeFilterResponses = await Promise.all(
@@ -118,28 +127,7 @@ var SearchProvider = ({ children, email, password, url, dataset }) => {
       if (allFilters.length === 0) {
         console.log("No valid filters found.");
       }
-      if (allFilters.length === 1) {
-        filterProxy = allFilters[0];
-      } else if (allFilters.length > 1) {
-        const combinedResponse = await fetch(`${url}/api/CombineFilters/${dataset}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            A: allFilters[0],
-            B: allFilters[1],
-            AndMode: false
-          })
-        });
-        if (!combinedResponse.ok) {
-          const err = await combinedResponse.json();
-          console.error("CombineFilters failed:", err);
-          throw new Error("CombineFilters failed");
-        }
-        filterProxy = await combinedResponse.json();
-      }
+      filterProxy = await combineFilters(allFilters, url, dataset, token);
       console.log("Sending search filterProxy:", filterProxy);
       const searchResponse = await fetch(`${url}/api/Search/${dataset}`, {
         method: "POST",
