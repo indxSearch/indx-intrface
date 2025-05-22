@@ -1,6 +1,6 @@
 // src/context/SearchContext.tsx
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { Fragment, jsx } from "react/jsx-runtime";
 var SearchContext = createContext(void 0);
 var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearch = false, maxResults = 10 }) => {
   const [state, setState] = useState({
@@ -293,37 +293,23 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
     };
     login();
   }, [email, password, url, dataset]);
-  return /* @__PURE__ */ jsxs(Fragment, { children: [
-    /* @__PURE__ */ jsx(
-      SearchContext.Provider,
-      {
-        value: {
-          state: {
-            ...state,
-            filterableFields,
-            facetableFields,
-            rangeBounds
-          },
-          setQuery,
-          toggleFilter,
-          setRangeFilter
+  return /* @__PURE__ */ jsx(Fragment, { children: /* @__PURE__ */ jsx(
+    SearchContext.Provider,
+    {
+      value: {
+        state: {
+          ...state,
+          filterableFields,
+          facetableFields,
+          rangeBounds
         },
-        children
-      }
-    ),
-    state.facets && typeof state.facets === "object" && /* @__PURE__ */ jsx(Fragment, { children: Object.entries(state.facets).map(([facetName, values]) => {
-      if (!Array.isArray(values))
-        return null;
-      return /* @__PURE__ */ jsxs("div", { children: [
-        /* @__PURE__ */ jsx("strong", { children: facetName }),
-        /* @__PURE__ */ jsx("ul", { children: values.map((v, i) => /* @__PURE__ */ jsxs("li", { children: [
-          v.key,
-          ": ",
-          v.value
-        ] }, i)) })
-      ] }, facetName);
-    }) })
-  ] });
+        setQuery,
+        toggleFilter,
+        setRangeFilter
+      },
+      children
+    }
+  ) });
 };
 var useSearchContext = () => {
   const context = useContext(SearchContext);
@@ -359,7 +345,7 @@ var SearchInput = ({
 };
 
 // src/components/SearchResults.tsx
-import { jsx as jsx3, jsxs as jsxs2 } from "react/jsx-runtime";
+import { jsx as jsx3, jsxs } from "react/jsx-runtime";
 var SearchResults = ({ fields, customLabels }) => {
   const { state: { results } } = useSearchContext();
   if (!results || results.length === 0) {
@@ -379,7 +365,7 @@ var SearchResults = ({ fields, customLabels }) => {
     }, {}) : parsed;
     return /* @__PURE__ */ jsx3("div", { children: /* @__PURE__ */ jsx3("ul", { children: Object.entries(displayData).map(([key, value]) => {
       const label = customLabels?.[key];
-      return /* @__PURE__ */ jsxs2("li", { children: [
+      return /* @__PURE__ */ jsxs("li", { children: [
         label === "" ? "" : label ?? `${key}: `,
         String(value)
       ] }, key);
@@ -390,7 +376,7 @@ var SearchResults = ({ fields, customLabels }) => {
 // src/components/FilterPanel.tsx
 import { Range } from "react-range";
 import React2 from "react";
-import { jsx as jsx4, jsxs as jsxs3 } from "react/jsx-runtime";
+import { jsx as jsx4, jsxs as jsxs2 } from "react/jsx-runtime";
 var FilterPanel = ({
   field,
   label,
@@ -410,7 +396,7 @@ var FilterPanel = ({
       missing.push("filterable");
     if (!facetableFields?.includes(field))
       missing.push("facetable");
-    return /* @__PURE__ */ jsxs3("div", { style: { color: "red" }, children: [
+    return /* @__PURE__ */ jsxs2("div", { style: { color: "red" }, children: [
       'Cannot render filter for "',
       field,
       '": missing ',
@@ -442,9 +428,9 @@ var FilterPanel = ({
         mergedValuesMap.set(f.key, f.value);
       }
     }
-    return /* @__PURE__ */ jsxs3("fieldset", { children: [
+    return /* @__PURE__ */ jsxs2("fieldset", { children: [
       /* @__PURE__ */ jsx4("legend", { children: label || field }),
-      /* @__PURE__ */ jsx4("ul", { children: Array.from(mergedValuesMap.entries()).map(([key, count], index) => /* @__PURE__ */ jsx4("li", { children: /* @__PURE__ */ jsxs3("label", { children: [
+      /* @__PURE__ */ jsx4("ul", { children: Array.from(mergedValuesMap.entries()).map(([key, count], index) => /* @__PURE__ */ jsx4("li", { children: /* @__PURE__ */ jsxs2("label", { children: [
         /* @__PURE__ */ jsx4(
           "input",
           {
@@ -477,9 +463,9 @@ var FilterPanel = ({
       }
     };
     if (displayType === "slider") {
-      return /* @__PURE__ */ jsxs3("fieldset", { children: [
+      return /* @__PURE__ */ jsxs2("fieldset", { children: [
         /* @__PURE__ */ jsx4("legend", { children: label || field }),
-        /* @__PURE__ */ jsxs3("div", { style: { padding: "1rem 0" }, children: [
+        /* @__PURE__ */ jsxs2("div", { style: { padding: "1rem 0" }, children: [
           /* @__PURE__ */ jsx4(
             Range,
             {
@@ -520,7 +506,7 @@ var FilterPanel = ({
               }
             }
           ),
-          /* @__PURE__ */ jsxs3("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "0.85rem" }, children: [
+          /* @__PURE__ */ jsxs2("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "0.85rem" }, children: [
             /* @__PURE__ */ jsx4("span", { children: currentMin }),
             /* @__PURE__ */ jsx4("span", { children: currentMax })
           ] })
@@ -545,9 +531,9 @@ var FilterPanel = ({
         setRangeFilter(field, currentMin, value);
       }
     };
-    return /* @__PURE__ */ jsxs3("fieldset", { children: [
+    return /* @__PURE__ */ jsxs2("fieldset", { children: [
       /* @__PURE__ */ jsx4("legend", { children: label || field }),
-      /* @__PURE__ */ jsxs3("label", { children: [
+      /* @__PURE__ */ jsxs2("label", { children: [
         "Min:",
         /* @__PURE__ */ jsx4(
           "input",
@@ -558,7 +544,7 @@ var FilterPanel = ({
           }
         )
       ] }),
-      /* @__PURE__ */ jsxs3("label", { children: [
+      /* @__PURE__ */ jsxs2("label", { children: [
         "Max:",
         /* @__PURE__ */ jsx4(
           "input",

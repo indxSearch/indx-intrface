@@ -333,37 +333,23 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
     };
     login();
   }, [email, password, url, dataset]);
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-      SearchContext.Provider,
-      {
-        value: {
-          state: {
-            ...state,
-            filterableFields,
-            facetableFields,
-            rangeBounds
-          },
-          setQuery,
-          toggleFilter,
-          setRangeFilter
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    SearchContext.Provider,
+    {
+      value: {
+        state: {
+          ...state,
+          filterableFields,
+          facetableFields,
+          rangeBounds
         },
-        children
-      }
-    ),
-    state.facets && typeof state.facets === "object" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: Object.entries(state.facets).map(([facetName, values]) => {
-      if (!Array.isArray(values))
-        return null;
-      return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: facetName }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", { children: values.map((v, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
-          v.key,
-          ": ",
-          v.value
-        ] }, i)) })
-      ] }, facetName);
-    }) })
-  ] });
+        setQuery,
+        toggleFilter,
+        setRangeFilter
+      },
+      children
+    }
+  ) });
 };
 var useSearchContext = () => {
   const context = (0, import_react.useContext)(SearchContext);

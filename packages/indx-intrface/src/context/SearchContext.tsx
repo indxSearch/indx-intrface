@@ -385,25 +385,6 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
       >
         {children}
       </SearchContext.Provider>
-      {state.facets && typeof state.facets === 'object' && (
-        <>
-          {Object.entries(state.facets).map(([facetName, values]) => {
-            if (!Array.isArray(values)) return null;
-            return (
-              <div key={facetName}>
-                <strong>{facetName}</strong>
-                <ul>
-                  {values.map((v, i) => (
-                    <li key={i}>
-                      {v.key}: {v.value}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
-        </>
-      )}
     </>
   );
 };
