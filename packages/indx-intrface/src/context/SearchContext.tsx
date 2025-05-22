@@ -23,7 +23,7 @@ export interface SearchContextType {
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
-export const SearchProvider: React.FC<{ children: React.ReactNode; email: string; password: string; url: string; dataset: string }> = ({ children, email, password, url, dataset }) => {
+export const SearchProvider: React.FC<{ children: React.ReactNode; email: string; password: string; url: string; dataset: string; allowEmptySearch?: boolean; maxResults?: number }> = ({ children, email, password, url, dataset, allowEmptySearch = false, maxResults = 10 }) => {
   const [state, setState] = useState<SearchState>({
     query: '',
     results: null,
@@ -97,7 +97,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
         body: JSON.stringify({
           A: current,
           B: filters[i],
-          AndMode: true,
+          useAndOperation: true
         }),
       });
 
@@ -186,7 +186,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
         },
         body: JSON.stringify({
           text: state.query,
-          maxNumberOfRecordsToReturn: 10,
+          maxNumberOfRecordsToReturn: maxResults,
           ...(filterProxy ? { filter: filterProxy } : {}),
           ...(showFacets ? { enableFacets: true } : {}),
         }),
@@ -268,15 +268,15 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
         isLoading: false,
       }));
     }
-  }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds]);
+  }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds, maxResults]);
 
   React.useEffect(() => {
-    if (state.query.trim()) {
+    if (state.query.trim() || allowEmptySearch) {
       search();
     } else {
       setState(prev => ({ ...prev, results: null }));
     }
-  }, [state.query, state.filters, state.rangeFilters, search]);
+  }, [state.query, state.filters, state.rangeFilters, search, allowEmptySearch]);
 
   React.useEffect(() => {
     const login = async () => {

@@ -34,6 +34,8 @@ declare const SearchProvider: React.FC<{
     password: string;
     url: string;
     dataset: string;
+    allowEmptySearch?: boolean;
+    maxResults?: number;
 }>;
 declare const useSearchContext: () => SearchContextType;
 

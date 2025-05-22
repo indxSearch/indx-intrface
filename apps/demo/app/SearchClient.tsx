@@ -7,7 +7,7 @@ export function SearchClient({ dataset }: { dataset: string }) {
   const email = process.env.NEXT_PUBLIC_INDX_EMAIL!;
   const password = process.env.NEXT_PUBLIC_INDX_PASSWORD!;
   return (
-    <SearchProvider url={url} email={email} password={password} dataset={dataset}>
+    <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={true}>
       <SearchUI />
     </SearchProvider>
   );
@@ -35,8 +35,8 @@ function SearchUI() {
         />
       </div>
       <div style={{ width: '40%' }}>
-        {/* <FilterPanel label="speed" field="speed" filterType="range" displayType="slider" /> */}
-        <FilterPanel label="speed" field="speed" filterType="value" displayType="checkbox" />
+        <FilterPanel label="speed" field="speed" filterType="range" displayType="slider" />
+        {/* <FilterPanel label="speed" field="speed" filterType="value" displayType="checkbox" /> */}
         <FilterPanel label="attack" field="attack" filterType="value" displayType="checkbox" />
         <FilterPanel label="hp" field="hp" filterType="value" displayType="checkbox" />
         <FilterPanel label="primary type" field="type1" filterType="value" displayType="checkbox" />

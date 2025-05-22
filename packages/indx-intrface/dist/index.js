@@ -42,7 +42,7 @@ module.exports = __toCommonJS(src_exports);
 var import_react = __toESM(require("react"));
 var import_jsx_runtime = require("react/jsx-runtime");
 var SearchContext = (0, import_react.createContext)(void 0);
-var SearchProvider = ({ children, email, password, url, dataset }) => {
+var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearch = false, maxResults = 10 }) => {
   const [state, setState] = (0, import_react.useState)({
     query: "",
     results: null,
@@ -109,7 +109,7 @@ var SearchProvider = ({ children, email, password, url, dataset }) => {
         body: JSON.stringify({
           A: current,
           B: filters[i],
-          AndMode: true
+          useAndOperation: true
         })
       });
       if (!response.ok) {
@@ -178,7 +178,7 @@ var SearchProvider = ({ children, email, password, url, dataset }) => {
         },
         body: JSON.stringify({
           text: state.query,
-          maxNumberOfRecordsToReturn: 10,
+          maxNumberOfRecordsToReturn: maxResults,
           ...filterProxy ? { filter: filterProxy } : {},
           ...showFacets ? { enableFacets: true } : {}
         })
@@ -245,14 +245,14 @@ var SearchProvider = ({ children, email, password, url, dataset }) => {
         isLoading: false
       }));
     }
-  }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds]);
+  }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds, maxResults]);
   import_react.default.useEffect(() => {
-    if (state.query.trim()) {
+    if (state.query.trim() || allowEmptySearch) {
       search();
     } else {
       setState((prev) => ({ ...prev, results: null }));
     }
-  }, [state.query, state.filters, state.rangeFilters, search]);
+  }, [state.query, state.filters, state.rangeFilters, search, allowEmptySearch]);
   import_react.default.useEffect(() => {
     const login = async () => {
       try {

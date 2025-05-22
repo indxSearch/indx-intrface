@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 var SearchContext = createContext(void 0);
-var SearchProvider = ({ children, email, password, url, dataset }) => {
+var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearch = false, maxResults = 10 }) => {
   const [state, setState] = useState({
     query: "",
     results: null,
@@ -69,7 +69,7 @@ var SearchProvider = ({ children, email, password, url, dataset }) => {
         body: JSON.stringify({
           A: current,
           B: filters[i],
-          AndMode: true
+          useAndOperation: true
         })
       });
       if (!response.ok) {
@@ -138,7 +138,7 @@ var SearchProvider = ({ children, email, password, url, dataset }) => {
         },
         body: JSON.stringify({
           text: state.query,
-          maxNumberOfRecordsToReturn: 10,
+          maxNumberOfRecordsToReturn: maxResults,
           ...filterProxy ? { filter: filterProxy } : {},
           ...showFacets ? { enableFacets: true } : {}
         })
@@ -205,14 +205,14 @@ var SearchProvider = ({ children, email, password, url, dataset }) => {
         isLoading: false
       }));
     }
-  }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds]);
+  }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds, maxResults]);
   React.useEffect(() => {
-    if (state.query.trim()) {
+    if (state.query.trim() || allowEmptySearch) {
       search();
     } else {
       setState((prev) => ({ ...prev, results: null }));
     }
-  }, [state.query, state.filters, state.rangeFilters, search]);
+  }, [state.query, state.filters, state.rangeFilters, search, allowEmptySearch]);
   React.useEffect(() => {
     const login = async () => {
       try {
