@@ -23,23 +23,24 @@ function SearchUI() {
           style={{ padding: '0.5rem', width: '100%', maxWidth: '300px' }}
         />
         <SearchResults
-          fields={['name', 'type1', 'type2', 'hp', 'speed', 'attack']}
+          fields={['name', 'type1', 'type2', 'hp', 'speed', 'attack', 'abilities']}
           customLabels={{
             name: '',
             type1: 'Primary Type: ',
             type2: 'Secondary Type: ',
             hp: 'HP: ',
             speed: 'Speed: ',
-            attack: 'Attack: '
+            attack: 'Attack: ',
+            abilities: 'Abilities: '
           }}
         />
       </div>
       <div style={{ width: '40%' }}>
-        <FilterPanel label="speed" field="speed" filterType="range" displayType="slider" />
-        {/* <FilterPanel label="speed" field="speed" filterType="value" displayType="checkbox" /> */}
+        {/* <FilterPanel label="speed" field="speed" filterType="range" displayType="slider" /> */}
+        <FilterPanel label="primary type" field="type1" filterType="value" displayType="checkbox" preserveBlankFacetState={true} />
+        <FilterPanel label="speed" field="speed" filterType="value" displayType="checkbox" />
         <FilterPanel label="attack" field="attack" filterType="value" displayType="checkbox" />
         <FilterPanel label="hp" field="hp" filterType="value" displayType="checkbox" />
-        <FilterPanel label="primary type" field="type1" filterType="value" displayType="checkbox" />
       </div>
     </div>
   );

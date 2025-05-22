@@ -57,7 +57,6 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
   const [rangeBounds, setRangeBounds] = (0, import_react.useState)({});
   const [lastValueFilters, setLastValueFilters] = (0, import_react.useState)({});
   const setRangeFilter = (0, import_react.useCallback)((field, min, max) => {
-    console.log(`setRangeFilter for field: ${field}, min: ${min}, max: ${max}`);
     setState((prev) => ({
       ...prev,
       rangeFilters: {
@@ -118,14 +117,12 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
         throw new Error("CombineFilters failed");
       }
       current = await response.json();
-      console.log("Intermediate combined filter result:", current);
     }
     return current;
   }
   const search = (0, import_react.useCallback)(async () => {
     if (!token)
       return;
-    console.log("Triggering search...");
     setState((prev) => ({ ...prev, isLoading: true }));
     try {
       let filterProxy = null;
@@ -148,7 +145,6 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
       );
       const valueFilterResponses = valueFilterResponsesNested.flat();
       const rangeFilterEntries = Object.entries(state.rangeFilters ?? {});
-      console.log("Applying range filters:", JSON.stringify(state.rangeFilters, null, 2));
       const rangeFilterResponses = await Promise.all(
         rangeFilterEntries.map(
           ([field, { min, max }]) => fetch(`${url}/api/CreateRangeFilter/${dataset}`, {
@@ -164,12 +160,7 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
       const allFilters = [...valueFilterResponses, ...rangeFilterResponses].filter(
         (f) => f && typeof f.hashString === "string"
       );
-      console.log("\u{1F9EA} All filters being combined:", JSON.stringify(allFilters, null, 2));
-      if (allFilters.length === 0) {
-        console.log("No valid filters found.");
-      }
       filterProxy = await combineFilters(allFilters, url, dataset, token);
-      console.log("Sending search filterProxy:", filterProxy);
       const searchResponse = await fetch(`${url}/api/Search/${dataset}`, {
         method: "POST",
         headers: {
@@ -182,10 +173,6 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
           ...filterProxy ? { filter: filterProxy } : {},
           ...showFacets ? { enableFacets: true } : {}
         })
-      });
-      console.log("Final search body:", {
-        text: state.query,
-        filter: filterProxy
       });
       const searchData = await searchResponse.json();
       const keys = (searchData.records || []).map((record) => record.documentKey);
@@ -424,13 +411,21 @@ var SearchResults = ({ fields, customLabels }) => {
 
 // src/components/FilterPanel.tsx
 var import_react_range = require("react-range");
+var import_react2 = __toESM(require("react"));
 var import_jsx_runtime4 = require("react/jsx-runtime");
-var FilterPanel = ({ field, label, filterType, displayType }) => {
+var FilterPanel = ({
+  field,
+  label,
+  filterType,
+  displayType,
+  preserveBlankFacetState = false
+}) => {
   const {
     state: { facets, filterableFields, facetableFields, filters, rangeFilters, facetStats, rangeBounds },
     toggleFilter,
     setRangeFilter
   } = useSearchContext();
+  const preservedFacetValuesRef = import_react2.default.useRef(null);
   if (!filterableFields?.includes(field) || !facetableFields?.includes(field)) {
     const missing = [];
     if (!filterableFields?.includes(field))
@@ -450,20 +445,40 @@ var FilterPanel = ({ field, label, filterType, displayType }) => {
     if (!facetValues || !Array.isArray(facetValues))
       return null;
     const selectedValues = filters?.[field] ?? [];
+    if (preserveBlankFacetState && !preservedFacetValuesRef.current && facetValues.length > 0) {
+      preservedFacetValuesRef.current = facetValues.reduce((acc, f) => {
+        acc[f.key] = f.value;
+        return acc;
+      }, {});
+    }
+    const mergedValuesMap = /* @__PURE__ */ new Map();
+    if (preserveBlankFacetState && preservedFacetValuesRef.current) {
+      for (const key in preservedFacetValuesRef.current) {
+        mergedValuesMap.set(key, 0);
+      }
+      for (const f of facetValues) {
+        mergedValuesMap.set(f.key, f.value);
+      }
+    } else {
+      for (const f of facetValues) {
+        mergedValuesMap.set(f.key, f.value);
+      }
+    }
     return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("fieldset", { children: [
       /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("legend", { children: label || field }),
-      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("ul", { children: facetValues.map((facet, index) => /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("label", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("ul", { children: Array.from(mergedValuesMap.entries()).map(([key, count], index) => /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("label", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
           "input",
           {
             type: "checkbox",
-            checked: selectedValues.includes(facet.key),
-            onChange: () => toggleFilter(field, facet.key)
+            checked: selectedValues.includes(key),
+            onChange: () => toggleFilter(field, key),
+            disabled: count === 0
           }
         ),
-        facet.key,
+        key,
         " (",
-        facet.value,
+        count,
         ")"
       ] }) }, index)) })
     ] });

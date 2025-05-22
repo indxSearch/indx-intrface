@@ -55,6 +55,7 @@ interface FilterPanelProps {
     label?: string;
     filterType: 'value' | 'range';
     displayType?: 'checkbox' | 'slider';
+    preserveBlankFacetState?: boolean;
 }
 declare const FilterPanel: React.FC<FilterPanelProps>;
 

@@ -7,14 +7,23 @@ export interface FilterPanelProps {
   label?: string;
   filterType: 'value' | 'range';
   displayType?: 'checkbox' | 'slider';
+  preserveBlankFacetState?: boolean;
 }
 
-export const FilterPanel: React.FC<FilterPanelProps> = ({ field, label, filterType, displayType }) => {
+export const FilterPanel: React.FC<FilterPanelProps> = ({
+  field,
+  label,
+  filterType,
+  displayType,
+  preserveBlankFacetState = false
+}) => {
   const {
     state: { facets, filterableFields, facetableFields, filters, rangeFilters, facetStats, rangeBounds },
     toggleFilter,
     setRangeFilter,
   } = useSearchContext();
+
+  const preservedFacetValuesRef = React.useRef<Record<string, number> | null>(null);
 
   if (!filterableFields?.includes(field) || !facetableFields?.includes(field)) {
     const missing: string[] = [];
@@ -32,19 +41,44 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({ field, label, filterTy
     if (!facetValues || !Array.isArray(facetValues)) return null;
     const selectedValues = filters?.[field] ?? [];
 
+    // --- preserve blank facet state logic ---
+
+    if (preserveBlankFacetState && !preservedFacetValuesRef.current && facetValues.length > 0) {
+      preservedFacetValuesRef.current = facetValues.reduce((acc: Record<string, number>, f: any) => {
+        acc[f.key] = f.value;
+        return acc;
+      }, {});
+    }
+
+    const mergedValuesMap = new Map<string, number>();
+
+    if (preserveBlankFacetState && preservedFacetValuesRef.current) {
+      for (const key in preservedFacetValuesRef.current) {
+        mergedValuesMap.set(key, 0);
+      }
+      for (const f of facetValues) {
+        mergedValuesMap.set(f.key, f.value);
+      }
+    } else {
+      for (const f of facetValues) {
+        mergedValuesMap.set(f.key, f.value);
+      }
+    }
+
     return (
       <fieldset>
         <legend>{label || field}</legend>
         <ul>
-          {facetValues.map((facet: any, index: number) => (
+          {Array.from(mergedValuesMap.entries()).map(([key, count], index) => (
             <li key={index}>
               <label>
                 <input
                   type="checkbox"
-                  checked={selectedValues.includes(facet.key)}
-                  onChange={() => toggleFilter(field, facet.key)}
+                  checked={selectedValues.includes(key)}
+                  onChange={() => toggleFilter(field, key)}
+                  disabled={count === 0}
                 />
-                {facet.key} ({facet.value})
+                {key} ({count})
               </label>
             </li>
           ))}

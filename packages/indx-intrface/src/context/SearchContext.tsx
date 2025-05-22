@@ -39,7 +39,6 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
   const [lastValueFilters, setLastValueFilters] = useState<Record<string, string[]>>({});
 
   const setRangeFilter = useCallback((field: string, min: number, max: number) => {
-    console.log(`setRangeFilter for field: ${field}, min: ${min}, max: ${max}`);
     setState(prev => ({
       ...prev,
       rangeFilters: {
@@ -108,8 +107,6 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
       }
 
       current = await response.json();
-      // Add logging to inspect the output of the CombineFilters call
-      console.log('Intermediate combined filter result:', current);
     }
 
     return current;
@@ -117,9 +114,6 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
 
   const search = useCallback(async () => {
     if (!token) return;
-
-    console.log('Triggering search...');
-
     setState(prev => ({ ...prev, isLoading: true }));
 
     try {
@@ -147,7 +141,6 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
 
       // Range filter logic
       const rangeFilterEntries = Object.entries(state.rangeFilters ?? {});
-      console.log('Applying range filters:', JSON.stringify(state.rangeFilters, null, 2));
       const rangeFilterResponses: any[] = await Promise.all(
         rangeFilterEntries.map(([field, { min, max }]) =>
           fetch(`${url}/api/CreateRangeFilter/${dataset}`, {
@@ -166,17 +159,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
         f => f && typeof f.hashString === 'string'
       );
 
-      // Debug log to verify filters being passed into combineFilters
-      console.log('🧪 All filters being combined:', JSON.stringify(allFilters, null, 2));
-
-      if (allFilters.length === 0) {
-        console.log('No valid filters found.');
-      }
-
       filterProxy = await combineFilters(allFilters, url, dataset, token);
-
-      // Log filterProxy before search
-      console.log('Sending search filterProxy:', filterProxy);
 
       const searchResponse = await fetch(`${url}/api/Search/${dataset}`, {
         method: 'POST',
@@ -190,10 +173,6 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
           ...(filterProxy ? { filter: filterProxy } : {}),
           ...(showFacets ? { enableFacets: true } : {}),
         }),
-      });
-      console.log('Final search body:', {
-        text: state.query,
-        filter: filterProxy,
       });
 
       const searchData = await searchResponse.json();
