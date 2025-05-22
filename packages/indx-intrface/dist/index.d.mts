@@ -15,6 +15,8 @@ declare const SearchProvider: React.FC<{
     children: React.ReactNode;
     email: string;
     password: string;
+    url: string;
+    dataset: string;
 }>;
 declare const useSearchContext: () => SearchContextType;
 

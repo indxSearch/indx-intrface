@@ -41,7 +41,7 @@ module.exports = __toCommonJS(src_exports);
 var import_react = __toESM(require("react"));
 var import_jsx_runtime = require("react/jsx-runtime");
 var SearchContext = (0, import_react.createContext)(void 0);
-var SearchProvider = ({ children, email, password }) => {
+var SearchProvider = ({ children, email, password, url, dataset }) => {
   const [state, setState] = (0, import_react.useState)({
     query: "",
     results: null,
@@ -57,7 +57,7 @@ var SearchProvider = ({ children, email, password }) => {
       return;
     setState((prev) => ({ ...prev, isLoading: true }));
     try {
-      const searchResponse = await fetch("http://localhost:38171/api/Search/pokedex", {
+      const searchResponse = await fetch(`${url}/api/Search/${dataset}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -71,7 +71,7 @@ var SearchProvider = ({ children, email, password }) => {
       });
       const searchData = await searchResponse.json();
       const keys = (searchData.records || []).map((record) => record.documentKey);
-      const jsonResponse = await fetch("http://localhost:38171/api/GetJson/pokedex", {
+      const jsonResponse = await fetch(`${url}/api/GetJson/${dataset}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -94,7 +94,7 @@ var SearchProvider = ({ children, email, password }) => {
         isLoading: false
       }));
     }
-  }, [state.query, token, showFacets]);
+  }, [state.query, token, showFacets, url, dataset]);
   import_react.default.useEffect(() => {
     if (state.query.trim()) {
       search();
@@ -109,7 +109,7 @@ var SearchProvider = ({ children, email, password }) => {
           throw new Error("Missing email or password in props");
         }
         const response = await fetch(
-          `http://localhost:38171/api/Login?userEmail=${encodeURIComponent(email)}&userPassWord=${encodeURIComponent(password)}`,
+          `${url}/api/Login?userEmail=${encodeURIComponent(email)}&userPassWord=${encodeURIComponent(password)}`,
           {
             method: "POST",
             headers: { accept: "*/*" },
@@ -124,7 +124,7 @@ var SearchProvider = ({ children, email, password }) => {
       }
     };
     login();
-  }, [email, password]);
+  }, [email, password, url]);
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
       SearchContext.Provider,

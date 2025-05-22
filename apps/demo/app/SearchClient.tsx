@@ -1,18 +1,19 @@
 'use client';
 
-import { SearchProvider, useSearch, SearchInput, SearchResults } from 'indx-intrface';
+import { SearchProvider, SearchInput, SearchResults } from 'indx-intrface';
 
-export function SearchClient({ email, password }: { email: string; password: string }) {
+export function SearchClient({ dataset }: { dataset: string }) {
+  const url = process.env.NEXT_PUBLIC_INDX_URL!;
+  const email = process.env.NEXT_PUBLIC_INDX_EMAIL!;
+  const password = process.env.NEXT_PUBLIC_INDX_PASSWORD!;
   return (
-    <SearchProvider email={email} password={password}>
+    <SearchProvider url={url} email={email} password={password} dataset={dataset}>
       <SearchUI />
     </SearchProvider>
   );
 }
 
 function SearchUI() {
-  const { isLoading, results, facets } = useSearch().state;
-
   return (
     <div style={{ padding: '2rem' }}>
       <SearchInput
@@ -20,9 +21,8 @@ function SearchUI() {
         className="search-input"
         style={{ padding: '0.5rem', width: '100%', maxWidth: '300px' }}
       />
-      {isLoading && <p>Loading...</p>}
       <SearchResults
-        fields={['name', 'type1', 'type2', 'hp']}
+        fields={['name', 'type1', 'type2', 'hp', 'baretull']}
         customLabels={{
           name: '',
           type1: 'Primary Type: ',
@@ -30,27 +30,6 @@ function SearchUI() {
           hp: 'HP: ',
         }}
       />
-      {/* 
-      {facets && typeof facets === 'object' && (
-        <div style={{ marginTop: '2rem' }}>
-          <h3>Facets</h3>
-          {Object.entries(facets).map(([facetName, values]) => {
-            if (!Array.isArray(values)) return null;
-            return (
-              <div key={facetName}>
-                <strong>{facetName}</strong>
-                <ul>
-                  {values.map((v: any, i: number) => (
-                    <li key={i}>
-                      {v.key}: {v.value}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
-        </div>
-      )} */}
     </div> 
   );
 }

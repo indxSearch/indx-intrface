@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 var SearchContext = createContext(void 0);
-var SearchProvider = ({ children, email, password }) => {
+var SearchProvider = ({ children, email, password, url, dataset }) => {
   const [state, setState] = useState({
     query: "",
     results: null,
@@ -18,7 +18,7 @@ var SearchProvider = ({ children, email, password }) => {
       return;
     setState((prev) => ({ ...prev, isLoading: true }));
     try {
-      const searchResponse = await fetch("http://localhost:38171/api/Search/pokedex", {
+      const searchResponse = await fetch(`${url}/api/Search/${dataset}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -32,7 +32,7 @@ var SearchProvider = ({ children, email, password }) => {
       });
       const searchData = await searchResponse.json();
       const keys = (searchData.records || []).map((record) => record.documentKey);
-      const jsonResponse = await fetch("http://localhost:38171/api/GetJson/pokedex", {
+      const jsonResponse = await fetch(`${url}/api/GetJson/${dataset}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,7 +55,7 @@ var SearchProvider = ({ children, email, password }) => {
         isLoading: false
       }));
     }
-  }, [state.query, token, showFacets]);
+  }, [state.query, token, showFacets, url, dataset]);
   React.useEffect(() => {
     if (state.query.trim()) {
       search();
@@ -70,7 +70,7 @@ var SearchProvider = ({ children, email, password }) => {
           throw new Error("Missing email or password in props");
         }
         const response = await fetch(
-          `http://localhost:38171/api/Login?userEmail=${encodeURIComponent(email)}&userPassWord=${encodeURIComponent(password)}`,
+          `${url}/api/Login?userEmail=${encodeURIComponent(email)}&userPassWord=${encodeURIComponent(password)}`,
           {
             method: "POST",
             headers: { accept: "*/*" },
@@ -85,7 +85,7 @@ var SearchProvider = ({ children, email, password }) => {
       }
     };
     login();
-  }, [email, password]);
+  }, [email, password, url]);
   return /* @__PURE__ */ jsxs(Fragment, { children: [
     /* @__PURE__ */ jsx(
       SearchContext.Provider,

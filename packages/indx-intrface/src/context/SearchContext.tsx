@@ -15,7 +15,7 @@ export interface SearchContextType {
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
-export const SearchProvider: React.FC<{ children: React.ReactNode; email: string; password: string }> = ({ children, email, password }) => {
+export const SearchProvider: React.FC<{ children: React.ReactNode; email: string; password: string; url: string; dataset: string }> = ({ children, email, password, url, dataset }) => {
   const [state, setState] = useState<SearchState>({
     query: '',
     results: null,
@@ -36,7 +36,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
     setState(prev => ({ ...prev, isLoading: true }));
 
     try {
-      const searchResponse = await fetch('http://localhost:38171/api/Search/pokedex', {
+      const searchResponse = await fetch(`${url}/api/Search/${dataset}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
 
       const keys = (searchData.records || []).map((record: any) => record.documentKey);
 
-      const jsonResponse = await fetch('http://localhost:38171/api/GetJson/pokedex', {
+      const jsonResponse = await fetch(`${url}/api/GetJson/${dataset}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
         isLoading: false,
       }));
     }
-  }, [state.query, token, showFacets]);
+  }, [state.query, token, showFacets, url, dataset]);
 
   React.useEffect(() => {
     if (state.query.trim()) {
@@ -96,7 +96,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
         }
 
         const response = await fetch(
-          `http://localhost:38171/api/Login?userEmail=${encodeURIComponent(email)}&userPassWord=${encodeURIComponent(password)}`,
+          `${url}/api/Login?userEmail=${encodeURIComponent(email)}&userPassWord=${encodeURIComponent(password)}`,
           {
             method: 'POST',
             headers: { accept: '*/*' },
@@ -113,7 +113,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
     };
 
     login();
-  }, [email, password]);
+  }, [email, password, url]);
 
   return (
     <>
