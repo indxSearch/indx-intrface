@@ -13,6 +13,8 @@ export interface SearchState {
   rangeFilters: Record<string, { min: number; max: number }>;
   facetStats?: Record<string, { min: number; max: number }>; // live
   rangeBounds?: Record<string, { min: number; max: number }>; // init only
+  sortBy?: string;
+  sortAscending?: boolean;
 }
 
 export interface SearchContextType {
@@ -22,6 +24,7 @@ export interface SearchContextType {
   setRangeFilter: (field: string, min: number, max: number) => void;
   resetFilters: () => void;
   resetSingleFilter: (field: string, value?: string) => void;
+  setSort: (field: string | null, ascending: boolean) => void;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -166,18 +169,29 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
 
       filterProxy = await combineFilters(allFilters, url, dataset, token);
 
+      const searchBody = {
+        text: state.query,
+        maxNumberOfRecordsToReturn: maxResults,
+        ...(filterProxy ? { filter: filterProxy } : {}),
+        ...(showFacets ? { enableFacets: true } : {}),
+        ...(state.sortBy ? { sortBy: state.sortBy } : {}),
+        ...(state.sortAscending !== undefined ? { sortAscending: state.sortAscending } : {}),
+      };
+
+      // Debugging: Log applied sorting and search body
+      console.log('[Search] Applied sorting:', {
+        sortBy: state.sortBy,
+        sortAscending: state.sortAscending,
+      });
+      console.log('[Search] Search request body:', searchBody);
+
       const searchResponse = await fetch(`${url}/api/Search/${dataset}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          text: state.query,
-          maxNumberOfRecordsToReturn: maxResults,
-          ...(filterProxy ? { filter: filterProxy } : {}),
-          ...(showFacets ? { enableFacets: true } : {}),
-        }),
+        body: JSON.stringify(searchBody),
       });
 
       const searchData = await searchResponse.json();
@@ -262,7 +276,15 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
         isLoading: false,
       }));
     }
-  }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds, maxResults, initialFacetKeys]);
+  }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds, maxResults, initialFacetKeys, state.sortBy, state.sortAscending]);
+  
+  const setSort = useCallback((field: string | null, ascending: boolean) => {
+    setState(prev => ({
+      ...prev,
+      sortBy: field || undefined,
+      sortAscending: field ? ascending : undefined,
+    }));
+  }, []);
 
   const resetFilters = useCallback(() => {
     setState(prev => ({
@@ -369,6 +391,8 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
             text: '',
             maxNumberOfRecordsToReturn: 0,
             enableFacets: true,
+            ...(state.sortBy ? { sortBy: state.sortBy } : {}),
+            ...(state.sortAscending !== undefined ? { sortAscending: state.sortAscending } : {}),
           }),
         });
 
@@ -431,6 +455,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
           setRangeFilter,
           resetFilters,
           resetSingleFilter,
+          setSort,
         }}
       >
         {children}

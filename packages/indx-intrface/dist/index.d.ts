@@ -22,6 +22,8 @@ interface SearchState {
         min: number;
         max: number;
     }>;
+    sortBy?: string;
+    sortAscending?: boolean;
 }
 interface SearchContextType {
     state: SearchState;
@@ -30,6 +32,7 @@ interface SearchContextType {
     setRangeFilter: (field: string, min: number, max: number) => void;
     resetFilters: () => void;
     resetSingleFilter: (field: string, value?: string) => void;
+    setSort: (field: string | null, ascending: boolean) => void;
 }
 declare const SearchProvider: React.FC<{
     children: React.ReactNode;
@@ -53,13 +56,6 @@ interface SearchResultsProps {
 }
 declare const SearchResults: React.FC<SearchResultsProps>;
 
-interface RangeFilterPanelProps {
-    field: string;
-    label?: string;
-    displayType?: 'slider' | 'input';
-}
-declare const RangeFilterPanel: React.FC<RangeFilterPanelProps>;
-
 interface ValueFilterPanelProps {
     field: string;
     label?: string;
@@ -67,6 +63,15 @@ interface ValueFilterPanelProps {
 }
 declare const ValueFilterPanel: React.FC<ValueFilterPanelProps>;
 
+interface RangeFilterPanelProps {
+    field: string;
+    label?: string;
+    displayType?: 'slider' | 'input';
+}
+declare const RangeFilterPanel: React.FC<RangeFilterPanelProps>;
+
 declare const ActiveFiltersPanel: React.FC;
 
-export { ActiveFiltersPanel, RangeFilterPanel, SearchInput, SearchProvider, SearchResults, ValueFilterPanel, useSearchContext as useSearch };
+declare const SortByPanel: React.FC;
+
+export { ActiveFiltersPanel, RangeFilterPanel, SearchInput, SearchProvider, SearchResults, SortByPanel, ValueFilterPanel, useSearchContext as useSearch };

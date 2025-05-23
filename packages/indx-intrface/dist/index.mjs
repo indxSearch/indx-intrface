@@ -123,18 +123,26 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
         (f) => f && typeof f.hashString === "string"
       );
       filterProxy = await combineFilters(allFilters, url, dataset, token);
+      const searchBody = {
+        text: state.query,
+        maxNumberOfRecordsToReturn: maxResults,
+        ...filterProxy ? { filter: filterProxy } : {},
+        ...showFacets ? { enableFacets: true } : {},
+        ...state.sortBy ? { sortBy: state.sortBy } : {},
+        ...state.sortAscending !== void 0 ? { sortAscending: state.sortAscending } : {}
+      };
+      console.log("[Search] Applied sorting:", {
+        sortBy: state.sortBy,
+        sortAscending: state.sortAscending
+      });
+      console.log("[Search] Search request body:", searchBody);
       const searchResponse = await fetch(`${url}/api/Search/${dataset}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({
-          text: state.query,
-          maxNumberOfRecordsToReturn: maxResults,
-          ...filterProxy ? { filter: filterProxy } : {},
-          ...showFacets ? { enableFacets: true } : {}
-        })
+        body: JSON.stringify(searchBody)
       });
       const searchData = await searchResponse.json();
       const keys = (searchData.records || []).map((record) => record.documentKey);
@@ -202,7 +210,14 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
         isLoading: false
       }));
     }
-  }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds, maxResults, initialFacetKeys]);
+  }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds, maxResults, initialFacetKeys, state.sortBy, state.sortAscending]);
+  const setSort = useCallback((field, ascending) => {
+    setState((prev) => ({
+      ...prev,
+      sortBy: field || void 0,
+      sortAscending: field ? ascending : void 0
+    }));
+  }, []);
   const resetFilters = useCallback(() => {
     setState((prev) => ({
       ...prev,
@@ -293,7 +308,9 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
           body: JSON.stringify({
             text: "",
             maxNumberOfRecordsToReturn: 0,
-            enableFacets: true
+            enableFacets: true,
+            ...state.sortBy ? { sortBy: state.sortBy } : {},
+            ...state.sortAscending !== void 0 ? { sortAscending: state.sortAscending } : {}
           })
         });
         const blankSearchData = await blankSearchResponse.json();
@@ -347,7 +364,8 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
         toggleFilter,
         setRangeFilter,
         resetFilters,
-        resetSingleFilter
+        resetSingleFilter,
+        setSort
       },
       children
     }
@@ -415,131 +433,9 @@ var SearchResults = ({ fields, customLabels }) => {
   }) });
 };
 
-// src/components/RangeFilterPanel.tsx
-import { Range } from "react-range";
-import { jsx as jsx4, jsxs as jsxs2 } from "react/jsx-runtime";
-var RangeFilterPanel = ({
-  field,
-  label,
-  displayType = "input"
-}) => {
-  const {
-    state: { rangeFilters, rangeBounds },
-    setRangeFilter
-  } = useSearchContext();
-  const actualMin = rangeBounds?.[field]?.min ?? 0;
-  const actualMax = rangeBounds?.[field]?.max ?? 1e3;
-  const currentMin = rangeFilters?.[field]?.min ?? actualMin;
-  const currentMax = rangeFilters?.[field]?.max ?? actualMax;
-  const handleRangeChange = (values) => {
-    const [min, max] = values;
-    if (!isNaN(min) && !isNaN(max) && min <= max) {
-      if (min !== actualMin || max !== actualMax) {
-        setRangeFilter(field, min, max);
-      } else {
-        setRangeFilter(field, actualMin, actualMax);
-      }
-    }
-  };
-  if (displayType === "slider") {
-    return /* @__PURE__ */ jsxs2("fieldset", { children: [
-      /* @__PURE__ */ jsx4("legend", { children: label || field }),
-      /* @__PURE__ */ jsxs2("div", { style: { padding: "1rem 0" }, children: [
-        /* @__PURE__ */ jsx4(
-          Range,
-          {
-            step: 1,
-            min: actualMin,
-            max: actualMax,
-            values: [currentMin, currentMax],
-            onChange: handleRangeChange,
-            renderTrack: ({ props, children }) => /* @__PURE__ */ jsx4(
-              "div",
-              {
-                ...props,
-                style: {
-                  ...props.style,
-                  height: "6px",
-                  width: "100%",
-                  backgroundColor: "#ccc"
-                },
-                children
-              }
-            ),
-            renderThumb: ({ props, index }) => {
-              const { key, ...rest } = props;
-              return /* @__PURE__ */ jsx4(
-                "div",
-                {
-                  ...rest,
-                  style: {
-                    ...props.style,
-                    height: "20px",
-                    width: "20px",
-                    backgroundColor: "#999",
-                    borderRadius: "50%"
-                  }
-                },
-                key
-              );
-            }
-          }
-        ),
-        /* @__PURE__ */ jsxs2("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "0.85rem" }, children: [
-          /* @__PURE__ */ jsx4("span", { children: currentMin }),
-          /* @__PURE__ */ jsx4("span", { children: currentMax })
-        ] })
-      ] })
-    ] });
-  }
-  const handleMinChange = (e) => {
-    const input = e.target.value;
-    if (input === "")
-      return;
-    const value = Number(input);
-    if (!isNaN(value) && value <= currentMax) {
-      setRangeFilter(field, value, currentMax);
-    }
-  };
-  const handleMaxChange = (e) => {
-    const input = e.target.value;
-    if (input === "")
-      return;
-    const value = Number(input);
-    if (!isNaN(value) && value >= currentMin) {
-      setRangeFilter(field, currentMin, value);
-    }
-  };
-  return /* @__PURE__ */ jsxs2("fieldset", { children: [
-    /* @__PURE__ */ jsx4("legend", { children: label || field }),
-    /* @__PURE__ */ jsxs2("label", { children: [
-      "Min:",
-      /* @__PURE__ */ jsx4(
-        "input",
-        {
-          type: "number",
-          value: currentMin,
-          onChange: handleMinChange
-        }
-      )
-    ] }),
-    /* @__PURE__ */ jsxs2("label", { children: [
-      "Max:",
-      /* @__PURE__ */ jsx4(
-        "input",
-        {
-          type: "number",
-          value: currentMax,
-          onChange: handleMaxChange
-        }
-      )
-    ] })
-  ] });
-};
-
 // src/components/ValueFilterPanel.tsx
 import React2 from "react";
-import { jsx as jsx5, jsxs as jsxs3 } from "react/jsx-runtime";
+import { jsx as jsx4, jsxs as jsxs2 } from "react/jsx-runtime";
 var ValueFilterPanel = ({
   field,
   label,
@@ -556,7 +452,7 @@ var ValueFilterPanel = ({
       missing.push("filterable");
     if (!facetableFields?.includes(field))
       missing.push("facetable");
-    return /* @__PURE__ */ jsxs3("div", { style: { color: "red" }, children: [
+    return /* @__PURE__ */ jsxs2("div", { style: { color: "red" }, children: [
       'Cannot render filter for "',
       field,
       '": missing ',
@@ -587,10 +483,10 @@ var ValueFilterPanel = ({
       mergedValuesMap.set(f.key, f.value);
     }
   }
-  return /* @__PURE__ */ jsxs3("fieldset", { children: [
-    /* @__PURE__ */ jsx5("legend", { children: label || field }),
-    /* @__PURE__ */ jsx5("ul", { children: Array.from(mergedValuesMap.entries()).map(([key, count], index) => /* @__PURE__ */ jsx5("li", { children: /* @__PURE__ */ jsxs3("label", { children: [
-      /* @__PURE__ */ jsx5(
+  return /* @__PURE__ */ jsxs2("fieldset", { children: [
+    /* @__PURE__ */ jsx4("legend", { children: label || field }),
+    /* @__PURE__ */ jsx4("ul", { children: Array.from(mergedValuesMap.entries()).map(([key, count], index) => /* @__PURE__ */ jsx4("li", { children: /* @__PURE__ */ jsxs2("label", { children: [
+      /* @__PURE__ */ jsx4(
         "input",
         {
           type: "checkbox",
@@ -604,6 +500,128 @@ var ValueFilterPanel = ({
       count,
       ")"
     ] }) }, index)) })
+  ] });
+};
+
+// src/components/RangeFilterPanel.tsx
+import { Range } from "react-range";
+import { jsx as jsx5, jsxs as jsxs3 } from "react/jsx-runtime";
+var RangeFilterPanel = ({
+  field,
+  label,
+  displayType = "input"
+}) => {
+  const {
+    state: { rangeFilters, rangeBounds },
+    setRangeFilter
+  } = useSearchContext();
+  const actualMin = rangeBounds?.[field]?.min ?? 0;
+  const actualMax = rangeBounds?.[field]?.max ?? 1e3;
+  const currentMin = rangeFilters?.[field]?.min ?? actualMin;
+  const currentMax = rangeFilters?.[field]?.max ?? actualMax;
+  const handleRangeChange = (values) => {
+    const [min, max] = values;
+    if (!isNaN(min) && !isNaN(max) && min <= max) {
+      if (min !== actualMin || max !== actualMax) {
+        setRangeFilter(field, min, max);
+      } else {
+        setRangeFilter(field, actualMin, actualMax);
+      }
+    }
+  };
+  if (displayType === "slider") {
+    return /* @__PURE__ */ jsxs3("fieldset", { children: [
+      /* @__PURE__ */ jsx5("legend", { children: label || field }),
+      /* @__PURE__ */ jsxs3("div", { style: { padding: "1rem 0" }, children: [
+        /* @__PURE__ */ jsx5(
+          Range,
+          {
+            step: 1,
+            min: actualMin,
+            max: actualMax,
+            values: [currentMin, currentMax],
+            onChange: handleRangeChange,
+            renderTrack: ({ props, children }) => /* @__PURE__ */ jsx5(
+              "div",
+              {
+                ...props,
+                style: {
+                  ...props.style,
+                  height: "6px",
+                  width: "100%",
+                  backgroundColor: "#ccc"
+                },
+                children
+              }
+            ),
+            renderThumb: ({ props, index }) => {
+              const { key, ...rest } = props;
+              return /* @__PURE__ */ jsx5(
+                "div",
+                {
+                  ...rest,
+                  style: {
+                    ...props.style,
+                    height: "20px",
+                    width: "20px",
+                    backgroundColor: "#999",
+                    borderRadius: "50%"
+                  }
+                },
+                key
+              );
+            }
+          }
+        ),
+        /* @__PURE__ */ jsxs3("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "0.85rem" }, children: [
+          /* @__PURE__ */ jsx5("span", { children: currentMin }),
+          /* @__PURE__ */ jsx5("span", { children: currentMax })
+        ] })
+      ] })
+    ] });
+  }
+  const handleMinChange = (e) => {
+    const input = e.target.value;
+    if (input === "")
+      return;
+    const value = Number(input);
+    if (!isNaN(value) && value <= currentMax) {
+      setRangeFilter(field, value, currentMax);
+    }
+  };
+  const handleMaxChange = (e) => {
+    const input = e.target.value;
+    if (input === "")
+      return;
+    const value = Number(input);
+    if (!isNaN(value) && value >= currentMin) {
+      setRangeFilter(field, currentMin, value);
+    }
+  };
+  return /* @__PURE__ */ jsxs3("fieldset", { children: [
+    /* @__PURE__ */ jsx5("legend", { children: label || field }),
+    /* @__PURE__ */ jsxs3("label", { children: [
+      "Min:",
+      /* @__PURE__ */ jsx5(
+        "input",
+        {
+          type: "number",
+          value: currentMin,
+          onChange: handleMinChange
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxs3("label", { children: [
+      "Max:",
+      /* @__PURE__ */ jsx5(
+        "input",
+        {
+          type: "number",
+          value: currentMax,
+          onChange: handleMaxChange
+        }
+      )
+    ] })
   ] });
 };
 
@@ -644,12 +662,58 @@ var ActiveFiltersPanel = () => {
     /* @__PURE__ */ jsx6("button", { onClick: handleResetFilters, children: "Reset" })
   ] });
 };
+
+// src/components/SortByPanel.tsx
+import React3 from "react";
+import { jsx as jsx7, jsxs as jsxs5 } from "react/jsx-runtime";
+var SortByPanel = () => {
+  const {
+    state: { sortableFields, sortBy, sortAscending },
+    setSort
+  } = useSearchContext();
+  if (!sortableFields || sortableFields.length === 0)
+    return null;
+  const handleSortChange = (e) => {
+    const value = e.target.value;
+    if (value === "") {
+      setSort(null, true);
+    } else {
+      const [field, direction] = value.split(":");
+      setSort(field, direction === "asc");
+    }
+  };
+  return /* @__PURE__ */ jsxs5("div", { children: [
+    /* @__PURE__ */ jsx7("label", { htmlFor: "sort-by-select", children: "Sort by:" }),
+    /* @__PURE__ */ jsxs5(
+      "select",
+      {
+        id: "sort-by-select",
+        value: sortBy ? `${sortBy}:${sortAscending ? "asc" : "desc"}` : "",
+        onChange: handleSortChange,
+        children: [
+          /* @__PURE__ */ jsx7("option", { value: "", children: "None" }),
+          sortableFields.map((field) => /* @__PURE__ */ jsxs5(React3.Fragment, { children: [
+            /* @__PURE__ */ jsxs5("option", { value: `${field}:asc`, children: [
+              field,
+              " (asc)"
+            ] }),
+            /* @__PURE__ */ jsxs5("option", { value: `${field}:desc`, children: [
+              field,
+              " (desc)"
+            ] })
+          ] }, field))
+        ]
+      }
+    )
+  ] });
+};
 export {
   ActiveFiltersPanel,
   RangeFilterPanel,
   SearchInput,
   SearchProvider,
   SearchResults,
+  SortByPanel,
   ValueFilterPanel,
   useSearchContext as useSearch
 };
