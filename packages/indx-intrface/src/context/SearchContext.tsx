@@ -20,6 +20,7 @@ export interface SearchContextType {
   setQuery: (query: string) => void;
   toggleFilter: (field: string, value: string) => void;
   setRangeFilter: (field: string, min: number, max: number) => void;
+  resetFilters: () => void;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -33,28 +34,19 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
     rangeFilters: {},
     facetStats: {},
   });
-  const [initialFacetStats, setInitialFacetStats] = useState<Record<string, { min: number; max: number }>>({}); // Stores min/max values for each faceted field from the initial blank search
-  const [initialFacetKeys, setInitialFacetKeys] = useState<Record<string, string[]>>({}); // Stores list of facet keys (strings) from the initial blank search. Used later for non-coverage hits
-  const [fixedFacetStats, setFixedFacetStats] = useState<Record<string, { min: number; max: number }>>({}); // Tracks fixed facet stats that remain stable until query changes
-  const [lastQueryText, setLastQueryText] = useState<string>(''); // Caches the previous query string to detect changes
-  const [rangeBounds, setRangeBounds] = useState<Record<string, { min: number; max: number }>>({}); // Remembers range slider bounds from the initial or recent searches
-  const [lastValueFilters, setLastValueFilters] = useState<Record<string, string[]>>({}); // Stores previous value filters to detect when they change
-
-  const setRangeFilter = useCallback((field: string, min: number, max: number) => {
-    setState(prev => ({
-      ...prev,
-      rangeFilters: {
-        ...prev.rangeFilters,
-        [field]: { min, max },
-      }
-    }));
-  }, []);
 
   const [token, setToken] = useState<string | null>(null); // Holds the authentication token after login
   const [showFacets] = useState(true); // Controls whether to enable facets in the search query (currently always true)
   const [filterableFields, setFilterableFields] = useState<string[]>([]); // Stores list of fields that can be used for value filtering
   const [facetableFields, setFacetableFields] = useState<string[]>([]); // Stores list of fields that can return facet histograms
   const [sortableFields, setSortableFields] = useState<string[]>([]); // Stores list of fields that can be used for sorting
+
+  const [initialFacetStats, setInitialFacetStats] = useState<Record<string, { min: number; max: number }>>({}); // Stores min/max values for each faceted field from the initial blank search
+  const [initialFacetKeys, setInitialFacetKeys] = useState<Record<string, string[]>>({}); // Stores list of facet keys (strings) from the initial blank search. Used later for non-coverage hits
+  const [fixedFacetStats, setFixedFacetStats] = useState<Record<string, { min: number; max: number }>>({}); // Tracks fixed facet stats that remain stable until query changes
+  const [lastQueryText, setLastQueryText] = useState<string>(''); // Caches the previous query string to detect changes
+  const [rangeBounds, setRangeBounds] = useState<Record<string, { min: number; max: number }>>({}); // Remembers range slider bounds from the initial or recent searches
+  const [lastValueFilters, setLastValueFilters] = useState<Record<string, string[]>>({}); // Stores previous value filters to detect when they change
   
 
   const setQuery = useCallback((query: string) => {
@@ -80,6 +72,16 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
         }
       };
     });
+  }, []);
+
+    const setRangeFilter = useCallback((field: string, min: number, max: number) => {
+    setState(prev => ({
+      ...prev,
+      rangeFilters: {
+        ...prev.rangeFilters,
+        [field]: { min, max },
+      }
+    }));
   }, []);
 
   async function combineFilters(filters: any[], url: string, dataset: string, token: string): Promise<any> {
@@ -261,10 +263,23 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
     }
   }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds, maxResults, initialFacetKeys]);
 
+  const resetFilters = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      filters: {},
+      rangeFilters: {},
+    }));
+
+    // Re-run the search without filters
+    search();
+  }, [search]);
+
   React.useEffect(() => {
+    // If query is not empty or empty search is allowed, perform a search
     if (state.query.trim() || allowEmptySearch) {
       search();
     } else {
+      // Otherwise, clear results
       setState(prev => ({ ...prev, results: null }));
     }
   }, [state.query, state.filters, state.rangeFilters, search, allowEmptySearch]);
@@ -391,6 +406,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
           setQuery,
           toggleFilter,
           setRangeFilter,
+          resetFilters,
         }}
       >
         {children}

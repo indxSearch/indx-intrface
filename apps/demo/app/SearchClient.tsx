@@ -1,6 +1,6 @@
 'use client';
 
-import { SearchProvider, SearchInput, SearchResults, RangeFilterPanel, ValueFilterPanel } from 'indx-intrface';
+import { SearchProvider, SearchInput, SearchResults, RangeFilterPanel, ValueFilterPanel, ActiveFiltersPanel } from 'indx-intrface';
 
 export function SearchClient({ dataset }: { dataset: string }) {
   const url = process.env.NEXT_PUBLIC_INDX_URL!;
@@ -36,6 +36,7 @@ function SearchUI() {
         />
       </div>
       <div style={{ width: '40%' }}>
+        <ActiveFiltersPanel/>
         <RangeFilterPanel label="speed" field="speed" displayType="input" />
         <ValueFilterPanel label="primary type" field="type1" preserveBlankFacetState={true} />
         <ValueFilterPanel label="speed" field="speed" />

@@ -28,6 +28,7 @@ interface SearchContextType {
     setQuery: (query: string) => void;
     toggleFilter: (field: string, value: string) => void;
     setRangeFilter: (field: string, min: number, max: number) => void;
+    resetFilters: () => void;
 }
 declare const SearchProvider: React.FC<{
     children: React.ReactNode;
@@ -65,4 +66,6 @@ interface ValueFilterPanelProps {
 }
 declare const ValueFilterPanel: React.FC<ValueFilterPanelProps>;
 
-export { RangeFilterPanel, SearchInput, SearchProvider, SearchResults, ValueFilterPanel, useSearchContext as useSearch };
+declare const ActiveFiltersPanel: React.FC;
+
+export { ActiveFiltersPanel, RangeFilterPanel, SearchInput, SearchProvider, SearchResults, ValueFilterPanel, useSearchContext as useSearch };

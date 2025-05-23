@@ -30,6 +30,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.tsx
 var src_exports = {};
 __export(src_exports, {
+  ActiveFiltersPanel: () => ActiveFiltersPanel,
   RangeFilterPanel: () => RangeFilterPanel,
   SearchInput: () => SearchInput,
   SearchProvider: () => SearchProvider,
@@ -52,26 +53,17 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
     rangeFilters: {},
     facetStats: {}
   });
+  const [token, setToken] = (0, import_react.useState)(null);
+  const [showFacets] = (0, import_react.useState)(true);
+  const [filterableFields, setFilterableFields] = (0, import_react.useState)([]);
+  const [facetableFields, setFacetableFields] = (0, import_react.useState)([]);
+  const [sortableFields, setSortableFields] = (0, import_react.useState)([]);
   const [initialFacetStats, setInitialFacetStats] = (0, import_react.useState)({});
   const [initialFacetKeys, setInitialFacetKeys] = (0, import_react.useState)({});
   const [fixedFacetStats, setFixedFacetStats] = (0, import_react.useState)({});
   const [lastQueryText, setLastQueryText] = (0, import_react.useState)("");
   const [rangeBounds, setRangeBounds] = (0, import_react.useState)({});
   const [lastValueFilters, setLastValueFilters] = (0, import_react.useState)({});
-  const setRangeFilter = (0, import_react.useCallback)((field, min, max) => {
-    setState((prev) => ({
-      ...prev,
-      rangeFilters: {
-        ...prev.rangeFilters,
-        [field]: { min, max }
-      }
-    }));
-  }, []);
-  const [token, setToken] = (0, import_react.useState)(null);
-  const [showFacets] = (0, import_react.useState)(true);
-  const [filterableFields, setFilterableFields] = (0, import_react.useState)([]);
-  const [facetableFields, setFacetableFields] = (0, import_react.useState)([]);
-  const [sortableFields, setSortableFields] = (0, import_react.useState)([]);
   const setQuery = (0, import_react.useCallback)((query) => {
     setState((prev) => ({
       ...prev,
@@ -94,6 +86,15 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
         }
       };
     });
+  }, []);
+  const setRangeFilter = (0, import_react.useCallback)((field, min, max) => {
+    setState((prev) => ({
+      ...prev,
+      rangeFilters: {
+        ...prev.rangeFilters,
+        [field]: { min, max }
+      }
+    }));
   }, []);
   async function combineFilters(filters, url2, dataset2, token2) {
     if (filters.length === 0)
@@ -244,6 +245,14 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
       }));
     }
   }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds, maxResults, initialFacetKeys]);
+  const resetFilters = (0, import_react.useCallback)(() => {
+    setState((prev) => ({
+      ...prev,
+      filters: {},
+      rangeFilters: {}
+    }));
+    search();
+  }, [search]);
   import_react.default.useEffect(() => {
     if (state.query.trim() || allowEmptySearch) {
       search();
@@ -357,7 +366,8 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
         },
         setQuery,
         toggleFilter,
-        setRangeFilter
+        setRangeFilter,
+        resetFilters
       },
       children
     }
@@ -616,8 +626,44 @@ var ValueFilterPanel = ({
     ] }) }, index)) })
   ] });
 };
+
+// src/components/ActiveFiltersPanel.tsx
+var import_jsx_runtime6 = require("react/jsx-runtime");
+var ActiveFiltersPanel = () => {
+  const {
+    state: { filters, rangeFilters },
+    resetFilters
+  } = useSearchContext();
+  const hasFilters = Object.keys(filters).length > 0 || Object.keys(rangeFilters).length > 0;
+  if (!hasFilters)
+    return null;
+  const handleResetFilters = () => {
+    resetFilters();
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("h3", { children: "Active Filters" }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("ul", { children: [
+      Object.entries(filters).map(
+        ([field, values]) => values.map((value) => /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("li", { children: [
+          field,
+          ": ",
+          value
+        ] }, `${field}-${value}`))
+      ),
+      Object.entries(rangeFilters).map(([field, { min, max }]) => /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("li", { children: [
+        field,
+        ": ",
+        min,
+        " \u2013 ",
+        max
+      ] }, field))
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("button", { onClick: handleResetFilters, children: "Reset" })
+  ] });
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  ActiveFiltersPanel,
   RangeFilterPanel,
   SearchInput,
   SearchProvider,

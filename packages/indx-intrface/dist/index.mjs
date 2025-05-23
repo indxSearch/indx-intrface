@@ -11,26 +11,17 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
     rangeFilters: {},
     facetStats: {}
   });
+  const [token, setToken] = useState(null);
+  const [showFacets] = useState(true);
+  const [filterableFields, setFilterableFields] = useState([]);
+  const [facetableFields, setFacetableFields] = useState([]);
+  const [sortableFields, setSortableFields] = useState([]);
   const [initialFacetStats, setInitialFacetStats] = useState({});
   const [initialFacetKeys, setInitialFacetKeys] = useState({});
   const [fixedFacetStats, setFixedFacetStats] = useState({});
   const [lastQueryText, setLastQueryText] = useState("");
   const [rangeBounds, setRangeBounds] = useState({});
   const [lastValueFilters, setLastValueFilters] = useState({});
-  const setRangeFilter = useCallback((field, min, max) => {
-    setState((prev) => ({
-      ...prev,
-      rangeFilters: {
-        ...prev.rangeFilters,
-        [field]: { min, max }
-      }
-    }));
-  }, []);
-  const [token, setToken] = useState(null);
-  const [showFacets] = useState(true);
-  const [filterableFields, setFilterableFields] = useState([]);
-  const [facetableFields, setFacetableFields] = useState([]);
-  const [sortableFields, setSortableFields] = useState([]);
   const setQuery = useCallback((query) => {
     setState((prev) => ({
       ...prev,
@@ -53,6 +44,15 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
         }
       };
     });
+  }, []);
+  const setRangeFilter = useCallback((field, min, max) => {
+    setState((prev) => ({
+      ...prev,
+      rangeFilters: {
+        ...prev.rangeFilters,
+        [field]: { min, max }
+      }
+    }));
   }, []);
   async function combineFilters(filters, url2, dataset2, token2) {
     if (filters.length === 0)
@@ -203,6 +203,14 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
       }));
     }
   }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds, maxResults, initialFacetKeys]);
+  const resetFilters = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      filters: {},
+      rangeFilters: {}
+    }));
+    search();
+  }, [search]);
   React.useEffect(() => {
     if (state.query.trim() || allowEmptySearch) {
       search();
@@ -316,7 +324,8 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
         },
         setQuery,
         toggleFilter,
-        setRangeFilter
+        setRangeFilter,
+        resetFilters
       },
       children
     }
@@ -575,7 +584,43 @@ var ValueFilterPanel = ({
     ] }) }, index)) })
   ] });
 };
+
+// src/components/ActiveFiltersPanel.tsx
+import { jsx as jsx6, jsxs as jsxs4 } from "react/jsx-runtime";
+var ActiveFiltersPanel = () => {
+  const {
+    state: { filters, rangeFilters },
+    resetFilters
+  } = useSearchContext();
+  const hasFilters = Object.keys(filters).length > 0 || Object.keys(rangeFilters).length > 0;
+  if (!hasFilters)
+    return null;
+  const handleResetFilters = () => {
+    resetFilters();
+  };
+  return /* @__PURE__ */ jsxs4("div", { children: [
+    /* @__PURE__ */ jsx6("h3", { children: "Active Filters" }),
+    /* @__PURE__ */ jsxs4("ul", { children: [
+      Object.entries(filters).map(
+        ([field, values]) => values.map((value) => /* @__PURE__ */ jsxs4("li", { children: [
+          field,
+          ": ",
+          value
+        ] }, `${field}-${value}`))
+      ),
+      Object.entries(rangeFilters).map(([field, { min, max }]) => /* @__PURE__ */ jsxs4("li", { children: [
+        field,
+        ": ",
+        min,
+        " \u2013 ",
+        max
+      ] }, field))
+    ] }),
+    /* @__PURE__ */ jsx6("button", { onClick: handleResetFilters, children: "Reset" })
+  ] });
+};
 export {
+  ActiveFiltersPanel,
   RangeFilterPanel,
   SearchInput,
   SearchProvider,
