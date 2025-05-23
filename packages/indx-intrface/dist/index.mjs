@@ -209,8 +209,29 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
       filters: {},
       rangeFilters: {}
     }));
-    search();
-  }, [search]);
+  }, []);
+  const resetSingleFilter = useCallback((field, value) => {
+    setState((prev) => {
+      const updatedFilters = { ...prev.filters };
+      const updatedRangeFilters = { ...prev.rangeFilters };
+      if (value !== void 0) {
+        const currentValues = updatedFilters[field] || [];
+        const newValues = currentValues.filter((v) => v !== value);
+        if (newValues.length > 0) {
+          updatedFilters[field] = newValues;
+        } else {
+          delete updatedFilters[field];
+        }
+      } else {
+        delete updatedRangeFilters[field];
+      }
+      return {
+        ...prev,
+        filters: updatedFilters,
+        rangeFilters: updatedRangeFilters
+      };
+    });
+  }, []);
   React.useEffect(() => {
     if (state.query.trim() || allowEmptySearch) {
       search();
@@ -325,7 +346,8 @@ var SearchProvider = ({ children, email, password, url, dataset, allowEmptySearc
         setQuery,
         toggleFilter,
         setRangeFilter,
-        resetFilters
+        resetFilters,
+        resetSingleFilter
       },
       children
     }
@@ -590,7 +612,8 @@ import { jsx as jsx6, jsxs as jsxs4 } from "react/jsx-runtime";
 var ActiveFiltersPanel = () => {
   const {
     state: { filters, rangeFilters },
-    resetFilters
+    resetFilters,
+    resetSingleFilter
   } = useSearchContext();
   const hasFilters = Object.keys(filters).length > 0 || Object.keys(rangeFilters).length > 0;
   if (!hasFilters)
@@ -602,19 +625,21 @@ var ActiveFiltersPanel = () => {
     /* @__PURE__ */ jsx6("h3", { children: "Active Filters" }),
     /* @__PURE__ */ jsxs4("ul", { children: [
       Object.entries(filters).map(
-        ([field, values]) => values.map((value) => /* @__PURE__ */ jsxs4("li", { children: [
+        ([field, values]) => values.map((value) => /* @__PURE__ */ jsx6("li", { children: /* @__PURE__ */ jsxs4("button", { onClick: () => resetSingleFilter(field, value), children: [
           field,
           ": ",
-          value
-        ] }, `${field}-${value}`))
+          value,
+          " \u274C"
+        ] }) }, `${field}-${value}`))
       ),
-      Object.entries(rangeFilters).map(([field, { min, max }]) => /* @__PURE__ */ jsxs4("li", { children: [
+      Object.entries(rangeFilters).map(([field, { min, max }]) => /* @__PURE__ */ jsx6("li", { children: /* @__PURE__ */ jsxs4("button", { onClick: () => resetSingleFilter(field), children: [
         field,
         ": ",
         min,
         " \u2013 ",
-        max
-      ] }, field))
+        max,
+        " \u274C"
+      ] }) }, field))
     ] }),
     /* @__PURE__ */ jsx6("button", { onClick: handleResetFilters, children: "Reset" })
   ] });

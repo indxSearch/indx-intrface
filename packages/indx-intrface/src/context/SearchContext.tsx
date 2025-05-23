@@ -21,6 +21,7 @@ export interface SearchContextType {
   toggleFilter: (field: string, value: string) => void;
   setRangeFilter: (field: string, min: number, max: number) => void;
   resetFilters: () => void;
+  resetSingleFilter: (field: string, value?: string) => void;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -269,10 +270,32 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
       filters: {},
       rangeFilters: {},
     }));
+  }, []);
 
-    // Re-run the search without filters
-    search();
-  }, [search]);
+  const resetSingleFilter = useCallback((field: string, value?: string) => {
+    setState(prev => {
+      const updatedFilters = { ...prev.filters };
+      const updatedRangeFilters = { ...prev.rangeFilters };
+
+      if (value !== undefined) {
+        const currentValues = updatedFilters[field] || [];
+        const newValues = currentValues.filter(v => v !== value);
+        if (newValues.length > 0) {
+          updatedFilters[field] = newValues;
+        } else {
+          delete updatedFilters[field];
+        }
+      } else {
+        delete updatedRangeFilters[field];
+      }
+
+      return {
+        ...prev,
+        filters: updatedFilters,
+        rangeFilters: updatedRangeFilters,
+      };
+    });
+  }, []);
 
   React.useEffect(() => {
     // If query is not empty or empty search is allowed, perform a search
@@ -407,6 +430,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
           toggleFilter,
           setRangeFilter,
           resetFilters,
+          resetSingleFilter,
         }}
       >
         {children}

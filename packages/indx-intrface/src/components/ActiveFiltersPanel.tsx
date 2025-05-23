@@ -5,6 +5,7 @@ export const ActiveFiltersPanel: React.FC = () => {
   const {
     state: { filters, rangeFilters },
     resetFilters,
+    resetSingleFilter,
   } = useSearchContext();
 
   const hasFilters =
@@ -22,13 +23,17 @@ export const ActiveFiltersPanel: React.FC = () => {
         {Object.entries(filters).map(([field, values]) =>
           values.map((value: string) => (
             <li key={`${field}-${value}`}>
-              {field}: {value}
+              <button onClick={() => resetSingleFilter(field, value)}>
+                {field}: {value} ❌
+              </button>
             </li>
           ))
         )}
         {Object.entries(rangeFilters).map(([field, { min, max }]) => (
           <li key={field}>
-            {field}: {min} – {max}
+            <button onClick={() => resetSingleFilter(field)}>
+              {field}: {min} – {max} ❌
+            </button>
           </li>
         ))}
       </ul>

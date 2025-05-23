@@ -29,6 +29,7 @@ interface SearchContextType {
     toggleFilter: (field: string, value: string) => void;
     setRangeFilter: (field: string, min: number, max: number) => void;
     resetFilters: () => void;
+    resetSingleFilter: (field: string, value?: string) => void;
 }
 declare const SearchProvider: React.FC<{
     children: React.ReactNode;
