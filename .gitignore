@@ -34,3 +34,6 @@ pnpm-debug.log*
 
 # Vercel
 apps/demo/.vercel
+
+packages/indx-intrface/dist
+dist/

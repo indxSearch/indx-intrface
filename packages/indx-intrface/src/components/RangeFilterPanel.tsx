@@ -1,4 +1,4 @@
-import { Range } from 'react-range';
+// import Range from 'react-range';
 import React from 'react';
 import { useSearchContext } from '../context/SearchContext';
 
@@ -35,55 +35,55 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
     }
   };
 
-  if (displayType === 'slider') {
-    return (
-      <fieldset>
-        <legend>{label || field}</legend>
-        <div style={{ padding: '1rem 0' }}>
-          <Range
-            step={1}
-            min={actualMin}
-            max={actualMax}
-            values={[currentMin, currentMax]}
-            onChange={handleRangeChange}
-            renderTrack={({ props, children }) => (
-              <div
-                {...props}
-                style={{
-                  ...props.style,
-                  height: '6px',
-                  width: '100%',
-                  backgroundColor: '#ccc',
-                }}
-              >
-                {children}
-              </div>
-            )}
-            renderThumb={({ props, index }) => {
-              const { key, ...rest } = props;
-              return (
-                <div
-                  key={key}
-                  {...rest}
-                  style={{
-                    ...props.style,
-                    height: '20px',
-                    width: '20px',
-                    backgroundColor: '#999',
-                    borderRadius: '50%',
-                  }}
-                />
-              );
-            }}
-          />
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-            <span>{currentMin}</span>
-            <span>{currentMax}</span>
-          </div>
-        </div>
-      </fieldset>
-    );
-  }
+  // if (displayType === 'slider') {
+  //   return (
+  //     <fieldset>
+  //       <legend>{label || field}</legend>
+  //       <div style={{ padding: '1rem 0' }}>
+  //         <Range
+  //           step={1}
+  //           min={actualMin}
+  //           max={actualMax}
+  //           values={[currentMin, currentMax]}
+  //           onChange={handleRangeChange}
+  //           renderTrack={({ props, children }) => (
+  //             <div
+  //               {...props}
+  //               style={{
+  //                 ...props.style,
+  //                 height: '6px',
+  //                 width: '100%',
+  //                 backgroundColor: '#ccc',
+  //               }}
+  //             >
+  //               {children}
+  //             </div>
+  //           )}
+  //           renderThumb={({ props, index }) => {
+  //             const { key, ...rest } = props;
+  //             return (
+  //               <div
+  //                 key={key}
+  //                 {...rest}
+  //                 style={{
+  //                   ...props.style,
+  //                   height: '20px',
+  //                   width: '20px',
+  //                   backgroundColor: '#999',
+  //                   borderRadius: '50%',
+  //                 }}
+  //               />
+  //             );
+  //           }}
+  //         />
+  //         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+  //           <span>{Number(currentMin)}</span>
+  //           <span>{Number(currentMax)}</span>
+  //         </div>
+  //       </div>
+  //     </fieldset>
+  //   );
+  // }
 
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
