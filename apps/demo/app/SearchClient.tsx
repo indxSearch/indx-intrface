@@ -1,7 +1,6 @@
 'use client';
-
+import '@indxsearch/intrface/styles.css';
 import { SearchProvider, SearchInput, SearchResults, RangeFilterPanel, ValueFilterPanel, ActiveFiltersPanel, SortByPanel } from '@indxsearch/intrface';
-import { Button } from '@indxsearch/systm';
 
 export function SearchClient({ dataset }: { dataset: string }) {
   const url = process.env.NEXT_PUBLIC_INDX_URL!;
@@ -18,7 +17,6 @@ function SearchUI() {
   return (
     <div style={{ padding: '30px', width: '100%', display: 'flex' }}>
       <div style={{ width: '60%', paddingRight: '1rem' }}>
-        <Button>Yo</Button>
         <SearchInput
           placeholder="Search..."
           className="search-input"

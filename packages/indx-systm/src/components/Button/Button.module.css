@@ -1,4 +1,6 @@
 .button {
+  all: unset;
+  appearance: none;
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 0.5rem;
@@ -6,4 +8,14 @@
   color: white;
   font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.button:hover {
+  background-color: #1e3a8a;
+}
+
+.button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
 }

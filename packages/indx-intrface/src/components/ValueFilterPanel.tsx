@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSearchContext } from '../context/SearchContext';
+import { Checkbox } from '@indxsearch/systm';
 
 export interface ValueFilterPanelProps {
   field: string;
@@ -62,15 +63,12 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
       <ul>
         {Array.from(mergedValuesMap.entries()).map(([key, count], index) => (
           <li key={index}>
-            <label>
-              <input
-                type="checkbox"
-                checked={selectedValues.includes(key)}
-                onChange={() => toggleFilter(field, key)}
-                disabled={count === 0}
-              />
-              {key} ({count})
-            </label>
+            <Checkbox
+              label={`${key} (${count})`}
+              checked={selectedValues.includes(key)}
+              onChange={() => toggleFilter(field, key)}
+              disabled={count === 0}
+            />
           </li>
         ))}
       </ul>
