@@ -1,77 +1,8 @@
-import React from 'react';
-
-interface SearchState {
-    query: string;
-    results: any[] | null;
-    isLoading: boolean;
-    error?: string;
-    facets?: any | null;
-    filterableFields?: string[];
-    facetableFields?: string[];
-    sortableFields?: string[];
-    filters: Record<string, string[]>;
-    rangeFilters: Record<string, {
-        min: number;
-        max: number;
-    }>;
-    facetStats?: Record<string, {
-        min: number;
-        max: number;
-    }>;
-    rangeBounds?: Record<string, {
-        min: number;
-        max: number;
-    }>;
-    sortBy?: string;
-    sortAscending?: boolean;
-}
-interface SearchContextType {
-    state: SearchState;
-    setQuery: (query: string) => void;
-    toggleFilter: (field: string, value: string) => void;
-    setRangeFilter: (field: string, min: number, max: number) => void;
-    resetFilters: () => void;
-    resetSingleFilter: (field: string, value?: string) => void;
-    setSort: (field: string | null, ascending: boolean) => void;
-}
-declare const SearchProvider: React.FC<{
-    children: React.ReactNode;
-    email: string;
-    password: string;
-    url: string;
-    dataset: string;
-    allowEmptySearch?: boolean;
-    maxResults?: number;
-}>;
-declare const useSearchContext: () => SearchContextType;
-
-interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-    onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
-}
-declare const SearchInput: React.FC<SearchInputProps>;
-
-interface SearchResultsProps {
-    fields?: string[];
-    customLabels?: Record<string, string>;
-}
-declare const SearchResults: React.FC<SearchResultsProps>;
-
-interface ValueFilterPanelProps {
-    field: string;
-    label?: string;
-    preserveBlankFacetState?: boolean;
-}
-declare const ValueFilterPanel: React.FC<ValueFilterPanelProps>;
-
-interface RangeFilterPanelProps {
-    field: string;
-    label?: string;
-    displayType?: 'slider' | 'input';
-}
-declare const RangeFilterPanel: React.FC<RangeFilterPanelProps>;
-
-declare const ActiveFiltersPanel: React.FC;
-
-declare const SortByPanel: React.FC;
-
-export { ActiveFiltersPanel, RangeFilterPanel, SearchInput, SearchProvider, SearchResults, SortByPanel, ValueFilterPanel, useSearchContext as useSearch };
+export { SearchProvider } from './context/SearchContext';
+export { useSearch } from './context/useSearch';
+export { SearchInput } from './components/SearchInput';
+export { SearchResults } from './components/SearchResults';
+export { ValueFilterPanel } from './components/ValueFilterPanel';
+export { RangeFilterPanel } from './components/RangeFilterPanel';
+export { ActiveFiltersPanel } from './components/ActiveFiltersPanel';
+export { SortByPanel } from './components/SortByPanel';

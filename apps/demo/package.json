@@ -12,7 +12,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "next": "15.3.2",
-    "indx-intrface": "file:../../packages/indx-intrface"
+    "@indxsearch/intrface": "1.0.0",
+    "@indxsearch/systm": "1.0.0"
   },
   "devDependencies": {
     "typescript": "^5",
