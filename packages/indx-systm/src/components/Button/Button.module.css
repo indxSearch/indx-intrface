@@ -1,156 +1,160 @@
 .button {
-    display: inline-flex;
-    align-items: center;
-    transition: background-color 0.2s ease, border 0.2s ease;
-    cursor: pointer;
-    border: none;
-	  font-family: sans-serif;
-    font-weight: 600;
-	  background: none;
-    --button-icon-color: currentColor; /* fallback */
-  }
+  display: inline-flex;
+  align-items: center;
+  transition: background-color 0.2s ease, border 0.2s ease;
+  cursor: pointer;
+  border: none;
+  font: var(--font-px);
+  font-weight: 400;
+  background: none;
+  --button-icon-color: currentColor; /* fallback */
+}
   
-  /* Sizes */
-  .micro {
-    border-radius: 5px;
-    font-size: 12px;
-    gap: 7px;
-    height: 30px;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-  
-  .default {
-    height: 40px;
-    border-radius: 8px;
-    gap: 10px;
-    font-size: 14px;
-    padding-left: 15px;
-    padding-right: 15px;
-  }
-  
-  .large {
-		height: 50px;
-		gap: 10px;
-    border-radius: 8px;
-    font-size: 16px;
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-  
-  /* 
-		Types 
-	*/
+/* Sizes */
+.micro {
+  border-radius: 5px;
+  font-size: 12px;
+  gap: 7px;
+  height: 30px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
 
-	/* PRIMARY */
-  .primary {
-		background-color: var(--CB4);
-    color: var(--CB1);
-  }
-	.primary:hover {
-		background-color: color-mix(in srgb, white 10%, var(--CB4));
-  }
-  :global(html.dark) .primary {
-		background-color: var(--CB2);
-    color: var(--CB6);
-  }
-	:global(html.dark) .primary:hover {
-		background-color: color-mix(in srgb, white 30%, var(--CB2));
-	}
-	.button.primary {
-		--button-icon-color: var(--CB1);
-	}
-	:global(html.dark) .button.primary {
-		--button-icon-color: var(--CB6);
-	}
+.default {
+  height: 40px;
+  border-radius: 8px;
+  gap: 10px;
+  font-size: 14px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
 
-	/* SECONDARY */
+.large {
+  height: 50px;
+  gap: 10px;
+  border-radius: 8px;
+  font-size: 16px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
 
-	.secondary {
-    border: 1px solid var(--CGray);
-    color: var(--CB6);
-  }
-  .secondary:hover {
-		border: 1px solid color-mix(in srgb, black 30%, var(--CGray));
-  }
-  :global(html.dark) .secondary {
-		border: 1px solid var(--CDarkGray);
-		color: var(--CB2);
-  }
-  :global(html.dark) .secondary:hover {
-    border: 1px solid color-mix(in srgb, white 20%, var(--CDarkGray));
-  }
-	.button.secondary {
-		--button-icon-color: var(--CB6);
-	}
-	:global(html.dark) .button.secondary {
-		--button-icon-color: var(--CB2);
-	}
+/* 
+  Types 
+*/
 
-	/* TERTIARY */
+/* PRIMARY */
+.light.primary {
+  background-color: var(--CB4);
+  color: var(--CB1);
+}
+.light.primary:hover {
+  background-color: color-mix(in srgb, white 10%, var(--CB4));
+}
+.light.button.primary {
+  --button-icon-color: var(--CB1);
+}
 
-	.tertiary {
-    border: 1px solid var(--CGray);
-    color: var(--CBlueGray);
-  }
-  .tertiary:hover {
-		border: 1px solid color-mix(in srgb, black 30%, var(--CGray));
-	 }
-  :global(html.dark) .tertiary {
-		border: 1px solid var(--CDarkGray);
-		color: var(--CGray);
-  }
-  :global(html.dark) .tertiary:hover {
-    border: 1px solid color-mix(in srgb, white 20%, var(--CDarkGray));
-  }
-	.button.tertiary {
-		--button-icon-color: var(--CBlueGray);
-	}
-	:global(html.dark) .button.tertiary {
-		--button-icon-color: var(--CGray);
-	}
+.dark.primary {
+  background-color: var(--CB2);
+  color: var(--CB6);
+}
+.dark.primary:hover {
+  background-color: color-mix(in srgb, white 30%, var(--CB2));
+}
+.dark.button.primary {
+  --button-icon-color: var(--CB6);
+}
 
-	/* ACTIVE */
-	.active {
-		background-color: #0000ff;
-		color: white;
-	}
-	.active:hover {
-	}
-	:global(html.dark) .active {
-		background-color: var(--CB3);
-		color: var(--CB1);
-	}
-	:global(html.dark) .active:hover {
-		
-	}
-	.button.active {
-		--button-icon-color: white;
-	}
-	:global(html.dark) .button.active {
-		--button-icon-color: var(--CB1);
-	}
+/* SECONDARY */
+.light.secondary {
+  border: 1px solid var(--CGray);
+  color: var(--CB6);
+}
+.light.secondary:hover {
+  border: 1px solid color-mix(in srgb, black 30%, var(--CGray));
+}
+.light.button.secondary {
+  --button-icon-color: var(--CB6);
+}
 
-	/* GHOST */
+.dark.secondary {
+  border: 1px solid var(--CDarkGray);
+  color: var(--CB2);
+}
+.dark.secondary:hover {
+  border: 1px solid color-mix(in srgb, white 20%, var(--CDarkGray));
+}
+.dark.button.secondary {
+  --button-icon-color: var(--CB2);
+}
 
-	.ghost {
-		color: var(--CBlueGray);
-	}
-	.ghost:hover {
-		background-color: var(--CLightGray);
-	 }
-	:global(html.dark) .ghost {
-		color: var(--CGray);
-	}
-	:global(html.dark) .ghost:hover {
-		background-color: var(--CB4);
-	}
-	.button.ghost {
-		--button-icon-color: var(--CBlueGray);
-	}
-	:global(html.dark) .button.ghost {
-		--button-icon-color: var(--CGray);
-	}
+/* TERTIARY */
+.light.tertiary {
+  border: 1px solid var(--CGray);
+  color: var(--CBlueGray);
+}
+.light.tertiary:hover {
+  border: 1px solid color-mix(in srgb, black 30%, var(--CGray));
+}
+.light.button.tertiary {
+  --button-icon-color: var(--CBlueGray);
+}
+
+.dark.tertiary {
+  border: 1px solid var(--CDarkGray);
+  color: var(--CGray);
+}
+.dark.tertiary:hover {
+  border: 1px solid color-mix(in srgb, white 20%, var(--CDarkGray));
+}
+.dark.button.tertiary {
+  --button-icon-color: var(--CGray);
+}
+
+/* ACTIVE */
+.light.active {
+  background-color: #0000ff;
+  color: white;
+}
+.light.active:hover {
+  /* Add hover styles if needed */
+}
+.light.button.active {
+  --button-icon-color: white;
+}
+
+.dark.active {
+  background-color: var(--CB3);
+  color: var(--CB1);
+}
+.dark.active:hover {
+  /* Add hover styles if needed */
+}
+.dark.button.active {
+  --button-icon-color: var(--CB1);
+}
+
+/* GHOST */
+.light.ghost {
+  color: var(--CBlueGray);
+}
+.light.ghost:hover {
+  background-color: var(--CLightGray);
+}
+.light.button.ghost {
+  --button-icon-color: var(--CBlueGray);
+}
+
+.dark.ghost {
+  color: var(--CGray);
+}
+.dark.ghost:hover {
+  background-color: var(--CB4);
+}
+.dark.button.ghost {
+  --button-icon-color: var(--CGray);
+}
+
   
   
   /* Disabled State */

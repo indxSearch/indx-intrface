@@ -3,7 +3,14 @@ import { useSearchContext } from '../context/SearchContext';
 import { Button } from '@indxsearch/systm';
 import { X_or_error } from '@indxsearch/pixl';
 
-export const ActiveFiltersPanel: React.FC = () => {
+export type Theme = 'light' | 'dark';
+
+interface ActiveFiltersPanelProps {
+  theme?: Theme;
+}
+
+
+export const ActiveFiltersPanel: React.FC<ActiveFiltersPanelProps> = ({ theme = 'light' }) => {
   const {
     state: { filters, rangeFilters },
     resetFilters,
@@ -30,6 +37,7 @@ export const ActiveFiltersPanel: React.FC = () => {
                 iconRight={<X_or_error/>}
                 typeVariant='active'
                 size='micro'
+                theme={theme}
               >
                 {field}: {value}
               </Button>
@@ -40,16 +48,24 @@ export const ActiveFiltersPanel: React.FC = () => {
           <li key={field}>
             <Button 
               onClick={() => resetSingleFilter(field)}
-              iconRight={<X_or_error/>}
-              typeVariant='active'
+              iconRight={<X_or_error />}
+              typeVariant='primary'
               size='micro'
+              theme={theme}
             >
               {field}: {min} – {max}
             </Button>
           </li>
         ))}
       </ul>
-      <button onClick={handleResetFilters}>Reset</button>
+      <Button 
+        onClick={handleResetFilters}
+        size='micro'
+        typeVariant='tertiary'
+        theme={theme}
+      >
+        Reset
+      </Button>
     </div>
   );
 };

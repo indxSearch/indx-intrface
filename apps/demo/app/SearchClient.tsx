@@ -1,4 +1,5 @@
 'use client';
+import React, { useEffect, useState } from 'react';
 import '@indxsearch/intrface/styles.css';
 import { SearchProvider, SearchInput, SearchResults, RangeFilterPanel, ValueFilterPanel, ActiveFiltersPanel, SortByPanel } from '@indxsearch/intrface';
 
@@ -14,6 +15,21 @@ export function SearchClient({ dataset }: { dataset: string }) {
 }
 
 function SearchUI() {
+
+  /* SYSTEM THEME */
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  useEffect(() => {
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const updateTheme = () => {
+      setTheme(systemDark.matches ? 'dark' : 'light');
+    };
+    updateTheme(); // set initially
+    systemDark.addEventListener('change', updateTheme);
+    return () => {
+      systemDark.removeEventListener('change', updateTheme);
+    };
+  }, []);
+
   return (
     <div style={{ padding: '30px', width: '100%', display: 'flex' }}>
       <div style={{ width: '60%', paddingRight: '1rem' }}>
@@ -37,7 +53,7 @@ function SearchUI() {
         />
       </div>
       <div style={{ width: '40%' }}>
-        <ActiveFiltersPanel />
+        <ActiveFiltersPanel theme={theme}/>
         <RangeFilterPanel label="speed" field="speed" displayType="input" />
         <ValueFilterPanel label="primary type" field="type1" preserveBlankFacetState={true} />
         <ValueFilterPanel label="speed" field="speed" />

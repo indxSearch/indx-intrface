@@ -46,30 +46,13 @@ export function Button({
   ...props
 }: ButtonProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [mounted, setMounted] = useState(false);
-  const [computedColor, setComputedColor] = useState<string>('currentColor');
-
   const iconSize = iconSizeMap[size];
-
-  // Only update mounted after hydration
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Only read CSS variable after DOM is mounted and theme is applied
-  useEffect(() => {
-    if (!mounted || !buttonRef.current) return;
-
-    const style = getComputedStyle(buttonRef.current);
-    const cssColor = style.getPropertyValue('--button-icon-color').trim();
-    setComputedColor(cssColor || 'currentColor');
-  }, [mounted, typeVariant]);
-
-  // apply inline overrides if provided
   const inlineStyles: React.CSSProperties & { [key: string]: string } = {};
   if (backgroundColor) inlineStyles.backgroundColor = backgroundColor;
   if (iconColor) inlineStyles['--button-icon-color'] = iconColor;
   if (textColor) inlineStyles.color = textColor;
+
+  const fallbackIconColor = 'var(--button-icon-color)';
 
   // Combine class names
   const buttonClass = [
@@ -94,13 +77,13 @@ export function Button({
       {iconLeft &&
         React.cloneElement(iconLeft, {
           size: iconSize,
-          color: iconColor ?? computedColor,
+          color: iconColor ?? fallbackIconColor,
         })}
       <span>{children}</span>
       {iconRight &&
         React.cloneElement(iconRight, {
           size: iconSize,
-          color: iconColor ?? computedColor,
+          color: iconColor ?? fallbackIconColor,
         })}
     </button>
   );
