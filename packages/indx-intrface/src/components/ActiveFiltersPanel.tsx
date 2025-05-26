@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './ActiveFiltersPanel.module.css';
 import { useSearchContext } from '../context/SearchContext';
 import { Base } from '@indxsearch/systm';
 import { Button } from '@indxsearch/systm';
@@ -21,7 +22,7 @@ export const ActiveFiltersPanel: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className={styles.wrapper}>
       <Base>
         <h3>Active Filters</h3>
         <ul>
@@ -51,14 +52,16 @@ export const ActiveFiltersPanel: React.FC = () => {
               </Button>
             </li>
           ))}
+          <li>
+            <Button 
+              onClick={handleResetFilters}
+              size='micro'
+              typeVariant='tertiary'
+            >
+              Reset
+            </Button>
+          </li>
         </ul>
-        <Button 
-          onClick={handleResetFilters}
-          size='micro'
-          typeVariant='tertiary'
-        >
-          Reset
-        </Button>
       </Base>
     </div>
   );

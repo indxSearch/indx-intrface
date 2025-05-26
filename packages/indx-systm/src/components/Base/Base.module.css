@@ -3,4 +3,5 @@
     box-shadow: var(--base-shadow);
     border-radius: 13px;
     height: 100%;
+    padding: 15px;
 }
