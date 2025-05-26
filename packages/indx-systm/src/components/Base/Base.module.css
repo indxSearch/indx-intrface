@@ -1,0 +1,6 @@
+.container {
+    background: var(--base-color);
+    box-shadow: var(--base-shadow);
+    border-radius: 13px;
+    height: 100%;
+}

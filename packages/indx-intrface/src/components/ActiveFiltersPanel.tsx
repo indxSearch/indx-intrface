@@ -1,16 +1,11 @@
 import React from 'react';
 import { useSearchContext } from '../context/SearchContext';
+import { Base } from '@indxsearch/systm';
 import { Button } from '@indxsearch/systm';
 import { X_or_error } from '@indxsearch/pixl';
 
-export type Theme = 'light' | 'dark';
 
-interface ActiveFiltersPanelProps {
-  theme?: Theme;
-}
-
-
-export const ActiveFiltersPanel: React.FC<ActiveFiltersPanelProps> = ({ theme = 'light' }) => {
+export const ActiveFiltersPanel: React.FC = () => {
   const {
     state: { filters, rangeFilters },
     resetFilters,
@@ -27,45 +22,44 @@ export const ActiveFiltersPanel: React.FC<ActiveFiltersPanelProps> = ({ theme = 
 
   return (
     <div>
-      <h3>Active Filters</h3>
-      <ul>
-        {Object.entries(filters).map(([field, values]) =>
-          values.map((value: string) => (
-            <li key={`${field}-${value}`}>
+      <Base>
+        <h3>Active Filters</h3>
+        <ul>
+          {Object.entries(filters).map(([field, values]) =>
+            values.map((value: string) => (
+              <li key={`${field}-${value}`}>
+                <Button 
+                  onClick={() => resetSingleFilter(field, value)}
+                  iconRight={<X_or_error/>}
+                  typeVariant='active'
+                  size='micro'
+                >
+                  {field}: {value}
+                </Button>
+              </li>
+            ))
+          )}
+          {Object.entries(rangeFilters).map(([field, { min, max }]) => (
+            <li key={field}>
               <Button 
-                onClick={() => resetSingleFilter(field, value)}
-                iconRight={<X_or_error/>}
-                typeVariant='active'
+                onClick={() => resetSingleFilter(field)}
+                iconRight={<X_or_error />}
+                typeVariant='primary'
                 size='micro'
-                theme={theme}
               >
-                {field}: {value}
+                {field}: {min} – {max}
               </Button>
             </li>
-          ))
-        )}
-        {Object.entries(rangeFilters).map(([field, { min, max }]) => (
-          <li key={field}>
-            <Button 
-              onClick={() => resetSingleFilter(field)}
-              iconRight={<X_or_error />}
-              typeVariant='primary'
-              size='micro'
-              theme={theme}
-            >
-              {field}: {min} – {max}
-            </Button>
-          </li>
-        ))}
-      </ul>
-      <Button 
-        onClick={handleResetFilters}
-        size='micro'
-        typeVariant='tertiary'
-        theme={theme}
-      >
-        Reset
-      </Button>
+          ))}
+        </ul>
+        <Button 
+          onClick={handleResetFilters}
+          size='micro'
+          typeVariant='tertiary'
+        >
+          Reset
+        </Button>
+      </Base>
     </div>
   );
 };

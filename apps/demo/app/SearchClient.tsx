@@ -31,7 +31,7 @@ function SearchUI() {
   }, []);
 
   return (
-    <div style={{ padding: '30px', width: '100%', display: 'flex' }}>
+    <div className={theme} style={{ padding: '30px', width: '100%', display: 'flex' }}>
       <div style={{ width: '60%', paddingRight: '1rem' }}>
         <SearchInput
           placeholder="Search..."
@@ -53,7 +53,7 @@ function SearchUI() {
         />
       </div>
       <div style={{ width: '40%' }}>
-        <ActiveFiltersPanel theme={theme}/>
+        <ActiveFiltersPanel />
         <RangeFilterPanel label="speed" field="speed" displayType="input" />
         <ValueFilterPanel label="primary type" field="type1" preserveBlankFacetState={true} />
         <ValueFilterPanel label="speed" field="speed" />

@@ -15,13 +15,11 @@ const iconSizeMap = {
 export type ButtonSize = 'micro' | 'default' | 'large';
 export type ButtonType = 'primary' | 'secondary' | 'tertiary' | 'active' | 'ghost';
 export type ButtonState = 'default' | 'disabled';
-export type ButtonTheme = 'light' | 'dark';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
   typeVariant?: ButtonType;
   state?: ButtonState;
-  theme?: ButtonTheme;
   iconLeft?: React.ReactElement<IconProps>;
   iconRight?: React.ReactElement<IconProps>;
   children: React.ReactNode;
@@ -35,7 +33,6 @@ export function Button({
   size = 'default',
   typeVariant = 'primary',
   state = 'default',
-  theme = 'light',
   iconLeft,
   iconRight,
   backgroundColor,
@@ -59,7 +56,6 @@ export function Button({
     styles.button,
     styles[size],
     styles[typeVariant],
-    styles[theme],
     state === 'disabled' ? styles.disabled : '',
     className,
   ]

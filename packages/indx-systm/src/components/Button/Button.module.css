@@ -38,122 +38,126 @@
   padding-right: 20px;
 }
 
-/* 
-  Types 
-*/
+
+/* Types */
 
 /* PRIMARY */
-.light.primary {
+.primary {
   background-color: var(--CB4);
   color: var(--CB1);
 }
-.light.primary:hover {
+.primary:hover {
   background-color: color-mix(in srgb, white 10%, var(--CB4));
 }
-.light.button.primary {
+.button.primary {
   --button-icon-color: var(--CB1);
 }
 
-.dark.primary {
+:global(.dark) .primary {
   background-color: var(--CB2);
   color: var(--CB6);
 }
-.dark.primary:hover {
+:global(.dark) .primary:hover {
   background-color: color-mix(in srgb, white 30%, var(--CB2));
 }
-.dark.button.primary {
+:global(.dark) .button.primary {
   --button-icon-color: var(--CB6);
 }
 
+
 /* SECONDARY */
-.light.secondary {
+.secondary {
   border: 1px solid var(--CGray);
   color: var(--CB6);
 }
-.light.secondary:hover {
+.secondary:hover {
   border: 1px solid color-mix(in srgb, black 30%, var(--CGray));
 }
-.light.button.secondary {
+.button.secondary {
   --button-icon-color: var(--CB6);
 }
 
-.dark.secondary {
+:global(.dark) .secondary {
   border: 1px solid var(--CDarkGray);
   color: var(--CB2);
 }
-.dark.secondary:hover {
+:global(.dark) .secondary:hover {
   border: 1px solid color-mix(in srgb, white 20%, var(--CDarkGray));
 }
-.dark.button.secondary {
+:global(.dark) .button.secondary {
   --button-icon-color: var(--CB2);
 }
 
+
 /* TERTIARY */
-.light.tertiary {
+.tertiary {
   border: 1px solid var(--CGray);
   color: var(--CBlueGray);
 }
-.light.tertiary:hover {
+.tertiary:hover {
   border: 1px solid color-mix(in srgb, black 30%, var(--CGray));
 }
-.light.button.tertiary {
+.button.tertiary {
   --button-icon-color: var(--CBlueGray);
 }
 
-.dark.tertiary {
+:global(.dark) .tertiary {
   border: 1px solid var(--CDarkGray);
   color: var(--CGray);
 }
-.dark.tertiary:hover {
+:global(.dark) .tertiary:hover {
   border: 1px solid color-mix(in srgb, white 20%, var(--CDarkGray));
 }
-.dark.button.tertiary {
+:global(.dark) .button.tertiary {
   --button-icon-color: var(--CGray);
 }
 
+
 /* ACTIVE */
-.light.active {
+.active {
   background-color: #0000ff;
   color: white;
 }
-.light.active:hover {
+.active:hover {
   /* Add hover styles if needed */
 }
-.light.button.active {
+.button.active {
   --button-icon-color: white;
 }
 
-.dark.active {
+:global(.dark) .active {
   background-color: var(--CB3);
   color: var(--CB1);
 }
-.dark.active:hover {
+:global(.dark) .active:hover {
   /* Add hover styles if needed */
 }
-.dark.button.active {
+:global(.dark) .button.active {
   --button-icon-color: var(--CB1);
 }
 
+
 /* GHOST */
-.light.ghost {
+.ghost {
   color: var(--CBlueGray);
 }
-.light.ghost:hover {
+.ghost:hover {
   background-color: var(--CLightGray);
 }
-.light.button.ghost {
+.button.ghost {
   --button-icon-color: var(--CBlueGray);
 }
 
-.dark.ghost {
+:global(.dark) .ghost {
   color: var(--CGray);
 }
-.dark.ghost:hover {
+:global(.dark) .ghost:hover {
   background-color: var(--CB4);
 }
-.dark.button.ghost {
+:global(.dark) .button.ghost {
   --button-icon-color: var(--CGray);
 }
+
 
   
   

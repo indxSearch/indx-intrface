@@ -17,16 +17,13 @@
   --CB6: #080809;
 
   --font-px: 'PxGrotesk', sans-serif;
-}
 
-/* Semantic colors */
-html {
-  --text-color: var(--CB6);
-  --icon-color: var(--CBlueGray);
-  --base-color: white;
-  --base-shadow: 0px 0px 50px rgba(0, 0, 0, 0.1);  
+	--text-color: var(--CB6);
+	--icon-color: var(--CBlueGray);
+	--base-color: white;
+	--base-shadow: 0px 0px 50px rgba(0, 0, 0, 0.1);  
 }
-html.dark {
+:where(.dark) {
   --text-color: var(--CLight);
   --icon-color: var(--CGray);
   --base-color: var(--CB5);
