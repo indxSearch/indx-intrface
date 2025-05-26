@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSearchContext } from '../context/SearchContext';
 import { Checkbox } from '@indxsearch/systm';
+import { Button } from '@indxsearch/systm';
 
 export interface ValueFilterPanelProps {
   field: string;

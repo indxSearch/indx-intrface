@@ -1,21 +1,161 @@
 .button {
-  all: unset;
-  appearance: none;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  background-color: #1e40af;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.2s ease, border 0.2s ease;
+    cursor: pointer;
+    border: none;
+	  font-family: sans-serif;
+    font-weight: 600;
+	  background: none;
+    --button-icon-color: currentColor; /* fallback */
+  }
+  
+  /* Sizes */
+  .micro {
+    border-radius: 5px;
+    font-size: 12px;
+    gap: 7px;
+    height: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  .default {
+    height: 40px;
+    border-radius: 8px;
+    gap: 10px;
+    font-size: 14px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  
+  .large {
+		height: 50px;
+		gap: 10px;
+    border-radius: 8px;
+    font-size: 16px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  /* 
+		Types 
+	*/
 
-.button:hover {
-  background-color: #1e3a8a;
-}
+	/* PRIMARY */
+  .primary {
+		background-color: var(--CB4);
+    color: var(--CB1);
+  }
+	.primary:hover {
+		background-color: color-mix(in srgb, white 10%, var(--CB4));
+  }
+  :global(html.dark) .primary {
+		background-color: var(--CB2);
+    color: var(--CB6);
+  }
+	:global(html.dark) .primary:hover {
+		background-color: color-mix(in srgb, white 30%, var(--CB2));
+	}
+	.button.primary {
+		--button-icon-color: var(--CB1);
+	}
+	:global(html.dark) .button.primary {
+		--button-icon-color: var(--CB6);
+	}
 
-.button:disabled {
-  background-color: #9ca3af;
-  cursor: not-allowed;
-}
+	/* SECONDARY */
+
+	.secondary {
+    border: 1px solid var(--CGray);
+    color: var(--CB6);
+  }
+  .secondary:hover {
+		border: 1px solid color-mix(in srgb, black 30%, var(--CGray));
+  }
+  :global(html.dark) .secondary {
+		border: 1px solid var(--CDarkGray);
+		color: var(--CB2);
+  }
+  :global(html.dark) .secondary:hover {
+    border: 1px solid color-mix(in srgb, white 20%, var(--CDarkGray));
+  }
+	.button.secondary {
+		--button-icon-color: var(--CB6);
+	}
+	:global(html.dark) .button.secondary {
+		--button-icon-color: var(--CB2);
+	}
+
+	/* TERTIARY */
+
+	.tertiary {
+    border: 1px solid var(--CGray);
+    color: var(--CBlueGray);
+  }
+  .tertiary:hover {
+		border: 1px solid color-mix(in srgb, black 30%, var(--CGray));
+	 }
+  :global(html.dark) .tertiary {
+		border: 1px solid var(--CDarkGray);
+		color: var(--CGray);
+  }
+  :global(html.dark) .tertiary:hover {
+    border: 1px solid color-mix(in srgb, white 20%, var(--CDarkGray));
+  }
+	.button.tertiary {
+		--button-icon-color: var(--CBlueGray);
+	}
+	:global(html.dark) .button.tertiary {
+		--button-icon-color: var(--CGray);
+	}
+
+	/* ACTIVE */
+	.active {
+		background-color: #0000ff;
+		color: white;
+	}
+	.active:hover {
+	}
+	:global(html.dark) .active {
+		background-color: var(--CB3);
+		color: var(--CB1);
+	}
+	:global(html.dark) .active:hover {
+		
+	}
+	.button.active {
+		--button-icon-color: white;
+	}
+	:global(html.dark) .button.active {
+		--button-icon-color: var(--CB1);
+	}
+
+	/* GHOST */
+
+	.ghost {
+		color: var(--CBlueGray);
+	}
+	.ghost:hover {
+		background-color: var(--CLightGray);
+	 }
+	:global(html.dark) .ghost {
+		color: var(--CGray);
+	}
+	:global(html.dark) .ghost:hover {
+		background-color: var(--CB4);
+	}
+	.button.ghost {
+		--button-icon-color: var(--CBlueGray);
+	}
+	:global(html.dark) .button.ghost {
+		--button-icon-color: var(--CGray);
+	}
+  
+  
+  /* Disabled State */
+  .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  

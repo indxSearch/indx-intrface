@@ -1,0 +1,32 @@
+:root {
+  --CSuperLightGray: #FBFBFB;
+  --CLightGray: #EFEFEF;
+  --CGray: #CFCFCF;
+  --CMediumGray: #757575;
+  --CDarkGray: #333333;
+  --CBlueGray: #565661;
+  --CSignal: #FF4238;
+  --CTeal: #72F5C6;
+
+  --CB0: #F6F6FF;
+  --CB1: #EAEAFF;
+  --CB2: #AAAAFF;
+  --CB3: #5B02EA;
+  --CB4: #1A1A21;
+  --CB5: #121215;
+  --CB6: #080809;
+}
+
+/* Semantic colors */
+html {
+  --text-color: var(--CB6);
+  --icon-color: var(--CBlueGray);
+  --base-color: white;
+  --base-shadow: 0px 0px 50px rgba(0, 0, 0, 0.1);  
+}
+html.dark {
+  --text-color: var(--CLight);
+  --icon-color: var(--CGray);
+  --base-color: var(--CB5);
+  --base-shadow: 0px 0px 50px rgba(0, 0, 0, 0.2);
+}

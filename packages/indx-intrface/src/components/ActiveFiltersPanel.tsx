@@ -1,5 +1,7 @@
 import React from 'react';
 import { useSearchContext } from '../context/SearchContext';
+import { Button } from '@indxsearch/systm';
+import { X_or_error } from '@indxsearch/pixl';
 
 export const ActiveFiltersPanel: React.FC = () => {
   const {
@@ -23,17 +25,27 @@ export const ActiveFiltersPanel: React.FC = () => {
         {Object.entries(filters).map(([field, values]) =>
           values.map((value: string) => (
             <li key={`${field}-${value}`}>
-              <button onClick={() => resetSingleFilter(field, value)}>
-                {field}: {value} ❌
-              </button>
+              <Button 
+                onClick={() => resetSingleFilter(field, value)}
+                iconRight={<X_or_error/>}
+                typeVariant='active'
+                size='micro'
+              >
+                {field}: {value}
+              </Button>
             </li>
           ))
         )}
         {Object.entries(rangeFilters).map(([field, { min, max }]) => (
           <li key={field}>
-            <button onClick={() => resetSingleFilter(field)}>
-              {field}: {min} – {max} ❌
-            </button>
+            <Button 
+              onClick={() => resetSingleFilter(field)}
+              iconRight={<X_or_error/>}
+              typeVariant='active'
+              size='micro'
+            >
+              {field}: {min} – {max}
+            </Button>
           </li>
         ))}
       </ul>
