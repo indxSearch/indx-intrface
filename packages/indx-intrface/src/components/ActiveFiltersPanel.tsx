@@ -24,7 +24,7 @@ export const ActiveFiltersPanel: React.FC = () => {
   return (
     <div className={styles.wrapper}>
       <Base>
-        <h3>Active Filters</h3>
+        <h3>Active filters</h3>
         <ul>
           {Object.entries(filters).map(([field, values]) =>
             values.map((value: string) => (

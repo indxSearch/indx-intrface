@@ -1,0 +1,139 @@
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.label {
+	font-size: 14px;
+	font-weight: 500;
+	color: var(--text-color);
+}
+
+.inputContainer {
+	position: relative;
+	display: flex;
+	align-items: center; /* ✅ vertical alignment */
+	gap: 8px;
+}
+
+.input {
+	font-family: var(--font-px);
+	width: 100%;
+	font-weight: 400;
+	border-radius: 8px;
+	background: #eee;
+	border: none;
+	color: #1e1e1e;
+	box-sizing: border-box;
+	transition: background-color 0.2s;
+	caret-color: blue;
+}
+
+:global(.dark) .input {
+	color: white;
+	background-color: rgba(255, 255, 255, 0.05);
+	caret-color: var(--CB2);
+}
+
+.input[type="search"] {
+	-webkit-appearance: none;
+}
+
+.input:focus {
+	outline: none;
+	background: none;
+	color: var(--CB4);
+}
+
+:global(.dark) .input:focus {
+	color: #AAAAFF;
+}
+
+.input::placeholder {
+	opacity: 0.3;
+	color: black;
+	transition: opacity 0.2s;
+	padding-left: 40px;
+}
+
+:global(.dark) .input::placeholder {
+	color: white;
+}
+
+.searchIcon {
+	--search-icon-color: rgba(0,0,0,0.3);
+	position: absolute;
+	display: flex;
+	align-items: center;
+	height: 100%;
+	color: var(--search-icon-color); /* use CSS variable */
+	pointer-events: none;
+}
+:global(.dark) .searchIcon {
+	--search-icon-color: rgba(255,255,255,0.3);
+}
+
+/* Sizes */
+.micro .input {
+  font-size: 12px;
+  height: 30px;
+  padding: 0 13px 0 13px !important;
+}
+.micro .searchIcon {
+	left: 13px;
+}
+.micro .input::placeholder {
+	padding-left: 18px;
+}
+
+.default .input {
+  font-size: 16px;
+  height: 50px;
+  padding: 0 22px 0 22px !important;
+}
+.default .searchIcon {
+	left: 22px;
+}
+.default .input::placeholder {
+	padding-left: 30px;
+}
+
+.large .input {
+  font-size: 24px;
+  font-weight: 300;
+  height: 80px;
+  padding: 0 26px 0 26px !important;
+}
+.large .searchIcon {
+	left: 26px;
+}
+.large .input::placeholder {
+	padding-left: 40px;
+}
+
+.input:focus::placeholder {
+	opacity: 0;
+}
+
+.input::selection {
+	background: var(--CB2);
+}
+
+:global(.dark) .input::selection {
+	background: var(--CB3);
+}
+
+.input:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.error {
+	border-color: var(--CSignal);
+}
+
+.errorText {
+	font-size: 12px;
+	color: var(--CSignal);
+}
