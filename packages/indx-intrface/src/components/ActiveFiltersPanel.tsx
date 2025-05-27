@@ -6,7 +6,7 @@ import { Button } from '@indxsearch/systm';
 import { X_or_error } from '@indxsearch/pixl';
 
 
-export const ActiveFiltersPanel: React.FC = () => {
+export function ActiveFiltersPanel() {
   const {
     state: { filters, rangeFilters },
     resetFilters,

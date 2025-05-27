@@ -32,12 +32,15 @@ function SearchUI() {
 
   return (
     <div className={theme} style={{ padding: '30px', width: '100%', display: 'flex' }}>
-      <div style={{ width: '60%', paddingRight: '1rem' }}>
+      <div style={{ width: '60%', paddingRight: '1rem', marginBottom: '30px' }}>
+        <div style={{ marginBottom: '30px' }}>
         <SearchInput
-          placeholder="Search..."
+          // inputSize='large'
+          placeholder="Type to search"
           className="search-input"
-          style={{ padding: '0.5rem', width: '100%', maxWidth: '300px' }}
+          style={{ padding: '0.5rem', width: '100%', maxWidth: '600px' }}
         />
+        </div>
         <SortByPanel />
         <SearchResults
           fields={['name', 'type1', 'type2', 'hp', 'speed', 'attack', 'abilities']}

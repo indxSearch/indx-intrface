@@ -8,6 +8,7 @@ interface IconProps {
 }
 
 export type InputSize = 'micro' | 'default' | 'large';
+export type InputState = 'default' | 'focus' | 'filtered';
 
 const iconSizeMap: Record<InputSize, string> = {
   micro: '14px',
@@ -23,6 +24,7 @@ export interface SearchFieldProps extends React.InputHTMLAttributes<HTMLInputEle
   searchIcon?: React.ReactElement<IconProps>;
   searchIconColor?: string;
   inputSize?: InputSize;
+  inputState?: InputState;
 }
 
 export function SearchField({
@@ -33,6 +35,7 @@ export function SearchField({
   searchIcon,
   searchIconColor,
   inputSize = 'default',
+  inputState = 'default',
   ...props
 }: SearchFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -51,7 +54,7 @@ export function SearchField({
   return (
     <div className={`${styles.wrapper} ${className}`}>
       {label && <label className={styles.label}>{label}</label>}
-      <div className={`${styles.inputContainer} ${styles[inputSize]}`}>
+      <div className={`${styles.inputContainer} ${styles[inputSize]} ${styles[inputState]}`}>
         {showSearchIcon && !isFocused && inputRef.current?.value === '' && (
           <span className={styles.searchIcon}>
             {React.cloneElement(iconToRender, {

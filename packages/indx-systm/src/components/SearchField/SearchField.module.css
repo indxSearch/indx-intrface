@@ -42,7 +42,7 @@
 
 .input:focus {
 	outline: none;
-	background: none;
+	background: var(--CSuperLightGray);
 	color: var(--CB4);
 }
 
@@ -98,7 +98,6 @@
 .default .input::placeholder {
 	padding-left: 30px;
 }
-
 .large .input {
   font-size: 24px;
   font-weight: 300;
@@ -110,6 +109,12 @@
 }
 .large .input::placeholder {
 	padding-left: 40px;
+}
+
+/* States */
+
+.filtered .input {
+	background-color: var(--CB0);
 }
 
 .input:focus::placeholder {

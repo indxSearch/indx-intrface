@@ -1,17 +1,21 @@
 import React from 'react';
 import { useSearchContext } from '../context/SearchContext';
 import { SearchField } from '@indxsearch/systm';
+import type { InputSize } from '@indxsearch/systm';
 
-export interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+export interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  inputSize?: InputSize; // Optional prop with valid values
+}
 
-export const SearchInput: React.FC<SearchInputProps> = ({
+export const SearchInput: React.FC<SearchInputProps> = ({ 
   className,
-  placeholder = 'Search...',
+  placeholder = 'Type to search',
   autoFocus = false,
+  inputSize = 'default',
   ...rest
 }) => {
-  const { state: { query }, setQuery } = useSearchContext();
-
+  const { state: { query, filters, rangeFilters }, setQuery } = useSearchContext();
+  const hasFilters = Object.keys(filters).length > 0 || Object.keys(rangeFilters).length > 0;
   return (
     <SearchField
       type="text"
@@ -21,7 +25,8 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       autoFocus={autoFocus}
       className={className}
       showSearchIcon = {true}
-      inputSize = 'large'
+      inputSize = {inputSize}
+      inputState={hasFilters ? 'filtered' : 'default'}
       {...rest}
     />
   );
