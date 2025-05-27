@@ -54,17 +54,15 @@
 }
 
 .label {
-  font-size: 14px;
-  font-weight: 400;
+  font: var(--text-small);
   color: var(--CB6);
 }
 :global(.dark) .label {
   color: var(--CB1);
 }
 .score {
-  font-size: 12px;
+  font: var(--text-micro);
   color: var(--CBlueGray);
-  font-weight: 400;
 }
 :global(.dark) .score {
   color: var(--CGray);

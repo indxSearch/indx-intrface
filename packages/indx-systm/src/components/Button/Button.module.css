@@ -4,8 +4,8 @@
   transition: background-color 0.2s ease, border 0.2s ease;
   cursor: pointer;
   border: none;
-  font: var(--font-px);
-  font-weight: 400;
+  /* font: var(--font-px);
+  font-weight: 400; */
   background: none;
   --button-icon-color: currentColor; /* fallback */
 }
@@ -13,7 +13,7 @@
 /* Sizes */
 .micro {
   border-radius: 5px;
-  font-size: 12px;
+  font: var(--text-micro);
   gap: 7px;
   height: 30px;
   padding-left: 10px;
@@ -24,7 +24,7 @@
   height: 40px;
   border-radius: 8px;
   gap: 10px;
-  font-size: 14px;
+  font: var(--text-small);
   padding-left: 15px;
   padding-right: 15px;
 }
@@ -33,7 +33,7 @@
   height: 50px;
   gap: 10px;
   border-radius: 8px;
-  font-size: 16px;
+  font: var(--text-medium);
   padding-left: 20px;
   padding-right: 20px;
 }
@@ -159,11 +159,9 @@
 }
 
 
-  
-  
-  /* Disabled State */
-  .disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+/* Disabled State */
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
   

@@ -1,0 +1,74 @@
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.label {
+	font: var(--text-micro);
+	font-weight: 500;
+	color: var(--text-color);
+}
+
+.input {
+	font: var(--text-micro);
+	padding-left: 10px;
+	padding-right: 10px;
+	border: 1px solid var(--CGray);
+	height: 30px;
+	border-radius: 5px;
+	color: var(--CB6);
+	transition: border 0.2s;
+	background: transparent;
+	box-sizing: border-box;
+	transition: border-color 0.2s, box-shadow 0.2s;
+}
+:global(.dark) .input {
+    color: var(--CMediumGray);
+    border: 1px solid var(--CDarkGray);
+}
+
+.input:hover {
+    border: 1px solid var(--CB6);
+}
+:global(.dark) .input:hover {
+    border: 1px solid var(--CMediumGray);
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--CPureBlue);
+	box-shadow: 0 0 0 1px var(--CPureBlue);
+}
+:global(.dark) .input:focus {
+	color: var(--CLightGray);
+	border-color: var(--CB3);
+	box-shadow: 0 0 0 1px var(--CB3);
+}
+
+.input::placeholder {
+  color: var(--text-color);
+  opacity: 0.4;
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  border: 1px solid var(--CSignal);
+}
+
+.errorText {
+  font: var(--text-micro);
+  color: var(--CSignal);
+}
+
+.input::selection {
+	background: var(--CB2);
+}
+
+:global(.dark) .input::selection {
+	background: var(--CB3);
+}

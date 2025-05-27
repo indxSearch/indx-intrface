@@ -5,8 +5,7 @@
 }
 
 .label {
-	font-size: 14px;
-	font-weight: 500;
+	font: var(--text-small);
 	color: var(--text-color);
 }
 
@@ -20,14 +19,13 @@
 .input {
 	font-family: var(--font-px);
 	width: 100%;
-	font-weight: 400;
 	border-radius: 8px;
-	background: #eee;
 	border: none;
 	color: #1e1e1e;
 	box-sizing: border-box;
 	transition: background-color 0.2s;
 	caret-color: blue;
+	background-color: rgba(0, 0, 0, 0.03);
 }
 
 :global(.dark) .input {
@@ -35,6 +33,7 @@
 	background-color: rgba(255, 255, 255, 0.05);
 	caret-color: var(--CB2);
 }
+
 
 .input[type="search"] {
 	-webkit-appearance: none;
@@ -77,7 +76,7 @@
 
 /* Sizes */
 .micro .input {
-  font-size: 12px;
+  font: var(--text-micro);
   height: 30px;
   padding: 0 13px 0 13px !important;
 }
@@ -89,7 +88,7 @@
 }
 
 .default .input {
-  font-size: 16px;
+  font: var(--text-medium);
   height: 50px;
   padding: 0 22px 0 22px !important;
 }
@@ -143,6 +142,6 @@
 }
 
 .errorText {
-	font-size: 12px;
+	font: var(--text-micro);
 	color: var(--CSignal);
 }
