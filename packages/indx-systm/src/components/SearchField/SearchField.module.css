@@ -48,6 +48,7 @@
 
 :global(.dark) .input:focus {
 	color: #AAAAFF;
+	background-color: rgba(0,0,0, 0.2);
 }
 
 .input::placeholder {
@@ -115,6 +116,9 @@
 
 .filtered .input {
 	background-color: var(--CB0);
+}
+:global(.dark) .filtered .input {
+	background-color: var(--CB4);
 }
 
 .input:focus::placeholder {

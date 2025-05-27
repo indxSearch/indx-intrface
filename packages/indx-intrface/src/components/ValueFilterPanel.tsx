@@ -61,11 +61,12 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   return (
     <fieldset>
       <legend>{label || field}</legend>
-      <ul>
+      <ul style={{listStyle: 'none'}}>
         {Array.from(mergedValuesMap.entries()).map(([key, count], index) => (
           <li key={index}>
             <Checkbox
-              label={`${key} (${count})`}
+              label={`${key}`}
+              score={`(${count})`}
               checked={selectedValues.includes(key)}
               onChange={() => toggleFilter(field, key)}
               disabled={count === 0}
