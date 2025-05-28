@@ -23,7 +23,7 @@ export function ActiveFiltersPanel() {
 
   return (
     <div className={styles.wrapper}>
-      <FilterPanelBase>
+      <FilterPanelBase activeFilter={true}>
         <h3>Active filters</h3>
         <ul>
           {Object.entries(filters).map(([field, values]) =>

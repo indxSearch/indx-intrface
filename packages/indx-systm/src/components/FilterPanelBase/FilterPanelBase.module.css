@@ -4,3 +4,9 @@
     padding: 15px;
     margin-bottom: 5px;
 }
+.activeFilter {
+    background: var(--CB0);
+}
+:global(.dark) .activeFilter {
+    background: var(--CB4);
+}
