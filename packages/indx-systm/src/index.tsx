@@ -7,3 +7,4 @@ export { SearchField } from './components/SearchField/SearchField';
 export type InputSize = 'micro' | 'default' | 'large';
 export { InputField } from './components/InputField/InputField';
 export { RadioButton } from './components/RadioButton/RadioButton';
+export { ToggleSwitch } from './components/ToggleSwitch/ToggleSwitch';

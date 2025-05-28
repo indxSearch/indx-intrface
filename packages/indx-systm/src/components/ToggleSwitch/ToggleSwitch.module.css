@@ -1,0 +1,69 @@
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.switch input {
+  display: none;
+}
+
+.label {
+    font: var(--text-small);
+    color: var(--text-color);
+}
+
+/* Slider background */
+.switch .slider {
+  position: relative;
+  display: inline-block;
+  width: 28px;
+  height: 18px;
+  background-color: #ccc;
+  border-radius: 18px;
+  transition: 0.4s;
+}
+
+/* Slider handle */
+.switch .slider::before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+/* Checked background */
+.switch input:checked + .slider {
+  background-color: #4caf50;
+}
+
+/* Checked handle position */
+.switch input:checked + .slider::before {
+  transform: translateX(10px);
+}
+
+/* Disabled styling */
+.switch input:disabled + .slider {
+  background-color: #eee;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Dark mode override */
+:global(.dark) .switch .slider {
+  background-color: #555;
+}
+
+:global(.dark) .switch input:checked + .slider {
+  background-color: #6ddf6d;
+}
+
+:global(.dark) .switch input:disabled + .slider {
+  background-color: #333;
+}

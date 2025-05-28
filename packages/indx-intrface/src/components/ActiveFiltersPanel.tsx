@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import styles from './ActiveFiltersPanel.module.css';
 import { useSearchContext } from '../context/SearchContext';
 import { FilterPanelBase } from '@indxsearch/systm';

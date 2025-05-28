@@ -42,9 +42,10 @@ function SearchUI() {
         />
         </div>
         <SearchResults
-          fields={['name', 'type1', 'type2', 'hp', 'speed', 'attack', 'abilities']}
+          fields={['name', 'is_legendary', 'type1', 'type2', 'hp', 'speed', 'attack', 'abilities']}
           customLabels={{
             name: '',
+            is_legendary: 'Legendary: ',
             type1: 'Primary Type: ',
             type2: 'Secondary Type: ',
             hp: 'HP: ',
@@ -60,6 +61,7 @@ function SearchUI() {
         <SortByPanel />
         <RangeFilterPanel label="speed" field="speed" displayType="input" />
         <ValueFilterPanel label="primary type" field="type1" preserveBlankFacetState={true} />
+        <ValueFilterPanel label="Legendary" field="is_legendary" preserveBlankFacetState={true} />
         <ValueFilterPanel label="speed" field="speed" />
         <ValueFilterPanel label="attack" field="attack" />
         <ValueFilterPanel label="hp" field="hp" />
