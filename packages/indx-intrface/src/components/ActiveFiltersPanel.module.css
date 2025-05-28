@@ -1,3 +1,9 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .wrapper h3 {
     font-size: 14px;
     font-weight: 400;

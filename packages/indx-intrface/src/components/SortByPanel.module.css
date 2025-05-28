@@ -1,0 +1,27 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wrapper h3 {
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 10px;
+}
+
+.label {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.select {
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}

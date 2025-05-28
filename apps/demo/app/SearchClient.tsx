@@ -41,7 +41,6 @@ function SearchUI() {
           style={{ padding: '0.5rem', width: '100%', maxWidth: '600px' }}
         />
         </div>
-        <SortByPanel />
         <SearchResults
           fields={['name', 'type1', 'type2', 'hp', 'speed', 'attack', 'abilities']}
           customLabels={{
@@ -57,6 +56,8 @@ function SearchUI() {
       </div>
       <div style={{ width: '40%' }}>
         <ActiveFiltersPanel />
+        <SortByPanel type='radio' />
+        <SortByPanel />
         <RangeFilterPanel label="speed" field="speed" displayType="input" />
         <ValueFilterPanel label="primary type" field="type1" preserveBlankFacetState={true} />
         <ValueFilterPanel label="speed" field="speed" />

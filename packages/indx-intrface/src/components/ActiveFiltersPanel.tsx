@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './ActiveFiltersPanel.module.css';
 import { useSearchContext } from '../context/SearchContext';
-import { Base } from '@indxsearch/systm';
+import { FilterPanelBase } from '@indxsearch/systm';
 import { Button } from '@indxsearch/systm';
 import { X_or_error } from '@indxsearch/pixl';
 
@@ -23,7 +23,7 @@ export function ActiveFiltersPanel() {
 
   return (
     <div className={styles.wrapper}>
-      <Base>
+      <FilterPanelBase>
         <h3>Active filters</h3>
         <ul>
           {Object.entries(filters).map(([field, values]) =>
@@ -62,7 +62,7 @@ export function ActiveFiltersPanel() {
             </Button>
           </li>
         </ul>
-      </Base>
+      </FilterPanelBase>
     </div>
   );
 };
