@@ -5,10 +5,10 @@ import { RadioButton } from '@indxsearch/systm';
 import styles from './SortByPanel.module.css';
 
 type SortByPanelProps = {
-  type?: 'dropdown' | 'radio';
+  displayType?: 'dropdown' | 'radio';
 };
 
-export const SortByPanel: React.FC<SortByPanelProps> = ({ type = 'dropdown' }) => {
+export const SortByPanel: React.FC<SortByPanelProps> = ({ displayType = 'dropdown' }) => {
   const {
     state: { sortableFields, sortBy, sortAscending },
     setSort,
@@ -36,7 +36,7 @@ export const SortByPanel: React.FC<SortByPanelProps> = ({ type = 'dropdown' }) =
     <div className={styles.wrapper}>
       <FilterPanelBase>
         <h3>Sort by</h3>
-        {type === 'dropdown' ? (
+        {displayType === 'dropdown' ? (
           <select
             className={styles.select}
             value={currentValue}

@@ -18,7 +18,7 @@ export type ButtonState = 'default' | 'disabled';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
-  typeVariant?: ButtonType;
+  variant?: ButtonType;
   state?: ButtonState;
   iconLeft?: React.ReactElement<IconProps>;
   iconRight?: React.ReactElement<IconProps>;
@@ -31,7 +31,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 export function Button({
   size = 'default',
-  typeVariant = 'primary',
+  variant = 'primary',
   state = 'default',
   iconLeft,
   iconRight,
@@ -55,7 +55,7 @@ export function Button({
   const buttonClass = [
     styles.button,
     styles[size],
-    styles[typeVariant],
+    styles[variant],
     state === 'disabled' ? styles.disabled : '',
     className,
   ]

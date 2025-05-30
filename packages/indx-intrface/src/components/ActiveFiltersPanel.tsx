@@ -32,7 +32,7 @@ export function ActiveFiltersPanel() {
                 <Button 
                   onClick={() => resetSingleFilter(field, value)}
                   iconRight={<X_or_error/>}
-                  typeVariant='active'
+                  variant='active'
                   size='micro'
                 >
                   {field}: {value}
@@ -45,7 +45,7 @@ export function ActiveFiltersPanel() {
               <Button 
                 onClick={() => resetSingleFilter(field)}
                 iconRight={<X_or_error />}
-                typeVariant='primary'
+                variant='primary'
                 size='micro'
               >
                 {field}: {min} – {max}
@@ -56,7 +56,7 @@ export function ActiveFiltersPanel() {
             <Button 
               onClick={handleResetFilters}
               size='micro'
-              typeVariant='tertiary'
+              variant='tertiary'
             >
               Reset
             </Button>
