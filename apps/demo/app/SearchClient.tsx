@@ -60,7 +60,7 @@ function SearchUI() {
         <SortByPanel displayType='radio' />
         <SortByPanel startCollapsed={true}/>
         <RangeFilterPanel label="Speed" field="speed" displayType="input" />
-        <ValueFilterPanel label="Primary type" field="type1" preserveBlankFacetState={true} displayType='button' />
+        <ValueFilterPanel label="Primary type" layout='grid' field="type1" preserveBlankFacetState={true} displayType='button' />
         <ValueFilterPanel label="Legendary" field="is_legendary" preserveBlankFacetState={true} displayType='toggle' />
         <ValueFilterPanel label="Speed" field="speed" displayType='button'/>
         <ValueFilterPanel label="Attack" field="attack" />

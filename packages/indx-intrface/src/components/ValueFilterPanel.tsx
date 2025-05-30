@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import styles from './ValueFilterPanel.module.css';
 import { useSearchContext } from '../context/SearchContext';
 import { Checkbox, Button, ToggleSwitch, FilterPanelBase } from '@indxsearch/systm';
 
@@ -9,6 +10,7 @@ export interface ValueFilterPanelProps {
   limit?: number; // Maximum number of items to show before collapsing.
   startCollapsed?: boolean; // If filter should display as collapsed from init
   displayType?: 'checkbox' | 'button' | 'toggle';
+  layout?: 'list' | 'grid';
   showActivePanel?: boolean; // Change background color of panel when filtered
 }
 
@@ -19,6 +21,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   limit = 10,
   startCollapsed = false,
   displayType = 'checkbox',
+  layout = 'list',
   showActivePanel = false,
 }) => {
   const {
@@ -88,7 +91,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
     const trueCount = mergedValuesMap.get('true') || 0;
     const isOn = selectedValues.includes('true');
     return (
-      <FilterPanelBase title={label} collapsible={false} activeFilter={showActivePanel && isOn}>
+      <FilterPanelBase collapsible={false} activeFilter={showActivePanel && isOn}>
         <ToggleSwitch
           label={`${label || field} (${trueCount})`}
           checked={isOn}
@@ -148,26 +151,34 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   };
 
   return (
-    <FilterPanelBase title={label} collapsed={startCollapsed} activeFilter={showActivePanel && selectedValues.length > 0}>
-      <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+    <FilterPanelBase
+      title={label}
+      collapsed={startCollapsed}
+      activeFilter={showActivePanel && selectedValues.length > 0}
+    >
+      <ul
+        className={layout === 'grid' ? styles.grid : styles.list}
+        style={{ listStyle: 'none', padding: 0, margin: 0 }}
+      >
         {visibleEntries.map(([key, count]) => (
-          <li key={key} style={{ marginBottom: '0.5rem' }}>
+          <li key={key}>
             {renderControl(key, count)}
           </li>
         ))}
+        {shouldCollapse && (
+          <li className={styles.toggleItem}>
+            <Button
+              variant="tertiary"
+              size="micro"
+              onClick={() => setExpanded(prev => !prev)}
+            >
+              {expanded
+                ? 'Show less'
+                : `Show ${allEntries.length - (limit ?? 0)} more`}
+            </Button>
+          </li>
+        )}
       </ul>
-
-      {shouldCollapse && (
-        <Button
-          variant="tertiary"
-          size="micro"
-          onClick={() => setExpanded(prev => !prev)}
-        >
-          {expanded
-            ? 'Show less'
-            : `Show ${allEntries.length - (limit ?? 0)} more`}
-        </Button>
-      )}
     </FilterPanelBase>
   );
 };

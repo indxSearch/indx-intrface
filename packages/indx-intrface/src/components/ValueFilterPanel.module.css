@@ -1,0 +1,18 @@
+/* a vertical list of items */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* items flow left→right, wrapping to new rows as needed */
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* if you want each item to size itself rather than stretch */
+.grid li {
+  flex: 0 0 auto;
+}
