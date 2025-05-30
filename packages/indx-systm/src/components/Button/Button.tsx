@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import styles from './Button.module.css';
 
 interface IconProps {
@@ -6,7 +6,7 @@ interface IconProps {
   color?: string;
 }
 
-const iconSizeMap = {
+const iconSizeMap: Record<string, string> = {
   micro: '14px',
   default: '14px',
   large: '21px',
@@ -14,12 +14,11 @@ const iconSizeMap = {
 
 export type ButtonSize = 'micro' | 'default' | 'large';
 export type ButtonType = 'primary' | 'secondary' | 'tertiary' | 'active' | 'ghost';
-export type ButtonState = 'default' | 'disabled';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
   variant?: ButtonType;
-  state?: ButtonState;
+  /** use the built-in `disabled` prop instead of a separate state */
   iconLeft?: React.ReactElement<IconProps>;
   iconRight?: React.ReactElement<IconProps>;
   children: React.ReactNode;
@@ -32,7 +31,6 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export function Button({
   size = 'default',
   variant = 'primary',
-  state = 'default',
   iconLeft,
   iconRight,
   backgroundColor,
@@ -40,23 +38,24 @@ export function Button({
   textColor,
   className = '',
   children,
+  disabled = false,
   ...props
 }: ButtonProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const iconSize = iconSizeMap[size];
-  const inlineStyles: React.CSSProperties & { [key: string]: string } = {};
+  const iconSize = iconSizeMap[size] || iconSizeMap.default;
+
+  const inlineStyles: React.CSSProperties & Record<string, string> = {};
   if (backgroundColor) inlineStyles.backgroundColor = backgroundColor;
   if (iconColor) inlineStyles['--button-icon-color'] = iconColor;
   if (textColor) inlineStyles.color = textColor;
 
   const fallbackIconColor = 'var(--button-icon-color)';
 
-  // Combine class names
   const buttonClass = [
     styles.button,
     styles[size],
     styles[variant],
-    state === 'disabled' ? styles.disabled : '',
+    disabled ? styles.disabled : '',
     className,
   ]
     .filter(Boolean)
@@ -67,7 +66,7 @@ export function Button({
       ref={buttonRef}
       className={buttonClass}
       style={inlineStyles}
-      disabled={state === 'disabled'}
+      disabled={disabled}
       {...props}
     >
       {iconLeft &&
