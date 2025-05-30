@@ -58,13 +58,13 @@ function SearchUI() {
       <div style={{ width: '40%' }}>
         <ActiveFiltersPanel />
         <SortByPanel displayType='radio' />
-        <SortByPanel />
+        <SortByPanel startCollapsed={true}/>
         <RangeFilterPanel label="Speed" field="speed" displayType="input" />
         <ValueFilterPanel label="Primary type" field="type1" preserveBlankFacetState={true} displayType='button' />
         <ValueFilterPanel label="Legendary" field="is_legendary" preserveBlankFacetState={true} displayType='toggle' />
         <ValueFilterPanel label="Speed" field="speed" displayType='button'/>
         <ValueFilterPanel label="Attack" field="attack" />
-        <ValueFilterPanel label="HP" field="hp" />
+        <ValueFilterPanel label="HP" startCollapsed={true} field="hp" />
       </div>
     </div>
   );

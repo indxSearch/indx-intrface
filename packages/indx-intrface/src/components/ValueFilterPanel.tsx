@@ -7,6 +7,7 @@ export interface ValueFilterPanelProps {
   label?: string;
   preserveBlankFacetState?: boolean; // True if values should still render when facets are empty
   limit?: number; // Maximum number of items to show before collapsing.
+  startCollapsed?: boolean; // If filter should display as collapsed from init
   displayType?: 'checkbox' | 'button' | 'toggle';
   showActivePanel?: boolean; // Change background color of panel when filtered
 }
@@ -16,6 +17,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   label,
   preserveBlankFacetState = false,
   limit = 10,
+  startCollapsed = false,
   displayType = 'checkbox',
   showActivePanel = false,
 }) => {
@@ -86,7 +88,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
     const trueCount = mergedValuesMap.get('true') || 0;
     const isOn = selectedValues.includes('true');
     return (
-      <FilterPanelBase title={label} activeFilter={isOn}>
+      <FilterPanelBase title={label} collapsible={false} activeFilter={showActivePanel && isOn}>
         <ToggleSwitch
           label={`${label || field} (${trueCount})`}
           checked={isOn}
@@ -146,7 +148,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   };
 
   return (
-    <FilterPanelBase title={label} activeFilter={showActivePanel && selectedValues.length > 0}>
+    <FilterPanelBase title={label} collapsed={startCollapsed} activeFilter={showActivePanel && selectedValues.length > 0}>
       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
         {visibleEntries.map(([key, count]) => (
           <li key={key} style={{ marginBottom: '0.5rem' }}>

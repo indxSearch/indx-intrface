@@ -1,11 +1,14 @@
+import React, { useState, useEffect, ReactNode } from 'react';
 import styles from './FilterPanelBase.module.css';
-import { ReactNode } from 'react';
+import { Plus, Minus } from '@indxsearch/pixl';
 
 type Props = {
   title?: string;
   children: ReactNode;
   className?: string;
   activeFilter?: boolean;
+  collapsible?: boolean;
+  collapsed?: boolean;
 };
 
 export function FilterPanelBase({
@@ -13,7 +16,21 @@ export function FilterPanelBase({
   children,
   activeFilter = false,
   className = '',
+  collapsible = true,
+  collapsed = false,
 }: Props) {
+  const [expanded, setExpanded] = useState(() => !collapsed);
+
+  useEffect(() => {
+    if (collapsible) {
+      setExpanded(!collapsed);
+    }
+  }, [collapsed, collapsible]);
+
+  const handleToggle = () => {
+    if (collapsible) setExpanded((e) => !e);
+  };
+
   return (
     <div
       className={[
@@ -24,8 +41,29 @@ export function FilterPanelBase({
         .filter(Boolean)
         .join(' ')}
     >
-      {title && <h3 className={styles.title}>{title}</h3>}
-      {children}
+      {title && (
+        <div
+          className={styles.header}
+          onClick={handleToggle}
+          aria-label={expanded ? 'Collapse panel' : 'Expand panel'}
+          style={{ cursor: collapsible ? 'pointer' : 'default' }}
+        >
+          <h3 className={styles.title}>
+            {title}
+          </h3>
+          {collapsible && (
+            expanded
+              ? <Minus color="var(--icon-color)" size={14} />
+              : <Plus  color="var(--icon-color)" size={14} />
+          )}
+        </div>
+      )}
+
+      {(!collapsible || expanded) && (
+        <div className={styles.body}>
+          {children}
+        </div>
+      )}
     </div>
   );
 }

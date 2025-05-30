@@ -11,8 +11,34 @@
     background: var(--CB4);
 }
 
-.container h3 {
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+      /* define your internal icon‐color var, defaulting to the text color */
+    --icon-color: var(--CB4);
+    cursor: pointer;
+}
+:global(.dark) .header {
+    --icon-color: var(--CB0);
+}
+
+.title {
     font-size: 14px;
     font-weight: 400;
-    margin-bottom: 10px;
+}
+
+.toggleButton {
+  all: unset;               /* strip default button styles */
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* ensure the var is in scope for the icon */
+  color: inherit;
+}
+
+.body {
+    margin-top: 10px;
 }
