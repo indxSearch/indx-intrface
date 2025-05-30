@@ -22,8 +22,8 @@ export function ActiveFiltersPanel() {
   };
 
   return (
-    <FilterPanelBase activeFilter={true} title="Active filters">
-      <ul className={styles.list}>
+    <FilterPanelBase activeFilter={true} collapsible={false} title="Active filters">
+      <ul className={styles.grid}>
         {Object.entries(filters).map(([field, values]) =>
           values.map((value: string) => (
             <li key={`${field}-${value}`}>

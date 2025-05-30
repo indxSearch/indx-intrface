@@ -1,5 +1,12 @@
-.list {
-    display: flex;
-    gap: 10px;
-    list-style: none;
+/* items flow left→right, wrapping to new rows as needed */
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+}
+
+/* if you want each item to size itself rather than stretch */
+.grid li {
+  flex: 0 0 auto;
 }

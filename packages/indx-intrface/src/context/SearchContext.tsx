@@ -29,7 +29,23 @@ export interface SearchContextType {
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
-export const SearchProvider: React.FC<{ children: React.ReactNode; email: string; password: string; url: string; dataset: string; allowEmptySearch?: boolean; maxResults?: number }> = ({ children, email, password, url, dataset, allowEmptySearch = false, maxResults = 10 }) => {
+export const SearchProvider: React.FC<{ 
+  children: React.ReactNode; 
+  email: string; 
+  password: string; 
+  url: string; 
+  dataset: string; 
+  allowEmptySearch?: boolean;
+  maxResults?: number 
+}> = ({ 
+  children, 
+  email, 
+  password, 
+  url, 
+  dataset, 
+  allowEmptySearch = false, 
+  maxResults = 10 
+}) => {
   const [state, setState] = useState<SearchState>({
     query: '',
     results: null,
@@ -61,22 +77,6 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
       rangeFilters: {}, // reset range filters
     }));
   }, []);
-
-  // const toggleFilter = useCallback((field: string, value: string) => {
-  //   setState(prev => {
-  //     const currentValues = prev.filters?.[field] || [];
-  //     const updatedValues = currentValues.includes(value)
-  //       ? currentValues.filter(v => v !== value)
-  //       : [...currentValues, value];
-  //     return {
-  //       ...prev,
-  //       filters: {
-  //         ...prev.filters,
-  //         [field]: updatedValues,
-  //       }
-  //     };
-  //   });
-  // }, []);
 
   const toggleFilter = useCallback((field: string, value: string) => {
     setState(prev => {

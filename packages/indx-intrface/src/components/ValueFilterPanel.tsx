@@ -38,9 +38,11 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
     if (!filterableFields?.includes(field)) missing.push('filterable');
     if (!facetableFields?.includes(field))   missing.push('facetable');
     return (
-      <div style={{ color: 'red' }}>
-        Cannot render filter for "{field}": missing {missing.join(' and ')}.
-      </div>
+      <FilterPanelBase collapsible={false}>
+        <div style={{ color: 'red', fontSize: '12px'}}>
+          Cannot render filter for "{field}": missing {missing.join(' and ')}.
+        </div>
+      </FilterPanelBase>
     );
   }
 
@@ -81,9 +83,11 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
 
   if (displayType === 'toggle' && !isBooleanFacet) {
     return (
-      <div style={{ color: 'red' }}>
-        Cannot render toggle for "{field}": facet must have exactly two values "true" and "false".
-      </div>
+      <FilterPanelBase collapsible={false}>
+        <div style={{ color: 'red', fontSize: '12px' }}>
+          Cannot render toggle for "{field}": facet must have exactly two values "true" and "false".
+        </div>
+      </FilterPanelBase>
     );
   }
 
