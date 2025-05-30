@@ -2,7 +2,6 @@ import styles from './FilterPanelBase.module.css';
 import { ReactNode } from 'react';
 
 type Props = {
-  /* Optional panel title. If omitted or empty, no heading is rendered */
   title?: string;
   children: ReactNode;
   className?: string;

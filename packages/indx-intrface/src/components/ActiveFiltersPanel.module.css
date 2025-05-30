@@ -1,22 +1,5 @@
-.wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.wrapper h3 {
-    font-size: 14px;
-    font-weight: 400;
-}
-
-.wrapper ul {
+.list {
     display: flex;
     gap: 10px;
     list-style: none;
-}
-
-.wrapper > div {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
 }

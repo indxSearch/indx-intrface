@@ -1,8 +1,8 @@
 // import Range from 'react-range';
 import React from 'react';
 import { useSearchContext } from '../context/SearchContext';
-
 import { InputField } from '@indxsearch/systm';
+import { FilterPanelBase } from '@indxsearch/systm';
 
 export interface RangeFilterPanelProps {
   field: string;
@@ -106,20 +106,21 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   };
 
   return (
-    <fieldset style={{display: 'flex', gap: '10px', alignItems: 'flex-start'}}>
-      <legend>{label || field}</legend>
-      <InputField
-        label='Min:'
-        type="number"
-        value={currentMin}
-        onChange={handleMinChange}
-      />
-      <InputField
-        label='Max:'
-        type="number"
-        value={currentMax}
-        onChange={handleMaxChange}
-      />
-    </fieldset>
+    <FilterPanelBase title={label}>
+      <div style={{display: 'flex', gap: '10px', alignItems: 'flex-start'}}>
+        <InputField
+          label='Min:'
+          type="number"
+          value={currentMin}
+          onChange={handleMinChange}
+        />
+        <InputField
+          label='Max:'
+          type="number"
+          value={currentMax}
+          onChange={handleMaxChange}
+        />
+      </div>
+    </FilterPanelBase>
   );
 };

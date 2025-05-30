@@ -22,47 +22,44 @@ export function ActiveFiltersPanel() {
   };
 
   return (
-    <div className={styles.wrapper}>
-      <FilterPanelBase activeFilter={true}>
-        <h3>Active filters</h3>
-        <ul>
-          {Object.entries(filters).map(([field, values]) =>
-            values.map((value: string) => (
-              <li key={`${field}-${value}`}>
-                <Button 
-                  onClick={() => resetSingleFilter(field, value)}
-                  iconRight={<X_or_error/>}
-                  variant='active'
-                  size='micro'
-                >
-                  {field}: {value}
-                </Button>
-              </li>
-            ))
-          )}
-          {Object.entries(rangeFilters).map(([field, { min, max }]) => (
-            <li key={field}>
+    <FilterPanelBase activeFilter={true} title="Active filters">
+      <ul className={styles.list}>
+        {Object.entries(filters).map(([field, values]) =>
+          values.map((value: string) => (
+            <li key={`${field}-${value}`}>
               <Button 
-                onClick={() => resetSingleFilter(field)}
-                iconRight={<X_or_error />}
-                variant='primary'
+                onClick={() => resetSingleFilter(field, value)}
+                iconRight={<X_or_error/>}
+                variant='active'
                 size='micro'
               >
-                {field}: {min} – {max}
+                {field}: {value}
               </Button>
             </li>
-          ))}
-          <li>
+          ))
+        )}
+        {Object.entries(rangeFilters).map(([field, { min, max }]) => (
+          <li key={field}>
             <Button 
-              onClick={handleResetFilters}
+              onClick={() => resetSingleFilter(field)}
+              iconRight={<X_or_error />}
+              variant='primary'
               size='micro'
-              variant='tertiary'
             >
-              Reset
+              {field}: {min} – {max}
             </Button>
           </li>
-        </ul>
-      </FilterPanelBase>
-    </div>
+        ))}
+        <li>
+          <Button 
+            onClick={handleResetFilters}
+            size='micro'
+            variant='tertiary'
+          >
+            Reset
+          </Button>
+        </li>
+      </ul>
+    </FilterPanelBase>
   );
 };
