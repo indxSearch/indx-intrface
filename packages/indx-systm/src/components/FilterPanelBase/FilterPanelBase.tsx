@@ -2,14 +2,30 @@ import styles from './FilterPanelBase.module.css';
 import { ReactNode } from 'react';
 
 type Props = {
+  /* Optional panel title. If omitted or empty, no heading is rendered */
+  title?: string;
   children: ReactNode;
   className?: string;
-  activeFilter?: boolean
+  activeFilter?: boolean;
 };
 
-export function FilterPanelBase({ children, activeFilter, className }: Props) {
+export function FilterPanelBase({
+  title,
+  children,
+  activeFilter = false,
+  className = '',
+}: Props) {
   return (
-    <div className={`${styles.container} ${activeFilter ? styles.activeFilter : ''} ${className || ''}`}>
+    <div
+      className={[
+        styles.container,
+        activeFilter ? styles.activeFilter : '',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      {title && <h3 className={styles.title}>{title}</h3>}
       {children}
     </div>
   );

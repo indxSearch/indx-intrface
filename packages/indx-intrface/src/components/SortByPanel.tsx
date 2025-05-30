@@ -33,9 +33,7 @@ export const SortByPanel: React.FC<SortByPanelProps> = ({ displayType = 'dropdow
   };
 
   return (
-    <div className={styles.wrapper}>
-      <FilterPanelBase>
-        <h3>Sort by</h3>
+      <FilterPanelBase title='Sort by'>
         {displayType === 'dropdown' ? (
           <select
             className={styles.select}
@@ -73,6 +71,5 @@ export const SortByPanel: React.FC<SortByPanelProps> = ({ displayType = 'dropdow
           </div>
         )}
       </FilterPanelBase>
-    </div>
   );
 };

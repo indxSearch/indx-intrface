@@ -59,12 +59,12 @@ function SearchUI() {
         <ActiveFiltersPanel />
         <SortByPanel displayType='radio' />
         <SortByPanel />
-        <RangeFilterPanel label="speed" field="speed" displayType="input" />
-        <ValueFilterPanel label="primary type" field="type1" preserveBlankFacetState={true} displayType='button' />
+        <RangeFilterPanel label="Speed" field="speed" displayType="input" />
+        <ValueFilterPanel label="Primary type" field="type1" preserveBlankFacetState={true} displayType='button' />
         <ValueFilterPanel label="Legendary" field="is_legendary" preserveBlankFacetState={true} displayType='toggle' />
-        <ValueFilterPanel label="speed" field="speed" displayType='button'/>
-        <ValueFilterPanel label="attack" field="attack" />
-        <ValueFilterPanel label="hp" field="hp" />
+        <ValueFilterPanel label="Speed" field="speed" displayType='button'/>
+        <ValueFilterPanel label="Attack" field="attack" />
+        <ValueFilterPanel label="HP" field="hp" />
       </div>
     </div>
   );

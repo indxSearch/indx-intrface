@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSearchContext } from '../context/SearchContext';
 import { Checkbox, Button, ToggleSwitch } from '@indxsearch/systm';
+import { FilterPanelBase } from '@indxsearch/systm';
 
 export interface ValueFilterPanelProps {
   field: string;
@@ -82,15 +83,14 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
     const trueCount = mergedValuesMap.get('true') || 0;
     const isOn = selectedValues.includes('true');
     return (
-      <fieldset>
-        <legend>{label || field}</legend>
+      <FilterPanelBase>
         <ToggleSwitch
           label={`${label || field} (${trueCount})`}
           checked={isOn}
           onChange={() => toggleFilter(field, 'true')}
           disabled={trueCount === 0}
         />
-      </fieldset>
+      </FilterPanelBase>
     );
   }
 
@@ -137,8 +137,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   };
 
   return (
-    <fieldset>
-      <legend>{label || field}</legend>
+    <FilterPanelBase title={label}>
       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
         {Array.from(mergedValuesMap.entries()).map(([key, count], i) => (
           <li key={i} style={{ marginBottom: '0.5rem' }}>
@@ -146,6 +145,6 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
           </li>
         ))}
       </ul>
-    </fieldset>
+    </FilterPanelBase>
   );
 };

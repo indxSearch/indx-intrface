@@ -10,3 +10,9 @@
 :global(.dark) .activeFilter {
     background: var(--CB4);
 }
+
+.container h3 {
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 10px;
+}
