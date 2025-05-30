@@ -62,18 +62,44 @@ export const SearchProvider: React.FC<{ children: React.ReactNode; email: string
     }));
   }, []);
 
+  // const toggleFilter = useCallback((field: string, value: string) => {
+  //   setState(prev => {
+  //     const currentValues = prev.filters?.[field] || [];
+  //     const updatedValues = currentValues.includes(value)
+  //       ? currentValues.filter(v => v !== value)
+  //       : [...currentValues, value];
+  //     return {
+  //       ...prev,
+  //       filters: {
+  //         ...prev.filters,
+  //         [field]: updatedValues,
+  //       }
+  //     };
+  //   });
+  // }, []);
+
   const toggleFilter = useCallback((field: string, value: string) => {
     setState(prev => {
-      const currentValues = prev.filters?.[field] || [];
-      const updatedValues = currentValues.includes(value)
+      // clone the filters map
+      const updatedFilters = { ...prev.filters };
+      const currentValues = updatedFilters[field] || [];
+
+      // add or remove the value
+      const newValues = currentValues.includes(value)
         ? currentValues.filter(v => v !== value)
         : [...currentValues, value];
+
+      if (newValues.length) {
+        // still have some selected values → keep the key
+        updatedFilters[field] = newValues;
+      } else {
+        // array is now empty → drop the key entirely
+        delete updatedFilters[field];
+      }
+
       return {
         ...prev,
-        filters: {
-          ...prev.filters,
-          [field]: updatedValues,
-        }
+        filters: updatedFilters,
       };
     });
   }, []);
