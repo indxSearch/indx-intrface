@@ -9,6 +9,10 @@
   justify-content: space-between;
   align-items: center;
   font: var(--text-micro);
+  color: var(--CBlueGray);
+}
+:global(.dark) .count {
+  color: var(--CGray);
 }
 
 /* items flow left→right, wrapping to new rows as needed */

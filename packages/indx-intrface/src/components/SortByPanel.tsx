@@ -6,10 +6,11 @@ import styles from './SortByPanel.module.css';
 
 type SortByPanelProps = {
   displayType?: 'dropdown' | 'radio';
+  collapsible?: boolean;
   startCollapsed?: boolean;
 };
 
-export const SortByPanel: React.FC<SortByPanelProps> = ({ displayType = 'dropdown', startCollapsed = false }) => {
+export const SortByPanel: React.FC<SortByPanelProps> = ({ displayType = 'dropdown', collapsible = true, startCollapsed = false }) => {
   const {
     state: { sortableFields, sortBy, sortAscending },
     setSort,
@@ -33,8 +34,15 @@ export const SortByPanel: React.FC<SortByPanelProps> = ({ displayType = 'dropdow
     }
   };
 
+  // Determine whether to actually collapse based on `collapsible` + `startCollapsed`
+  const actualCollapsed = collapsible ? startCollapsed : false;
+
   return (
-      <FilterPanelBase title='Sort by' collapsed={startCollapsed}>
+      <FilterPanelBase 
+        title='Sort by' 
+        collapsible={collapsible}
+        collapsed={actualCollapsed}
+      >
         {displayType === 'dropdown' ? (
           <select
             className={styles.select}

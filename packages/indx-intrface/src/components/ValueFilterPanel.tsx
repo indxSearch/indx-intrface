@@ -8,6 +8,7 @@ export interface ValueFilterPanelProps {
   label?: string;
   preserveBlankFacetState?: boolean; // True if values should still render when facets are empty
   limit?: number; // Maximum number of items to show before collapsing.
+  collapsible?: boolean; // If filter panel should be able to be collapsed
   startCollapsed?: boolean; // If filter should display as collapsed from init
   displayType?: 'checkbox' | 'button' | 'toggle';
   layout?: 'list' | 'grid';
@@ -19,6 +20,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   label,
   preserveBlankFacetState = false,
   limit = 10,
+  collapsible = true,
   startCollapsed = false,
   displayType = 'checkbox',
   layout = 'list',
@@ -105,19 +107,23 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
     const isOn = selectedValues.includes('true');
     // Disable only if count === 0. If count is null (unknown), leave enabled.
     const disabled = trueCount === 0;
-    // Display count only if > 0
+    // Display just the number if > 0
     const countLabel = (trueCount ?? 0) > 0 ? `${trueCount}` : '';
-    
 
+    // If panel itself is not collapsible, override collapsed to false
+    const actualCollapsed = collapsible ? startCollapsed : false;
+
+    // For boolean facet, the panel should always be non-collapsible
     return (
       <FilterPanelBase collapsible={false} activeFilter={showActivePanel && isOn}>
         <div className={styles.count}>
-        <ToggleSwitch
-          label={label}
-          checked={isOn}
-          onChange={() => toggleFilter(field, 'true')}
-          disabled={disabled}
-        /> {countLabel}
+          <ToggleSwitch
+            label={label}
+            checked={isOn}
+            onChange={() => toggleFilter(field, 'true')}
+            disabled={disabled}
+          />{' '}
+          {countLabel}
         </div>
       </FilterPanelBase>
     );
@@ -168,7 +174,6 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
         );
 
       case 'toggle':
-        // (toggle isn't affected by list vs grid here)
         return (
           <ToggleSwitch
             label={key}
@@ -185,7 +190,6 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
             <div className={styles.count}>
               <Checkbox
                 label={key}
-                // do not pass a score prop for list
                 score=""
                 checked={isSelected}
                 onChange={() => toggleFilter(field, key)}
@@ -208,10 +212,14 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
     }
   };
 
+  // Determine whether to actually collapse based on `collapsible` + `startCollapsed`
+  const actualCollapsed = collapsible ? startCollapsed : false;
+
   return (
     <FilterPanelBase
       title={label}
-      collapsed={startCollapsed}
+      collapsible={collapsible}
+      collapsed={actualCollapsed}
       activeFilter={showActivePanel && selectedValues.length > 0}
     >
       <ul
