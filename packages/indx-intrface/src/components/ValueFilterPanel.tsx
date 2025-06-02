@@ -29,7 +29,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
     toggleFilter,
   } = useSearchContext();
 
-  const preservedFacetValuesRef = useRef<Record<string, number> | null>(null);
+  const preservedFacetValuesRef = useRef<Record<string, number | null> | null>(null);
   const [expanded, setExpanded] = useState(false);
 
   // 1) Field validation
@@ -39,7 +39,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
     if (!facetableFields?.includes(field))   missing.push('facetable');
     return (
       <FilterPanelBase collapsible={false}>
-        <div style={{ color: 'red', fontSize: '12px'}}>
+        <div style={{ color: 'red', fontSize: '12px' }}>
           Cannot render filter for "{field}": missing {missing.join(' and ')}.
         </div>
       </FilterPanelBase>
@@ -52,17 +52,24 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   const selectedValues = filters?.[field] ?? [];
 
   // 3) Optionally preserve blank state
-  if (preserveBlankFacetState && !preservedFacetValuesRef.current && facetValues.length > 0) {
-    preservedFacetValuesRef.current = facetValues.reduce((acc, f: any) => {
-      acc[f.key] = f.value;
-      return acc;
-    }, {} as Record<string, number>);
+  if (
+    preserveBlankFacetState &&
+    !preservedFacetValuesRef.current &&
+    facetValues.length > 0
+  ) {
+    preservedFacetValuesRef.current = facetValues.reduce(
+      (acc, f: any) => {
+        acc[f.key] = f.value;
+        return acc;
+      },
+      {} as Record<string, number | null>
+    );
   }
 
   // 4) Merge counts
-  const mergedValuesMap = new Map<string, number>();
+  const mergedValuesMap = new Map<string, number | null>();
   if (preserveBlankFacetState && preservedFacetValuesRef.current) {
-    Object.keys(preservedFacetValuesRef.current).forEach(key => {
+    Object.keys(preservedFacetValuesRef.current).forEach((key) => {
       mergedValuesMap.set(key, 0);
     });
     facetValues.forEach((f: any) => {
@@ -92,15 +99,23 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   }
 
   if (isBooleanFacet) {
-    const trueCount = mergedValuesMap.get('true') || 0;
+    // Get raw count (could be number or null)
+    const rawTrueCount = mergedValuesMap.get('true');
+    const trueCount = typeof rawTrueCount === 'number' ? rawTrueCount : null;
     const isOn = selectedValues.includes('true');
+    // Disable only if count === 0. If count is null (unknown), leave enabled.
+    const disabled = trueCount === 0;
+    // Display count only if > 0
+    const labelWithCount =
+      (trueCount ?? 0) > 0 ? `${label || field} (${trueCount})` : `${label || field}`;
+
     return (
       <FilterPanelBase collapsible={false} activeFilter={showActivePanel && isOn}>
         <ToggleSwitch
-          label={`${label || field} (${trueCount})`}
+          label={labelWithCount}
           checked={isOn}
           onChange={() => toggleFilter(field, 'true')}
-          disabled={trueCount === 0}
+          disabled={disabled}
         />
       </FilterPanelBase>
     );
@@ -109,13 +124,15 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   // 6) Expand/collapse list based on `limit` prop
   const allEntries = Array.from(mergedValuesMap.entries());
   const shouldCollapse = typeof limit === 'number' && allEntries.length > limit;
-  const visibleEntries = shouldCollapse && !expanded
-    ? allEntries.slice(0, limit)
-    : allEntries;
+  const visibleEntries =
+    shouldCollapse && !expanded ? allEntries.slice(0, limit) : allEntries;
 
-  const renderControl = (key: string, count: number) => {
+  const renderControl = (key: string, count: number | null) => {
     const isSelected = selectedValues.includes(key);
-    const disabled   = count === 0;
+    // Only disable when count === 0. If count is null (unknown), keep enabled.
+    const disabled = count === 0;
+    // Show count only when count > 0
+    const countDisplay = (count ?? 0) > 0 ? ` (${count})` : '';
 
     switch (displayType) {
       case 'button':
@@ -126,13 +143,14 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
             disabled={disabled}
             size="micro"
           >
-            {`${key} (${count})`}
+            {`${key}${countDisplay}`}
           </Button>
         );
 
       case 'toggle':
         return (
           <ToggleSwitch
+            // If you want to include the count on the toggle label, use `${key}${countDisplay}`
             label={key}
             checked={isSelected}
             onChange={() => toggleFilter(field, key)}
@@ -145,7 +163,8 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
         return (
           <Checkbox
             label={key}
-            score={`(${count})`}
+            // Only render score when count > 0; otherwise pass an empty string
+            score={(count ?? 0) > 0 ? `(${count})` : ''}
             checked={isSelected}
             onChange={() => toggleFilter(field, key)}
             disabled={disabled}
@@ -165,16 +184,14 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
         style={{ listStyle: 'none', padding: 0, margin: 0 }}
       >
         {visibleEntries.map(([key, count]) => (
-          <li key={key}>
-            {renderControl(key, count)}
-          </li>
+          <li key={key}>{renderControl(key, count)}</li>
         ))}
         {shouldCollapse && (
           <li className={styles.toggleItem}>
             <Button
               variant="tertiary"
               size="micro"
-              onClick={() => setExpanded(prev => !prev)}
+              onClick={() => setExpanded((prev) => !prev)}
             >
               {expanded
                 ? 'Show less'
