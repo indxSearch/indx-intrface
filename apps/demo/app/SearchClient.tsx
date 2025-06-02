@@ -30,32 +30,82 @@ function SearchUI() {
     };
   }, []);
 
+  const Tag: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <span style={{backgroundColor: '#efefef', marginRight: '5px', fontSize: '12px', borderRadius: '10px', paddingLeft: '5px', paddingRight: '5px'}}>{children}</span>
+  );
+
   return (
     <div className={theme} style={{ padding: '30px', width: '100%', display: 'flex', justifyContent: 'center' }}>
       <div style={{ width: '40%', paddingRight: '1rem', marginBottom: '30px' }}>
         <div style={{ marginBottom: '30px' }}>
-        <SearchInput
-          // inputSize='large'
-          placeholder="Type to search"
-          className="search-input"
-          style={{ padding: '0.5rem', width: '100%', maxWidth: '600px' }}
-        />
+          <SearchInput
+            // inputSize='large'
+            placeholder="Type to search"
+            className="search-input"
+            style={{ padding: '0.5rem', width: '100%', maxWidth: '600px' }}
+          />
         </div>
+
         <SearchResults
-          fields={['name', 'is_legendary', 'type1', 'type2', 'hp', 'speed', 'attack', 'abilities']}
-          customLabels={{
-            name: '',
-            is_legendary: 'Legendary: ',
-            type1: 'Primary Type: ',
-            type2: 'Secondary Type: ',
-            hp: 'HP: ',
-            speed: 'Speed: ',
-            attack: 'Attack: ',
-            abilities: 'Abilities: '
+          fields={[
+            'name',
+            'is_legendary',
+            'type1',
+            'type2',
+            'hp',
+            'speed',
+            'attack',
+            'abilities'
+          ]}
+        >
+          {(item: Record<string, any>) => {
+            const {
+              name,
+              is_legendary,
+              type1,
+              type2,
+              hp,
+              speed,
+              attack,
+              abilities
+            } = item;
+
+            return (
+              <div>
+                <h2>
+                  {name} {is_legendary ? '✨' : ''}
+                </h2>
+
+                <div>
+                  Types:{' '}
+                  {type1 && <Tag>{type1}</Tag>}
+                  {type2 && <Tag>{type2}</Tag>}
+                </div>
+
+                {Array.isArray(abilities) && abilities.length > 0 && (
+                  <div>
+                    Abilities:{' '}
+                    {abilities.map((ability: string, idx: number) => (
+                      <Tag key={`${ability}-${idx}`}>{ability}</Tag>
+                    ))}
+                  </div>
+                )}
+
+                <div>
+                  Stats:{' '}
+                  {typeof hp === 'number' && <Tag>HP: {hp}</Tag>}
+                  {typeof speed === 'number' && <Tag>Speed: {speed}</Tag>}
+                  {typeof attack === 'number' && <Tag>Attack: {attack}</Tag>}
+                </div>
+              </div>
+            );
           }}
-        />
+        </SearchResults>
+
       </div>
+
       <div style={{ width: '30%', maxWidth: '400px' }}>
+
         <ActiveFiltersPanel />
         <SortByPanel displayType='radio' collapsible={false} />
         <SortByPanel startCollapsed={true}/>
@@ -65,6 +115,7 @@ function SearchUI() {
         <ValueFilterPanel label="Speed" field="speed" displayType='button' collapsible={false}/>
         <ValueFilterPanel label="Attack" field="attack" layout='grid' startCollapsed={true} />
         <ValueFilterPanel label="HP" startCollapsed={true} field="hp" />
+     
       </div>
     </div>
   );

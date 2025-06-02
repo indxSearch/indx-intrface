@@ -20,6 +20,8 @@
 
   /* TEXT */
   --font-px: 'PxGrotesk', sans-serif;
+  --text-mini: 400 10px 'PxGrotesk', sans-serif;
+  --text-mini-light: 300 10px 'PxGrotesk', sans-serif;
   --text-micro: 400 12px 'PxGrotesk', sans-serif;
   --text-micro-light: 300 12px 'PxGrotesk', sans-serif;
   --text-small: 400 14px 'PxGrotesk', sans-serif;
@@ -28,6 +30,8 @@
   --text-medium-light: 300 16px 'PxGrotesk', sans-serif;
   --text-large: 400 18px 'PxGrotesk', sans-serif;
   --text-large-light: 300 18px 'PxGrotesk', sans-serif;
+  --text-extra-large: 400 20px 'PxGrotesk', sans-serif;
+  --text-extra-large-light: 300 20px 'PxGrotesk', sans-serif;
 
   /* DEFINITIONS */
   --text-color: var(--CB6);
