@@ -4,6 +4,12 @@
   flex-direction: column;
   gap: 10px;
 }
+.count {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: var(--text-micro);
+}
 
 /* items flow left→right, wrapping to new rows as needed */
 .grid {

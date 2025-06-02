@@ -31,8 +31,8 @@ function SearchUI() {
   }, []);
 
   return (
-    <div className={theme} style={{ padding: '30px', width: '100%', display: 'flex' }}>
-      <div style={{ width: '60%', paddingRight: '1rem', marginBottom: '30px' }}>
+    <div className={theme} style={{ padding: '30px', width: '100%', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ width: '40%', paddingRight: '1rem', marginBottom: '30px' }}>
         <div style={{ marginBottom: '30px' }}>
         <SearchInput
           // inputSize='large'
@@ -55,7 +55,7 @@ function SearchUI() {
           }}
         />
       </div>
-      <div style={{ width: '40%' }}>
+      <div style={{ width: '30%', maxWidth: '400px' }}>
         <ActiveFiltersPanel />
         <SortByPanel displayType='radio' />
         <SortByPanel startCollapsed={true}/>
@@ -63,7 +63,7 @@ function SearchUI() {
         <ValueFilterPanel label="Primary type" layout='grid' field="type1" preserveBlankFacetState={true} displayType='button' />
         <ValueFilterPanel label="Legendary" field="is_legendary" preserveBlankFacetState={true} displayType='toggle' />
         <ValueFilterPanel label="Speed" field="speed" displayType='button'/>
-        <ValueFilterPanel label="Attack" field="attack" />
+        <ValueFilterPanel label="Attack" field="attack" layout='grid' />
         <ValueFilterPanel label="HP" startCollapsed={true} field="hp" />
       </div>
     </div>

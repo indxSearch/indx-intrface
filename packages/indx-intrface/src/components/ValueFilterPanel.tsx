@@ -106,17 +106,19 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
     // Disable only if count === 0. If count is null (unknown), leave enabled.
     const disabled = trueCount === 0;
     // Display count only if > 0
-    const labelWithCount =
-      (trueCount ?? 0) > 0 ? `${label || field} (${trueCount})` : `${label || field}`;
+    const countLabel = (trueCount ?? 0) > 0 ? `${trueCount}` : '';
+    
 
     return (
       <FilterPanelBase collapsible={false} activeFilter={showActivePanel && isOn}>
+        <div className={styles.count}>
         <ToggleSwitch
-          label={labelWithCount}
+          label={label}
           checked={isOn}
           onChange={() => toggleFilter(field, 'true')}
           disabled={disabled}
-        />
+        /> {countLabel}
+        </div>
       </FilterPanelBase>
     );
   }
@@ -131,11 +133,29 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
     const isSelected = selectedValues.includes(key);
     // Only disable when count === 0. If count is null (unknown), keep enabled.
     const disabled = count === 0;
-    // Show count only when count > 0
+    // For grid layout, show "(n)" within the control
     const countDisplay = (count ?? 0) > 0 ? ` (${count})` : '';
+    // For list layout, show count as plain number to the right
+    const countNumber = (count ?? 0) > 0 ? count : '';
 
     switch (displayType) {
       case 'button':
+        if (layout === 'list') {
+          return (
+            <div className={styles.count}>
+              <Button
+                variant={isSelected ? 'active' : 'secondary'}
+                onClick={() => toggleFilter(field, key)}
+                disabled={disabled}
+                size="micro"
+              >
+                {key}
+              </Button>
+              <span>{countNumber}</span>
+            </div>
+          );
+        }
+        // grid
         return (
           <Button
             variant={isSelected ? 'active' : 'secondary'}
@@ -148,9 +168,9 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
         );
 
       case 'toggle':
+        // (toggle isn't affected by list vs grid here)
         return (
           <ToggleSwitch
-            // If you want to include the count on the toggle label, use `${key}${countDisplay}`
             label={key}
             checked={isSelected}
             onChange={() => toggleFilter(field, key)}
@@ -160,10 +180,25 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
 
       case 'checkbox':
       default:
+        if (layout === 'list') {
+          return (
+            <div className={styles.count}>
+              <Checkbox
+                label={key}
+                // do not pass a score prop for list
+                score=""
+                checked={isSelected}
+                onChange={() => toggleFilter(field, key)}
+                disabled={disabled}
+              />
+              <span>{countNumber}</span>
+            </div>
+          );
+        }
+        // grid
         return (
           <Checkbox
             label={key}
-            // Only render score when count > 0; otherwise pass an empty string
             score={(count ?? 0) > 0 ? `(${count})` : ''}
             checked={isSelected}
             onChange={() => toggleFilter(field, key)}
