@@ -37,10 +37,13 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   const {
     state: { facets, filterableFields, facetableFields, filters },
     toggleFilter,
+    isFetchingInitial
   } = useSearchContext();
 
   const preservedFacetValuesRef = useRef<Record<string, number | null> | null>(null);
   const [expanded, setExpanded] = useState(false);
+
+  if (isFetchingInitial || !facets) return null;
 
   // 1) Field validation
   if (!filterableFields?.includes(field) || !facetableFields?.includes(field)) {

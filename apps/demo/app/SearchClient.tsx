@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import '@indxsearch/intrface/styles.css';
-import { Indx } from '@indxsearch/pixl';
+import { Indx, Spark } from '@indxsearch/pixl';
 import { Base } from '@indxsearch/systm';
 import styles from './SearchClient.module.css';
 import { SearchProvider, SearchInput, SearchResults, RangeFilterPanel, ValueFilterPanel, ActiveFiltersPanel, SortByPanel } from '@indxsearch/intrface';
@@ -12,13 +12,12 @@ export function SearchClient({ dataset }: { dataset: string }) {
   const password = process.env.NEXT_PUBLIC_INDX_PASSWORD!;
   return (
     <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={true} maxResults={20}>
-      <SearchUI />
+      <SearchUI dataset={dataset} />
     </SearchProvider>
   );
 }
 
-function SearchUI() {
-
+function SearchUI({ dataset }: { dataset: string }) {
   /* SYSTEM THEME */
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   useEffect(() => {
@@ -49,7 +48,7 @@ function SearchUI() {
             <div id={styles.meta}>
               <div className={styles.metafields}>
                 <div className={styles.description}>INDX SEARCH SYSTEM</div>
-                <div className={styles.metainfo}>Dataset: dataset</div>
+                <div className={styles.metainfo}>Dataset: {dataset}</div>
               </div>
               <Indx size={35} color="var(--icon-color)"/>
             </div>
@@ -82,8 +81,8 @@ function SearchUI() {
 
                   return (
                     <div>
-                      <h2>
-                        {name} {is_legendary ? '✨' : ''}  {type1 && <Tag>{type1}</Tag>} {type2 && <Tag>{type2}</Tag>}
+                      <h2 style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                        {name} {is_legendary ? <Spark color='gold' size={14}/> : ''}  {type1 && <Tag>{type1}</Tag>} {type2 && <Tag>{type2}</Tag>}
                       </h2>
 
                       {Array.isArray(abilities) && abilities.length > 0 && (

@@ -11,7 +11,10 @@ export interface SearchResultsProps {
 export const SearchResults: React.FC<SearchResultsProps> = ({ fields, children }) => {
   const {
     state: { results },
+    isFetchingInitial
   } = useSearchContext();
+
+  if (isFetchingInitial) return null;
 
   if (!results || results.length === 0) {
     return <p>No results found.</p>;

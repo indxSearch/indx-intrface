@@ -20,6 +20,7 @@ export interface SearchState {
 
 export interface SearchContextType {
   state: SearchState;
+  isFetchingInitial: boolean;
   setQuery: (query: string) => void;
   toggleFilter: (field: string, value: string) => void;
   setRangeFilter: (field: string, min: number, max: number) => void;
@@ -84,7 +85,7 @@ export const SearchProvider: React.FC<{
   const [filterableFields, setFilterableFields] = useState<string[]>([]); // Stores list of fields that can be used for value filtering
   const [facetableFields, setFacetableFields] = useState<string[]>([]); // Stores list of fields that can return facet histograms
   const [sortableFields, setSortableFields] = useState<string[]>([]); // Stores list of fields that can be used for sorting
-
+  const [isFetchingInitial, setIsFetchingInitial] = useState(true); // True if facets or results has not been loaded yet
   const [initialFacetStats, setInitialFacetStats] = useState<Record<string, { min: number; max: number }>>({}); // Stores min/max values for each faceted field from the initial blank search
   const [initialFacetKeys, setInitialFacetKeys] = useState<Record<string, string[]>>({}); // Stores list of facet keys (strings) from the initial blank search. Used later for non-coverage hits
   const [fixedFacetStats, setFixedFacetStats] = useState<Record<string, { min: number; max: number }>>({}); // Tracks fixed facet stats that remain stable until query changes
@@ -530,6 +531,8 @@ export const SearchProvider: React.FC<{
         }));
       } catch (err) {
         console.error('Login failed:', err);
+      } finally {
+        setIsFetchingInitial(false);
       }
     };
 
@@ -547,6 +550,7 @@ export const SearchProvider: React.FC<{
             sortableFields,
             rangeBounds,
           },
+          isFetchingInitial,
           setQuery,
           toggleFilter,
           setRangeFilter,
