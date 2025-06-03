@@ -50,6 +50,7 @@ export const SearchProvider: React.FC<{
   allowEmptySearch?: boolean;
   maxResults?: number;
   debounceDelayMillis?: number;
+  enableFacets?: boolean;
 }> = ({ 
   children, 
   email, 
@@ -58,7 +59,8 @@ export const SearchProvider: React.FC<{
   dataset, 
   allowEmptySearch = false, 
   maxResults = 10,
-  debounceDelayMillis = 100 
+  debounceDelayMillis = 100 ,
+  enableFacets = true
 }) => {
   const [state, setState] = useState<SearchState>({
     query: '',
@@ -78,7 +80,7 @@ export const SearchProvider: React.FC<{
   }, [debounceDelayMillis]);
 
   const [token, setToken] = useState<string | null>(null); // Holds the authentication token after login
-  const [showFacets] = useState(true); // Controls whether to enable facets in the search query (currently always true)
+  const [facetsEnabled] = useState(enableFacets);; // Controls whether to enable facets in the search query (currently always true)
   const [filterableFields, setFilterableFields] = useState<string[]>([]); // Stores list of fields that can be used for value filtering
   const [facetableFields, setFacetableFields] = useState<string[]>([]); // Stores list of fields that can return facet histograms
   const [sortableFields, setSortableFields] = useState<string[]>([]); // Stores list of fields that can be used for sorting
@@ -399,14 +401,15 @@ export const SearchProvider: React.FC<{
     const isEmptySearch = trimmedQuery === '' && allowEmptySearch;
 
     if (isFirstLoad || isEmptySearch) {
-      // First load or empty search: trigger full faceted search instantly
       searchWithFacets.cancel?.();
-      performSearch({ enableFacets: true });
+      performSearch({ enableFacets: facetsEnabled });
     } else {
-      // While typing: always do basic search instantly
-      searchBasic();
-      // Debounce faceted search until typing pauses
-      searchWithFacets();
+      if (facetsEnabled) {
+        searchBasic();
+        searchWithFacets();
+      } else {
+        performSearch({ enableFacets: false });
+      }
     }
 
     return () => {

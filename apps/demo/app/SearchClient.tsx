@@ -8,7 +8,7 @@ export function SearchClient({ dataset }: { dataset: string }) {
   const email = process.env.NEXT_PUBLIC_INDX_EMAIL!;
   const password = process.env.NEXT_PUBLIC_INDX_PASSWORD!;
   return (
-    <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={true} maxResults={20}>
+    <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={true} maxResults={20} enableFacets={false}>
       <SearchUI />
     </SearchProvider>
   );
