@@ -1,6 +1,9 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import '@indxsearch/intrface/styles.css';
+import { Indx } from '@indxsearch/pixl';
+import { Base } from '@indxsearch/systm';
+import styles from './SearchClient.module.css';
 import { SearchProvider, SearchInput, SearchResults, RangeFilterPanel, ValueFilterPanel, ActiveFiltersPanel, SortByPanel } from '@indxsearch/intrface';
 
 export function SearchClient({ dataset }: { dataset: string }) {
@@ -8,7 +11,7 @@ export function SearchClient({ dataset }: { dataset: string }) {
   const email = process.env.NEXT_PUBLIC_INDX_EMAIL!;
   const password = process.env.NEXT_PUBLIC_INDX_PASSWORD!;
   return (
-    <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={true} maxResults={20} enableFacets={false}>
+    <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={true} maxResults={20}>
       <SearchUI />
     </SearchProvider>
   );
@@ -35,83 +38,91 @@ function SearchUI() {
   );
 
   return (
-    <div className={theme} style={{ padding: '30px', width: '100%', display: 'flex', justifyContent: 'center' }}>
-      <div style={{ width: '60%', paddingRight: '1rem', marginBottom: '30px' }}>
-        <div style={{ marginBottom: '30px', padding: '5px' }}>
-          <SearchInput
-            // inputSize='large'
-            placeholder="Type to search"
-            className="search-input"
-            style={{ padding: '0.5rem', width: '100%' }}
-          />
-        </div>
-
-        <SearchResults
-          fields={[
-            'name',
-            'is_legendary',
-            'type1',
-            'type2',
-            'hp',
-            'speed',
-            'attack',
-            'abilities'
-          ]}
-        >
-          {(item: Record<string, any>) => {
-            const {
-              name,
-              is_legendary,
-              type1,
-              type2,
-              hp,
-              speed,
-              attack,
-              abilities
-            } = item;
-
-            return (
-              <div>
-                <h2>
-                  {name} {is_legendary ? '✨' : ''}  {type1 && <Tag>{type1}</Tag>} {type2 && <Tag>{type2}</Tag>}
-                </h2>
-
-                {Array.isArray(abilities) && abilities.length > 0 && (
-                  <div>
-                    Abilities:{' '}
-                    {abilities.map((ability: string, idx: number) => (
-                      <Tag key={`${ability}-${idx}`}>{ability}</Tag>
-                    ))}
-                  </div>
-                )}
-
-                <div>
-                  Stats:{' '}
-                  {typeof hp === 'number' && <Tag>HP: {hp}</Tag>}
-                  {typeof speed === 'number' && <Tag>Speed: {speed}</Tag>}
-                  {typeof attack === 'number' && <Tag>Attack: {attack}</Tag>}
-                </div>
+    <div className={theme}>
+      <div className={styles.wrapper}>
+        <Base className={styles.component}>
+          <div className={styles.header}>
+            <SearchInput
+              placeholder="Type to search"
+              className={styles.searchInput}
+            />
+            <div id={styles.meta}>
+              <div className={styles.metafields}>
+                <div className={styles.description}>INDX SEARCH SYSTEM</div>
+                <div className={styles.metainfo}>Dataset: dataset</div>
               </div>
-            );
-          }}
-        </SearchResults>
+              <Indx size={35} color="var(--icon-color)"/>
+            </div>
+          </div>
+          <div className={styles.body}>
+            <div className={styles.results}>
+              <SearchResults
+                fields={[
+                  'name',
+                  'is_legendary',
+                  'type1',
+                  'type2',
+                  'hp',
+                  'speed',
+                  'attack',
+                  'abilities'
+                ]}
+              >
+                {(item: Record<string, any>) => {
+                  const {
+                    name,
+                    is_legendary,
+                    type1,
+                    type2,
+                    hp,
+                    speed,
+                    attack,
+                    abilities
+                  } = item;
 
-      </div>
+                  return (
+                    <div>
+                      <h2>
+                        {name} {is_legendary ? '✨' : ''}  {type1 && <Tag>{type1}</Tag>} {type2 && <Tag>{type2}</Tag>}
+                      </h2>
 
-      <div style={{ width: '30%', maxWidth: '400px' }}>
+                      {Array.isArray(abilities) && abilities.length > 0 && (
+                        <div>
+                          Abilities:{' '}
+                          {abilities.map((ability: string, idx: number) => (
+                            <Tag key={`${ability}-${idx}`}>{ability}</Tag>
+                          ))}
+                        </div>
+                      )}
 
-        <ActiveFiltersPanel />
-        <SortByPanel displayType='radio' collapsible={false} />
-        <SortByPanel startCollapsed={true}/>
-        <RangeFilterPanel label="Speed" field="speed" displayType="input" />
-        <ValueFilterPanel label="Primary type" layout='grid' field="type1" preserveBlankFacetState={true} preserveBlankFacetStateOrder={false} sortFacetsBy='alphabetical' displayType='button' />
-        <ValueFilterPanel label="Secondary type" field="type2" startCollapsed={true} displayType='button' layout='grid' showCount={false} sortFacetsBy='alphabetical' />
-        <ValueFilterPanel label="Legendary ✨" field="is_legendary" preserveBlankFacetState={true} displayType='toggle' />
-        <ValueFilterPanel label="Speed" field="speed" displayType='button' preserveBlankFacetStateOrder={false} sortFacetsBy='numeric' collapsible={false}/>
-        <ValueFilterPanel label="Attack" field="attack" layout='grid' startCollapsed={true} showCount={true} />
-        <ValueFilterPanel label="HP" startCollapsed={true} field="hp" />
-     
-      </div>
+                      <div>
+                        Stats:{' '}
+                        {typeof hp === 'number' && <Tag>HP: {hp}</Tag>}
+                        {typeof speed === 'number' && <Tag>Speed: {speed}</Tag>}
+                        {typeof attack === 'number' && <Tag>Attack: {attack}</Tag>}
+                      </div>
+                    </div>
+                  );
+                }}
+              </SearchResults>
+            </div>
+
+            <div className={styles.filters}>
+              <ActiveFiltersPanel />
+              <SortByPanel displayType='radio' collapsible={false} />
+              <SortByPanel startCollapsed={true}/>
+              <RangeFilterPanel label="Speed" field="speed" displayType="input" />
+              <ValueFilterPanel label="Primary type" layout='grid' field="type1" preserveBlankFacetState={true} preserveBlankFacetStateOrder={false} sortFacetsBy='alphabetical' displayType='button' />
+              <ValueFilterPanel label="Secondary type" field="type2" startCollapsed={true} displayType='button' layout='grid' showCount={false} sortFacetsBy='alphabetical' />
+              <ValueFilterPanel label="Legendary" field="is_legendary" preserveBlankFacetState={true} displayType='toggle' />
+              <ValueFilterPanel label="Speed" field="speed" displayType='button' preserveBlankFacetStateOrder={false} sortFacetsBy='numeric' startCollapsed={true}/>
+              <ValueFilterPanel label="Attack" field="attack" layout='grid' startCollapsed={true} showCount={true} />
+              <ValueFilterPanel label="HP" startCollapsed={true} field="hp" />
+            </div>
+          </div>  
+      
+        </Base> {/* END COMPONENT */}
+      </div> {/* END WRAPPER */}
     </div>
   );
 }
