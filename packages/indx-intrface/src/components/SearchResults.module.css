@@ -1,21 +1,64 @@
 .row {
     padding-bottom: 20px;
     padding-top: 20px;
-    border-bottom: 1px solid var(--CGray);
+    padding-left: 25px;
+    padding-right: 25px;
+    border-bottom: 1px solid var(--CLightGray);
     font: var(--text-mini-light);
+    position: relative;
+    color: var(--CB4);
+}
+:global(.dark) .row {
+    color: var(--CGray);
+    border-bottom: 1px solid var(--CDarkGray);
+}
+.row:hover {
+    background-color: var(--CB4);
+    border-radius: 8px;
+    color: var(--CB0);
+    border-bottom: 1px solid var(--CB4);
 }
 .row:first-child {
-    padding-top: 0px;
+    margin-top: -20px;
 }
 .row:last-child {
-    padding-bottom: 0px;
     border-bottom: none;
 }
 .row h2 {
     font: var(--text-extra-large-light);
+    color: var(--CB6);
+}
+:global(.dark) .row h2 {
+    color: var(--CB1);
+}
+.row:hover h2 {
+    color: var(--CB1);
 }
 .row > div {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+.indexNumber {
+    position: absolute;
+    top: 25px;
+    left: 5px;
+    font: var(--text-mini-light);
+    color: var(--CBlueGray);
+}
+.row span {
+    color: var(--CB4);
+    background-color: var(--CLightGray);
+    font: var(--text-micro);
+    margin-right: 5px;
+    border-radius: 10px;
+    padding: 2px 6px 2px 6px;
+}
+:global(.dark) .row span {
+    background-color: var(--CDarkGray);
+    color: var(--CLightGray);
+}
+.row:hover span {
+    color: var(--CB0);
+    background-color: var(--CBlueGray);
 }

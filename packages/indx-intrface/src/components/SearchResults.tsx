@@ -60,7 +60,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ fields, children }
         // 3) Pass the transformed displayData into the render‐prop
         return (
           <div key={idx} className={styles.row}>
-            {children(displayData)}
+            <div className={styles.indexNumber}>{idx}</div>{children(displayData)}
           </div>
         );
       })}

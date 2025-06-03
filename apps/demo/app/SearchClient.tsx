@@ -31,18 +31,18 @@ function SearchUI() {
   }, []);
 
   const Tag: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <span style={{backgroundColor: '#efefef', marginRight: '5px', fontSize: '12px', borderRadius: '10px', paddingLeft: '5px', paddingRight: '5px'}}>{children}</span>
+    <span>{children}</span>
   );
 
   return (
     <div className={theme} style={{ padding: '30px', width: '100%', display: 'flex', justifyContent: 'center' }}>
-      <div style={{ width: '40%', paddingRight: '1rem', marginBottom: '30px' }}>
-        <div style={{ marginBottom: '30px' }}>
+      <div style={{ width: '60%', paddingRight: '1rem', marginBottom: '30px' }}>
+        <div style={{ marginBottom: '30px', padding: '5px' }}>
           <SearchInput
             // inputSize='large'
             placeholder="Type to search"
             className="search-input"
-            style={{ padding: '0.5rem', width: '100%', maxWidth: '600px' }}
+            style={{ padding: '0.5rem', width: '100%' }}
           />
         </div>
 
@@ -73,14 +73,8 @@ function SearchUI() {
             return (
               <div>
                 <h2>
-                  {name} {is_legendary ? '✨' : ''}
+                  {name} {is_legendary ? '✨' : ''}  {type1 && <Tag>{type1}</Tag>} {type2 && <Tag>{type2}</Tag>}
                 </h2>
-
-                <div>
-                  Types:{' '}
-                  {type1 && <Tag>{type1}</Tag>}
-                  {type2 && <Tag>{type2}</Tag>}
-                </div>
 
                 {Array.isArray(abilities) && abilities.length > 0 && (
                   <div>
@@ -111,7 +105,7 @@ function SearchUI() {
         <SortByPanel startCollapsed={true}/>
         <RangeFilterPanel label="Speed" field="speed" displayType="input" />
         <ValueFilterPanel label="Primary type" layout='grid' field="type1" preserveBlankFacetState={true} displayType='button' />
-        <ValueFilterPanel label="Legendary" field="is_legendary" preserveBlankFacetState={true} displayType='toggle' />
+        <ValueFilterPanel label="Legendary ✨" field="is_legendary" preserveBlankFacetState={true} displayType='toggle' />
         <ValueFilterPanel label="Speed" field="speed" displayType='button' collapsible={false}/>
         <ValueFilterPanel label="Attack" field="attack" layout='grid' startCollapsed={true} />
         <ValueFilterPanel label="HP" startCollapsed={true} field="hp" />
