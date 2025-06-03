@@ -58,7 +58,7 @@ export const SearchProvider: React.FC<{
   dataset, 
   allowEmptySearch = false, 
   maxResults = 10,
-  debounceDelayMillis = 50 
+  debounceDelayMillis = 100 
 }) => {
   const [state, setState] = useState<SearchState>({
     query: '',
@@ -69,6 +69,13 @@ export const SearchProvider: React.FC<{
     rangeFilters: {},
     facetStats: {},
   });
+
+  useEffect(() => {
+    setState(prev => ({
+      ...prev,
+      debounceDelayMillis,
+    }));
+  }, [debounceDelayMillis]);
 
   const [token, setToken] = useState<string | null>(null); // Holds the authentication token after login
   const [showFacets] = useState(true); // Controls whether to enable facets in the search query (currently always true)
@@ -167,7 +174,7 @@ export const SearchProvider: React.FC<{
     return current;
   }
 
-  const search = useCallback(async () => {
+  const performSearch = useCallback(async ({ enableFacets }: { enableFacets: boolean }) => {
     if (!token) return;
     setState(prev => ({ ...prev, isLoading: true }));
 
@@ -175,10 +182,9 @@ export const SearchProvider: React.FC<{
       let filterProxy: any = null;
 
       const filterEntries = Object.entries(state.filters ?? {});
-      // For each field, create a value filter for each value; flatten all into a single array
       const valueFilterResponsesNested: any[][] = await Promise.all(
-        filterEntries.map(async ([field, values]) => {
-          return await Promise.all(
+        filterEntries.map(async ([field, values]) =>
+          await Promise.all(
             values.map(value =>
               fetch(`${url}/api/CreateValueFilter/${dataset}`, {
                 method: 'PUT',
@@ -189,12 +195,11 @@ export const SearchProvider: React.FC<{
                 body: JSON.stringify({ FieldName: field, Value: value }),
               }).then(res => res.json())
             )
-          );
-        })
+          )
+        )
       );
       const valueFilterResponses = valueFilterResponsesNested.flat();
 
-      // Range filter logic
       const rangeFilterEntries = Object.entries(state.rangeFilters ?? {});
       const rangeFilterResponses: any[] = await Promise.all(
         rangeFilterEntries.map(([field, { min, max }]) =>
@@ -209,28 +214,19 @@ export const SearchProvider: React.FC<{
         )
       );
 
-      // Combine value and range filters, validating filter objects
       const allFilters = [...valueFilterResponses, ...rangeFilterResponses].filter(
         f => f && typeof f.hashString === 'string'
       );
-
       filterProxy = await combineFilters(allFilters, url, dataset, token);
 
       const searchBody = {
         text: state.query,
         maxNumberOfRecordsToReturn: maxResults,
         ...(filterProxy ? { filter: filterProxy } : {}),
-        ...(showFacets ? { enableFacets: true } : {}),
+        ...(enableFacets ? { enableFacets: true } : {}),
         ...(state.sortBy ? { sortBy: state.sortBy } : {}),
         ...(state.sortAscending !== undefined ? { sortAscending: state.sortAscending } : {}),
       };
-
-      // Debugging: Log applied sorting and search body
-      console.log('[Search] Applied sorting:', {
-        sortBy: state.sortBy,
-        sortAscending: state.sortAscending,
-      });
-      console.log('[Search] Search request body:', searchBody);
 
       const searchResponse = await fetch(`${url}/api/Search/${dataset}`, {
         method: 'POST',
@@ -255,66 +251,70 @@ export const SearchProvider: React.FC<{
 
       const documents = await jsonResponse.json();
 
-      // Calculate facetStats for this search
+      // Only process facet data if enabled
       let newFacetStats: Record<string, { min: number; max: number }> = {};
-      if (searchData.facets) {
-        for (const [field, values] of Object.entries(searchData.facets)) {
-          if (Array.isArray(values) && values.length > 0) {
-            const numericValues = values
-              .map((v: any) => Number(v.key))
-              .filter((v: number) => !isNaN(v));
-            if (numericValues.length > 0) {
-              newFacetStats[field] = {
-                min: Math.min(...numericValues),
-                max: Math.max(...numericValues),
-              };
+      let mergedFacetStats = state.facetStats ?? {};
+      let displayFacets: any = undefined;
+
+      if (enableFacets) {
+        if (searchData.facets) {
+          for (const [field, values] of Object.entries(searchData.facets)) {
+            if (Array.isArray(values) && values.length > 0) {
+              const numericValues = values
+                .map((v: any) => Number(v.key))
+                .filter((v: number) => !isNaN(v));
+              if (numericValues.length > 0) {
+                newFacetStats[field] = {
+                  min: Math.min(...numericValues),
+                  max: Math.max(...numericValues),
+                };
+              }
             }
+          }
+        }
+
+        const queryChanged = state.query !== lastQueryText;
+        const valueFiltersChanged = JSON.stringify(state.filters) !== JSON.stringify(lastValueFilters);
+
+        if (queryChanged) {
+          mergedFacetStats = { ...initialFacetStats, ...newFacetStats };
+          setFixedFacetStats(mergedFacetStats);
+          setLastQueryText(state.query);
+        } else {
+          mergedFacetStats = { ...fixedFacetStats, ...newFacetStats };
+        }
+
+        if (queryChanged || valueFiltersChanged) {
+          const updatedBounds = { ...rangeBounds };
+          for (const [field, stats] of Object.entries(newFacetStats)) {
+            updatedBounds[field] = stats;
+          }
+          setRangeBounds(updatedBounds);
+          setLastValueFilters(state.filters);
+        }
+
+        const currentFacets = searchData.facets;
+        displayFacets = currentFacets;
+
+        if (!currentFacets || Object.keys(currentFacets).length === 0) {
+          displayFacets = {};
+          for (const [field, keys] of Object.entries(initialFacetKeys)) {
+            displayFacets[field] = keys.map(key => ({ key, value: null }));
           }
         }
       }
 
-      // Determine if query has changed
-      const queryChanged = state.query !== lastQueryText;
-      const valueFiltersChanged = JSON.stringify(state.filters) !== JSON.stringify(lastValueFilters);
-
-      let mergedFacetStats: Record<string, { min: number; max: number }>;
-
-      if (queryChanged) {
-        // When query changes, update fixedFacetStats and lastQueryText
-        mergedFacetStats = { ...initialFacetStats, ...newFacetStats };
-        setFixedFacetStats(mergedFacetStats);
-        setLastQueryText(state.query);
-      } else {
-        // Always use fixedFacetStats if query hasn't changed
-        mergedFacetStats = { ...fixedFacetStats, ...newFacetStats };
-      }
-
-      if (queryChanged || valueFiltersChanged) {
-        const updatedBounds = { ...rangeBounds };
-        for (const [field, stats] of Object.entries(newFacetStats)) {
-          updatedBounds[field] = stats;
-        }
-        setRangeBounds(updatedBounds);
-        setLastValueFilters(state.filters);
-      }
-
-      const currentFacets = searchData.facets;
-      let displayFacets = currentFacets;
-
-      if (!currentFacets || Object.keys(currentFacets).length === 0) {
-        displayFacets = {};
-        for (const [field, keys] of Object.entries(initialFacetKeys)) {
-          displayFacets[field] = keys.map(key => ({ key, value: null }));
-        }
-      }
-
+      // Final state update
       setState(prev => ({
         ...prev,
         results: documents,
-        facets: displayFacets,
-        facetStats: mergedFacetStats,
+        ...(enableFacets ? {
+          facets: displayFacets,
+          facetStats: mergedFacetStats,
+        } : {}),
         isLoading: false,
       }));
+
     } catch (error) {
       console.error('Search failed:', error);
       setState(prev => ({
@@ -323,9 +323,32 @@ export const SearchProvider: React.FC<{
         isLoading: false,
       }));
     }
-  }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds, maxResults, initialFacetKeys, state.sortBy, state.sortAscending]);
+  }, [
+    state.query,
+    state.filters,
+    state.rangeFilters,
+    state.sortBy,
+    state.sortAscending,
+    token,
+    url,
+    dataset,
+    maxResults,
+    initialFacetStats,
+    fixedFacetStats,
+    lastQueryText,
+    lastValueFilters,
+    rangeBounds,
+    initialFacetKeys
+  ]);
   
-  const debouncedSearch = useMemo(() => debounce(() => search(), state.debounceDelayMillis ?? 50), [search, state.debounceDelayMillis]);
+  const searchBasic = useCallback(() => {
+    performSearch({ enableFacets: false });
+  }, [performSearch]);
+
+  const searchWithFacets = useMemo(
+    () => debounce(() => performSearch({ enableFacets: true }), state.debounceDelayMillis ?? 50),
+    [performSearch, state.debounceDelayMillis]
+  );
 
   const setSort = useCallback((field: string | null, ascending: boolean) => {
     setState(prev => ({
@@ -368,33 +391,36 @@ export const SearchProvider: React.FC<{
     });
   }, []);
 
-  // React.useEffect(() => {
-  //   // If query is not empty or empty search is allowed, perform a search
-  //   if (state.query.trim() || allowEmptySearch) {
-  //     search();
-  //   } else {
-  //     // Otherwise, clear results
-  //     setState(prev => ({ ...prev, results: null }));
-  //   }
-  // }, [state.query, state.filters, state.rangeFilters, search, allowEmptySearch]);
 
-  // [CHANGE] Debounce effect: call debouncedSearch instead of search
   useEffect(() => {
-    if (state.query.trim() || allowEmptySearch) {
-      debouncedSearch();
+    const trimmedQuery = state.query.trim();
+
+    const isFirstLoad = lastQueryText === '' && trimmedQuery === '';
+    const isEmptySearch = trimmedQuery === '' && allowEmptySearch;
+
+    if (isFirstLoad || isEmptySearch) {
+      // First load or empty search: trigger full faceted search instantly
+      searchWithFacets.cancel?.();
+      performSearch({ enableFacets: true });
     } else {
-      debouncedSearch.cancel?.();
-      setState((prev) => ({ ...prev, results: null }));
+      // While typing: always do basic search instantly
+      searchBasic();
+      // Debounce faceted search until typing pauses
+      searchWithFacets();
     }
+
     return () => {
-      debouncedSearch.cancel?.();
+      searchWithFacets.cancel?.();
     };
   }, [
     state.query,
     state.filters,
     state.rangeFilters,
-    debouncedSearch,
     allowEmptySearch,
+    lastQueryText,
+    searchBasic,
+    searchWithFacets,
+    performSearch,
   ]);
 
   React.useEffect(() => {
