@@ -13,6 +13,7 @@ export interface ValueFilterPanelProps {
   displayType?: 'checkbox' | 'button' | 'toggle';
   layout?: 'list' | 'grid';
   showActivePanel?: boolean; // Change background color of panel when filtered
+  showNull?: boolean; // If true, include entries with count === null
 }
 
 export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
@@ -25,6 +26,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   displayType = 'checkbox',
   layout = 'list',
   showActivePanel = false,
+  showNull = false
 }) => {
   const {
     state: { facets, filterableFields, facetableFields, filters },
@@ -130,7 +132,11 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   }
 
   // 6) Expand/collapse list based on `limit` prop
-  const allEntries = Array.from(mergedValuesMap.entries());
+  let allEntries = Array.from(mergedValuesMap.entries());
+  if (!showNull) {
+    // drop any entry whose key is the string "null"
+    allEntries = allEntries.filter(([key,]) => key !== 'null');
+  }
   const shouldCollapse = typeof limit === 'number' && allEntries.length > limit;
   const visibleEntries =
     shouldCollapse && !expanded ? allEntries.slice(0, limit) : allEntries;
