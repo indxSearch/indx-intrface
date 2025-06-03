@@ -7,12 +7,15 @@ export interface ValueFilterPanelProps {
   field: string;
   label?: string;
   preserveBlankFacetState?: boolean; // True if values should still render when facets are empty
+  preserveBlankFacetStateOrder?: boolean; // Keep the order of facets that are preserved even if they are empty
+  sortFacetsBy?: 'histogram' | 'alphabetical' | 'numeric';
   limit?: number; // Maximum number of items to show before collapsing.
   collapsible?: boolean; // If filter panel should be able to be collapsed
   startCollapsed?: boolean; // If filter should display as collapsed from init
   displayType?: 'checkbox' | 'button' | 'toggle';
   layout?: 'list' | 'grid';
   showActivePanel?: boolean; // Change background color of panel when filtered
+  showCount?: boolean; // Show histogram of filters
   showNull?: boolean; // If true, include entries with count === null
 }
 
@@ -20,12 +23,15 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   field,
   label,
   preserveBlankFacetState = false,
+  preserveBlankFacetStateOrder = false,
+  sortFacetsBy = 'histogram',
   limit = 10,
   collapsible = true,
   startCollapsed = false,
   displayType = 'checkbox',
   layout = 'list',
   showActivePanel = false,
+  showCount = true,
   showNull = false
 }) => {
   const {
@@ -110,7 +116,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
     // Disable only if count === 0. If count is null (unknown), leave enabled.
     const disabled = trueCount === 0;
     // Display just the number if > 0
-    const countLabel = (trueCount ?? 0) > 0 ? `${trueCount}` : '';
+    const countLabel = showCount && (trueCount ?? 0) > 0 ? `${trueCount}` : '';
 
     // If panel itself is not collapsible, override collapsed to false
     const actualCollapsed = collapsible ? startCollapsed : false;
@@ -131,12 +137,62 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
     );
   }
 
-  // 6) Expand/collapse list based on `limit` prop
+  // 6) Build and filter “null” keys
   let allEntries = Array.from(mergedValuesMap.entries());
   if (!showNull) {
-    // drop any entry whose key is the string "null"
-    allEntries = allEntries.filter(([key,]) => key !== 'null');
+    allEntries = allEntries.filter(([key]) => key !== 'null');
   }
+
+  // 7) If there really are no entries to show—and we’re not forcibly preserving blank state—return null
+  if (allEntries.length === 0 && !preserveBlankFacetState) {
+    return null;
+  }
+
+  // 8) Decide ordering:
+  if (preserveBlankFacetStateOrder) {
+    // → Skip all reordering: keep whatever order came from the search engine.
+    //    (So do nothing here—just use `allEntries` as-is.)
+  } else if (sortFacetsBy === 'alphabetical') {
+    // → Alphabetical‐within‐groups: positive‐count first (A→Z), then zero/null (A→Z)
+    const positives = allEntries
+      .filter(([, c]) => typeof c === 'number' && c > 0)
+      .sort(([a], [b]) => a.localeCompare(b));
+    const nonPositives = allEntries
+      .filter(([, c]) => c === 0 || c === null)
+      .sort(([a], [b]) => a.localeCompare(b));
+    allEntries = [...positives, ...nonPositives];
+  } else if (sortFacetsBy === 'numeric') {
+    // positive counts first (numeric order), then zero/null (numeric order)
+    const numericCompare = (keyA: string, keyB: string) => {
+      const nA = Number(keyA);
+      const nB = Number(keyB);
+      const aIsNum = !isNaN(nA);
+      const bIsNum = !isNaN(nB);
+
+      if (aIsNum && bIsNum) {
+        return nA - nB; // both numeric → numeric comparison
+      }
+      // otherwise fallback to alphabetical
+      return keyA.localeCompare(keyB);
+    };
+
+    const positives = allEntries
+      .filter(([, c]) => typeof c === 'number' && c > 0)
+      .sort(([a], [b]) => numericCompare(a, b));
+    const nonPositives = allEntries
+      .filter(([, c]) => c === 0 || c === null)
+      .sort(([a], [b]) => numericCompare(a, b));
+    allEntries = [...positives, ...nonPositives];
+  } else {
+    // → “Histogram” order (default): positives first in their original order,
+    //    then zero/null in original order.
+    const positives = allEntries.filter(([, c]) => typeof c === 'number' && c > 0);
+    const nonPositives = allEntries.filter(([, c]) => c === 0 || c === null);
+    allEntries = [...positives, ...nonPositives];
+  }
+
+  // 9) Limit list length
+
   const shouldCollapse = typeof limit === 'number' && allEntries.length > limit;
   const visibleEntries =
     shouldCollapse && !expanded ? allEntries.slice(0, limit) : allEntries;
@@ -146,9 +202,11 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
     // Only disable when count === 0. If count is null (unknown), keep enabled.
     const disabled = count === 0;
     // For grid layout, show "(n)" within the control
-    const countDisplay = (count ?? 0) > 0 ? ` (${count})` : '';
+    // const countDisplay = (count ?? 0) > 0 ? ` (${count})` : '';
+    const countDisplay = showCount && (count ?? 0) > 0 ? ` (${count})` : '';
     // For list layout, show count as plain number to the right
-    const countNumber = (count ?? 0) > 0 ? count : '';
+    // const countNumber = (count ?? 0) > 0 ? count : '';
+    const countNumber = showCount && (count ?? 0) > 0 ? count : '';
 
     switch (displayType) {
       case 'button':
@@ -209,7 +267,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
         return (
           <Checkbox
             label={key}
-            score={(count ?? 0) > 0 ? `(${count})` : ''}
+            score={countDisplay}
             checked={isSelected}
             onChange={() => toggleFilter(field, key)}
             disabled={disabled}

@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 
 export interface SearchState {
   query: string;
   results: any[] | null;
   isLoading: boolean;
+  debounceDelayMillis?: number;
   error?: string;
   facets?: any | null;
   filterableFields?: string[];
@@ -25,9 +26,20 @@ export interface SearchContextType {
   resetFilters: () => void;
   resetSingleFilter: (field: string, value?: string) => void;
   setSort: (field: string | null, ascending: boolean) => void;
+  setDebounceDelay?: (ms: number) => void;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
+
+function debounce<F extends (...args: any[]) => void>(fn: F, delay: number) {
+  let timer: ReturnType<typeof setTimeout>;
+  const debounced = (...args: Parameters<F>) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+  debounced.cancel = () => clearTimeout(timer);
+  return debounced;
+}
 
 export const SearchProvider: React.FC<{ 
   children: React.ReactNode; 
@@ -36,7 +48,8 @@ export const SearchProvider: React.FC<{
   url: string; 
   dataset: string; 
   allowEmptySearch?: boolean;
-  maxResults?: number 
+  maxResults?: number;
+  debounceDelayMillis?: number;
 }> = ({ 
   children, 
   email, 
@@ -44,12 +57,14 @@ export const SearchProvider: React.FC<{
   url, 
   dataset, 
   allowEmptySearch = false, 
-  maxResults = 10 
+  maxResults = 10,
+  debounceDelayMillis = 50 
 }) => {
   const [state, setState] = useState<SearchState>({
     query: '',
     results: null,
     isLoading: false,
+    debounceDelayMillis,
     filters: {},
     rangeFilters: {},
     facetStats: {},
@@ -67,7 +82,6 @@ export const SearchProvider: React.FC<{
   const [lastQueryText, setLastQueryText] = useState<string>(''); // Caches the previous query string to detect changes
   const [rangeBounds, setRangeBounds] = useState<Record<string, { min: number; max: number }>>({}); // Remembers range slider bounds from the initial or recent searches
   const [lastValueFilters, setLastValueFilters] = useState<Record<string, string[]>>({}); // Stores previous value filters to detect when they change
-  
 
   const setQuery = useCallback((query: string) => {
     setState(prev => ({
@@ -75,6 +89,13 @@ export const SearchProvider: React.FC<{
       query,
       filters: {}, // reset value filters
       rangeFilters: {}, // reset range filters
+    }));
+  }, []);
+
+  const setDebounceDelay = useCallback((ms: number) => {
+    setState(prev => ({
+      ...prev,
+      debounceDelayMillis: ms,
     }));
   }, []);
 
@@ -304,6 +325,8 @@ export const SearchProvider: React.FC<{
     }
   }, [state.query, state.filters, state.rangeFilters, token, showFacets, url, dataset, initialFacetStats, fixedFacetStats, lastQueryText, lastValueFilters, rangeBounds, maxResults, initialFacetKeys, state.sortBy, state.sortAscending]);
   
+  const debouncedSearch = useMemo(() => debounce(() => search(), state.debounceDelayMillis ?? 50), [search, state.debounceDelayMillis]);
+
   const setSort = useCallback((field: string | null, ascending: boolean) => {
     setState(prev => ({
       ...prev,
@@ -345,15 +368,34 @@ export const SearchProvider: React.FC<{
     });
   }, []);
 
-  React.useEffect(() => {
-    // If query is not empty or empty search is allowed, perform a search
+  // React.useEffect(() => {
+  //   // If query is not empty or empty search is allowed, perform a search
+  //   if (state.query.trim() || allowEmptySearch) {
+  //     search();
+  //   } else {
+  //     // Otherwise, clear results
+  //     setState(prev => ({ ...prev, results: null }));
+  //   }
+  // }, [state.query, state.filters, state.rangeFilters, search, allowEmptySearch]);
+
+  // [CHANGE] Debounce effect: call debouncedSearch instead of search
+  useEffect(() => {
     if (state.query.trim() || allowEmptySearch) {
-      search();
+      debouncedSearch();
     } else {
-      // Otherwise, clear results
-      setState(prev => ({ ...prev, results: null }));
+      debouncedSearch.cancel?.();
+      setState((prev) => ({ ...prev, results: null }));
     }
-  }, [state.query, state.filters, state.rangeFilters, search, allowEmptySearch]);
+    return () => {
+      debouncedSearch.cancel?.();
+    };
+  }, [
+    state.query,
+    state.filters,
+    state.rangeFilters,
+    debouncedSearch,
+    allowEmptySearch,
+  ]);
 
   React.useEffect(() => {
     const login = async () => {
@@ -482,6 +524,7 @@ export const SearchProvider: React.FC<{
           resetFilters,
           resetSingleFilter,
           setSort,
+          setDebounceDelay
         }}
       >
         {children}
