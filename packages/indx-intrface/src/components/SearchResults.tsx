@@ -2,6 +2,7 @@
 import React from 'react';
 import styles from './SearchResults.module.css';
 import { useSearchContext } from '../context/SearchContext';
+import { Indx } from '@indxsearch/pixl';
 
 export interface SearchResultsProps {
   fields?: string[];
@@ -10,14 +11,16 @@ export interface SearchResultsProps {
 
 export const SearchResults: React.FC<SearchResultsProps> = ({ fields, children }) => {
   const {
-    state: { results },
-    isFetchingInitial
+    state: { results, resultsSuppressed },
+    isFetchingInitial,
   } = useSearchContext();
 
   if (isFetchingInitial) return null;
-
+  if (resultsSuppressed) {
+    return <div className={styles.placeholder}><Indx size={350} color="var(--icon-color)"/></div>;
+  }
   if (!results || results.length === 0) {
-    return <p>No results found.</p>;
+    return <div className={styles.invalid}><p>No results found.</p></div>;
   }
 
   return (

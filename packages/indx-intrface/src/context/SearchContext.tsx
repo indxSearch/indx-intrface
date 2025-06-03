@@ -4,6 +4,7 @@ export interface SearchState {
   query: string;
   results: any[] | null;
   isLoading: boolean;
+  resultsSuppressed?: boolean;
   debounceDelayMillis?: number;
   error?: string;
   facets?: any | null;
@@ -222,9 +223,11 @@ export const SearchProvider: React.FC<{
       );
       filterProxy = await combineFilters(allFilters, url, dataset, token);
 
+      const shouldFetchResults = allowEmptySearch || state.query.trim() !== '';
+
       const searchBody = {
         text: state.query,
-        maxNumberOfRecordsToReturn: maxResults,
+        maxNumberOfRecordsToReturn: shouldFetchResults ? maxResults : 0, // 🔑 limit results if disallowed
         ...(filterProxy ? { filter: filterProxy } : {}),
         ...(enableFacets ? { enableFacets: true } : {}),
         ...(state.sortBy ? { sortBy: state.sortBy } : {}),
@@ -241,18 +244,25 @@ export const SearchProvider: React.FC<{
       });
 
       const searchData = await searchResponse.json();
+
+      // Extract keys regardless — may be empty
       const keys = (searchData.records || []).map((record: any) => record.documentKey);
 
-      const jsonResponse = await fetch(`${url}/api/GetJson/${dataset}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(keys),
-      });
+      // Only fetch documents if there are results AND we're allowed to
+      let documents: any[] = [];
+      if (shouldFetchResults && keys.length > 0) {
+        const jsonResponse = await fetch(`${url}/api/GetJson/${dataset}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(keys),
+        });
 
-      const documents = await jsonResponse.json();
+        documents = await jsonResponse.json();
+      }
+
 
       // Only process facet data if enabled
       let newFacetStats: Record<string, { min: number; max: number }> = {};
@@ -311,6 +321,7 @@ export const SearchProvider: React.FC<{
       setState(prev => ({
         ...prev,
         results: documents,
+        resultsSuppressed: !shouldFetchResults,
         ...(enableFacets ? {
           facets: displayFacets,
           facetStats: mergedFacetStats,
@@ -324,6 +335,7 @@ export const SearchProvider: React.FC<{
         ...prev,
         results: null,
         isLoading: false,
+        resultsSuppressed: false,
       }));
     }
   }, [
