@@ -12,12 +12,12 @@ export function SearchClient({ dataset }: { dataset: string }) {
   const password = process.env.NEXT_PUBLIC_INDX_PASSWORD!;
   return (
     <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={false} enableFacets={true} maxResults={20}>
-      <SearchUI dataset={dataset} />
+      <SearchUI dataset={dataset} showFilters={true} />
     </SearchProvider>
   );
 }
 
-function SearchUI({ dataset }: { dataset: string }) {
+function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilters?: boolean }) {
   /* SYSTEM THEME */
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   useEffect(() => {
@@ -106,20 +106,21 @@ function SearchUI({ dataset }: { dataset: string }) {
               </SearchResults>
             </div>
 
-            <div className={styles.filters}>
-              <ActiveFiltersPanel />
-              <SortByPanel displayType='radio' collapsible={false} />
-              <SortByPanel startCollapsed={true}/>
-              <RangeFilterPanel label="Speed" field="speed" displayType="input" />
-              <ValueFilterPanel label="Primary type" layout='grid' field="type1" preserveBlankFacetState={true} preserveBlankFacetStateOrder={false} sortFacetsBy='alphabetical' displayType='button' />
-              <ValueFilterPanel label="Secondary type" field="type2" startCollapsed={true} displayType='button' layout='grid' showCount={false} sortFacetsBy='alphabetical' />
-              <ValueFilterPanel label="Legendary" field="is_legendary" preserveBlankFacetState={true} displayType='toggle' />
-              <ValueFilterPanel label="Speed" field="speed" displayType='button' preserveBlankFacetStateOrder={false} sortFacetsBy='numeric' startCollapsed={true}/>
-              <ValueFilterPanel label="Attack" field="attack" layout='grid' startCollapsed={true} showCount={true} />
-              <ValueFilterPanel label="HP" startCollapsed={true} field="hp" />
-            </div>
-          </div>  
-      
+            {showFilters && (
+              <div className={styles.filters}>
+                <ActiveFiltersPanel />
+                <SortByPanel displayType='radio' collapsible={false} />
+                <SortByPanel startCollapsed={true}/>
+                <RangeFilterPanel label="Speed" field="speed" displayType="input" />
+                <ValueFilterPanel label="Primary type" layout='grid' field="type1" preserveBlankFacetState={true} preserveBlankFacetStateOrder={false} sortFacetsBy='alphabetical' displayType='button' />
+                <ValueFilterPanel label="Secondary type" field="type2" startCollapsed={true} displayType='button' layout='grid' showCount={false} sortFacetsBy='alphabetical' />
+                <ValueFilterPanel label="Legendary" field="is_legendary" preserveBlankFacetState={true} displayType='toggle' />
+                <ValueFilterPanel label="Speed" field="speed" displayType='button' preserveBlankFacetStateOrder={false} sortFacetsBy='numeric' startCollapsed={true}/>
+                <ValueFilterPanel label="Attack" field="attack" layout='grid' startCollapsed={true} showCount={true} />
+                <ValueFilterPanel label="HP" startCollapsed={true} field="hp" />
+              </div> 
+            )}
+          </div> {/* END BODY */}
         </Base> {/* END COMPONENT */}
       </div> {/* END WRAPPER */}
     </div>
