@@ -15,11 +15,17 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   displayType = 'input',
 }) => {
   const {
-    state: { rangeFilters, rangeBounds, facetStats, filters },
+    state: {
+      rangeFilters,
+      rangeBounds,
+      facetStats,
+      facetStatsForSliderBounds,
+      filters
+    },
     setRangeFilter,
   } = useSearchContext();
 
-  // Check if any non-range filters are active
+  // Check if any non-range filters are active (facets or another range)
   const hasOtherFilters =
     (filters && Object.keys(filters).length > 0) ||
     (rangeFilters &&
@@ -35,17 +41,22 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   const globalMin = rangeBounds?.[field]?.min ?? 0;
   const globalMax = rangeBounds?.[field]?.max ?? 1000;
 
-  // Current (faceted/filtered) min/max for restricting handles
+  // Current (faceted/filtered) min/max for restricting handles (if snapshot is missing, fallback)
   const filteredMin = facetStats?.[field]?.min ?? globalMin;
   const filteredMax = facetStats?.[field]?.max ?? globalMax;
 
-  // What should be the allowed min/max for handles?
-  const allowedMin = useFilteredBounds ? filteredMin : globalMin;
-  const allowedMax = useFilteredBounds ? filteredMax : globalMax;
+  // Use the SNAPSHOT if available, else fallback
+  const allowedMin = useFilteredBounds
+    ? facetStatsForSliderBounds?.[field]?.min ?? filteredMin
+    : globalMin;
 
+  const allowedMax = useFilteredBounds
+    ? facetStatsForSliderBounds?.[field]?.max ?? filteredMax
+    : globalMax;
+
+  // Use the currently set filter values or default to bounds
   const currentMin = rangeFilters?.[field]?.min ?? allowedMin;
   const currentMax = rangeFilters?.[field]?.max ?? allowedMax;
-
 
   // Local slider state for smoother UI updates
   const [sliderValue, setSliderValue] = React.useState<[number, number]>([currentMin, currentMax]);

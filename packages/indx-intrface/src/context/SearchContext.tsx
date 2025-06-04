@@ -15,6 +15,7 @@ export interface SearchState {
   rangeFilters: Record<string, { min: number; max: number }>;
   facetStats?: Record<string, { min: number; max: number }>; // live
   rangeBounds?: Record<string, { min: number; max: number }>; // init only
+  facetStatsForSliderBounds?: Record<string, { min: number; max: number }>; // calc slider
   sortBy?: string;
   sortAscending?: boolean;
 }
@@ -72,6 +73,7 @@ export const SearchProvider: React.FC<{
     filters: {},
     rangeFilters: {},
     facetStats: {},
+    facetStatsForSliderBounds: {},
   });
 
   useEffect(() => {
@@ -93,6 +95,7 @@ export const SearchProvider: React.FC<{
   const [lastQueryText, setLastQueryText] = useState<string>(''); // Caches the previous query string to detect changes
   const [rangeBounds, setRangeBounds] = useState<Record<string, { min: number; max: number }>>({}); // Remembers range slider bounds from the initial or recent searches
   const [lastValueFilters, setLastValueFilters] = useState<Record<string, string[]>>({}); // Stores previous value filters to detect when they change
+  const [facetStatsForSliderBounds, setFacetStatsForSliderBounds] = useState<Record<string, { min: number; max: number }>>({}); // ?
 
   const setQuery = useCallback((query: string) => {
     setState(prev => ({
@@ -179,182 +182,202 @@ export const SearchProvider: React.FC<{
   }
 
   const performSearch = useCallback(async ({ enableFacets }: { enableFacets: boolean }) => {
-    if (!token) return;
-    setState(prev => ({ ...prev, isLoading: true }));
+  if (!token) return;
+  setState(prev => ({ ...prev, isLoading: true }));
 
-    try {
-      let filterProxy: any = null;
+  try {
+    let filterProxy: any = null;
 
-      const filterEntries = Object.entries(state.filters ?? {});
-      const valueFilterResponsesNested: any[][] = await Promise.all(
-        filterEntries.map(async ([field, values]) =>
-          await Promise.all(
-            values.map(value =>
-              fetch(`${url}/api/CreateValueFilter/${dataset}`, {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({ FieldName: field, Value: value }),
-              }).then(res => res.json())
-            )
+    const filterEntries = Object.entries(state.filters ?? {});
+    const valueFilterResponsesNested: any[][] = await Promise.all(
+      filterEntries.map(async ([field, values]) =>
+        await Promise.all(
+          values.map(value =>
+            fetch(`${url}/api/CreateValueFilter/${dataset}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+              },
+              body: JSON.stringify({ FieldName: field, Value: value }),
+            }).then(res => res.json())
           )
         )
-      );
-      const valueFilterResponses = valueFilterResponsesNested.flat();
+      )
+    );
+    const valueFilterResponses = valueFilterResponsesNested.flat();
 
-      const rangeFilterEntries = Object.entries(state.rangeFilters ?? {});
-      const rangeFilterResponses: any[] = await Promise.all(
-        rangeFilterEntries.map(([field, { min, max }]) =>
-          fetch(`${url}/api/CreateRangeFilter/${dataset}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify({ FieldName: field, LowerLimit: min, UpperLimit: max }),
-          }).then(res => res.json())
-        )
-      );
+    const rangeFilterEntries = Object.entries(state.rangeFilters ?? {});
+    const rangeFilterResponses: any[] = await Promise.all(
+      rangeFilterEntries.map(([field, { min, max }]) =>
+        fetch(`${url}/api/CreateRangeFilter/${dataset}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({ FieldName: field, LowerLimit: min, UpperLimit: max }),
+        }).then(res => res.json())
+      )
+    );
 
-      const allFilters = [...valueFilterResponses, ...rangeFilterResponses].filter(
-        f => f && typeof f.hashString === 'string'
-      );
-      filterProxy = await combineFilters(allFilters, url, dataset, token);
+    const allFilters = [...valueFilterResponses, ...rangeFilterResponses].filter(
+      f => f && typeof f.hashString === 'string'
+    );
+    filterProxy = await combineFilters(allFilters, url, dataset, token);
 
-      const shouldFetchResults = allowEmptySearch || state.query.trim() !== '';
+    const shouldFetchResults = allowEmptySearch || state.query.trim() !== '';
 
-      const searchBody = {
-        text: state.query,
-        maxNumberOfRecordsToReturn: shouldFetchResults ? maxResults : 0, // 🔑 limit results if disallowed
-        ...(filterProxy ? { filter: filterProxy } : {}),
-        ...(enableFacets ? { enableFacets: true } : {}),
-        ...(state.sortBy ? { sortBy: state.sortBy } : {}),
-        ...(state.sortAscending !== undefined ? { sortAscending: state.sortAscending } : {}),
-      };
+    const searchBody = {
+      text: state.query,
+      maxNumberOfRecordsToReturn: shouldFetchResults ? maxResults : 0,
+      ...(filterProxy ? { filter: filterProxy } : {}),
+      ...(enableFacets ? { enableFacets: true } : {}),
+      ...(state.sortBy ? { sortBy: state.sortBy } : {}),
+      ...(state.sortAscending !== undefined ? { sortAscending: state.sortAscending } : {}),
+    };
 
-      const searchResponse = await fetch(`${url}/api/Search/${dataset}`, {
+    const searchResponse = await fetch(`${url}/api/Search/${dataset}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(searchBody),
+    });
+
+    const searchData = await searchResponse.json();
+
+    // Extract keys regardless — may be empty
+    const keys = (searchData.records || []).map((record: any) => record.documentKey);
+
+    // Only fetch documents if there are results AND we're allowed to
+    let documents: any[] = [];
+    if (shouldFetchResults && keys.length > 0) {
+      const jsonResponse = await fetch(`${url}/api/GetJson/${dataset}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(searchBody),
+        body: JSON.stringify(keys),
       });
 
-      const searchData = await searchResponse.json();
+      documents = await jsonResponse.json();
+    }
 
-      // Extract keys regardless — may be empty
-      const keys = (searchData.records || []).map((record: any) => record.documentKey);
+    // Only process facet data if enabled
+    let newFacetStats: Record<string, { min: number; max: number }> = {};
+    let mergedFacetStats = state.facetStats ?? {};
+    let displayFacets: any = undefined;
 
-      // Only fetch documents if there are results AND we're allowed to
-      let documents: any[] = [];
-      if (shouldFetchResults && keys.length > 0) {
-        const jsonResponse = await fetch(`${url}/api/GetJson/${dataset}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify(keys),
-        });
-
-        documents = await jsonResponse.json();
-      }
-
-
-      // Only process facet data if enabled
-      let newFacetStats: Record<string, { min: number; max: number }> = {};
-      let mergedFacetStats = state.facetStats ?? {};
-      let displayFacets: any = undefined;
-
-      if (enableFacets) {
-        if (searchData.facets) {
-          for (const [field, values] of Object.entries(searchData.facets)) {
-            if (Array.isArray(values) && values.length > 0) {
-              const numericValues = values
-                .map((v: any) => Number(v.key))
-                .filter((v: number) => !isNaN(v));
-              if (numericValues.length > 0) {
-                newFacetStats[field] = {
-                  min: Math.min(...numericValues),
-                  max: Math.max(...numericValues),
-                };
-              }
+    if (enableFacets) {
+      if (searchData.facets) {
+        for (const [field, values] of Object.entries(searchData.facets)) {
+          if (Array.isArray(values) && values.length > 0) {
+            const numericValues = values
+              .map((v: any) => Number(v.key))
+              .filter((v: number) => !isNaN(v));
+            if (numericValues.length > 0) {
+              newFacetStats[field] = {
+                min: Math.min(...numericValues),
+                max: Math.max(...numericValues),
+              };
             }
           }
         }
-
-        const queryChanged = state.query !== lastQueryText;
-        const valueFiltersChanged = JSON.stringify(state.filters) !== JSON.stringify(lastValueFilters);
-
-        if (queryChanged) {
-          mergedFacetStats = { ...initialFacetStats, ...newFacetStats };
-          setFixedFacetStats(mergedFacetStats);
-          setLastQueryText(state.query);
-        } else {
-          mergedFacetStats = { ...fixedFacetStats, ...newFacetStats };
-        }
-
-        if (queryChanged || valueFiltersChanged) {
-          const updatedBounds = { ...rangeBounds };
-          for (const [field, stats] of Object.entries(newFacetStats)) {
-            updatedBounds[field] = stats;
-          }
-          setRangeBounds(updatedBounds);
-          setLastValueFilters(state.filters);
-        }
-
-        const currentFacets = searchData.facets;
-        displayFacets = currentFacets;
-
-        if (!currentFacets || Object.keys(currentFacets).length === 0) {
-          displayFacets = {};
-          for (const [field, keys] of Object.entries(initialFacetKeys)) {
-            displayFacets[field] = keys.map(key => ({ key, value: null }));
-          }
-        }
       }
 
-      // Final state update
-      setState(prev => ({
-        ...prev,
-        results: documents,
-        resultsSuppressed: !shouldFetchResults,
-        ...(enableFacets ? {
-          facets: displayFacets,
-          facetStats: mergedFacetStats,
-        } : {}),
-        isLoading: false,
-      }));
+      const queryChanged = state.query !== lastQueryText;
+      const valueFiltersChanged = JSON.stringify(state.filters) !== JSON.stringify(lastValueFilters);
 
-    } catch (error) {
-      console.error('Search failed:', error);
-      setState(prev => ({
-        ...prev,
-        results: null,
-        isLoading: false,
-        resultsSuppressed: false,
-      }));
+      if (queryChanged) {
+        mergedFacetStats = { ...initialFacetStats, ...newFacetStats };
+        setFixedFacetStats(mergedFacetStats);
+        setLastQueryText(state.query);
+      } else {
+        mergedFacetStats = { ...fixedFacetStats, ...newFacetStats };
+      }
+
+      if (queryChanged || valueFiltersChanged) {
+        const updatedBounds = { ...rangeBounds };
+        for (const [field, stats] of Object.entries(newFacetStats)) {
+          updatedBounds[field] = stats;
+        }
+        setRangeBounds(updatedBounds);
+        setLastValueFilters(state.filters);
+      }
+
+      const currentFacets = searchData.facets;
+      displayFacets = currentFacets;
+
+      if (!currentFacets || Object.keys(currentFacets).length === 0) {
+        displayFacets = {};
+        for (const [field, keys] of Object.entries(initialFacetKeys)) {
+          displayFacets[field] = keys.map(key => ({ key, value: null }));
+        }
+      }
     }
-  }, [
-    state.query,
-    state.filters,
-    state.rangeFilters,
-    state.sortBy,
-    state.sortAscending,
-    token,
-    url,
-    dataset,
-    maxResults,
-    initialFacetStats,
-    fixedFacetStats,
-    lastQueryText,
-    lastValueFilters,
-    rangeBounds,
-    initialFacetKeys
-  ]);
+
+    // --- NEW LOGIC: Update facetStatsForSliderBounds ---
+    // This snapshot is taken ONLY when non-range filters change
+    // Place this after you have "newFacetStats" and before setState
+    let newFacetStatsForSliderBounds = { ...facetStatsForSliderBounds };
+
+    // Non-range filters (category, type, etc) or query or sort changed
+    const nonRangeFiltersChanged =
+      JSON.stringify(state.filters) !== JSON.stringify(lastValueFilters) ||
+      state.query !== lastQueryText;
+
+    if (nonRangeFiltersChanged) {
+      for (const [field, stats] of Object.entries(newFacetStats)) {
+        newFacetStatsForSliderBounds[field] = stats;
+      }
+      setFacetStatsForSliderBounds(newFacetStatsForSliderBounds);
+    }
+    // --- END NEW LOGIC ---
+
+    // Final state update
+    setState(prev => ({
+      ...prev,
+      results: documents,
+      resultsSuppressed: !shouldFetchResults,
+      ...(enableFacets ? {
+        facets: displayFacets,
+        facetStats: mergedFacetStats,
+        facetStatsForSliderBounds: newFacetStatsForSliderBounds, // <-- add to state for context
+      } : {}),
+      isLoading: false,
+    }));
+
+  } catch (error) {
+    console.error('Search failed:', error);
+    setState(prev => ({
+      ...prev,
+      results: null,
+      isLoading: false,
+      resultsSuppressed: false,
+    }));
+  }
+}, [
+  state.query,
+  state.filters,
+  state.rangeFilters,
+  state.sortBy,
+  state.sortAscending,
+  token,
+  url,
+  dataset,
+  maxResults,
+  initialFacetStats,
+  fixedFacetStats,
+  lastQueryText,
+  lastValueFilters,
+  rangeBounds,
+  initialFacetKeys,
+  facetStatsForSliderBounds // <-- add this to dependencies!
+]);
+
   
   const searchBasic = useCallback(() => {
     performSearch({ enableFacets: false });
