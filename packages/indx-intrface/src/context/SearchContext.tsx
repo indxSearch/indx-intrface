@@ -61,7 +61,7 @@ export const SearchProvider: React.FC<{
   dataset, 
   allowEmptySearch = false, 
   maxResults = 10,
-  debounceDelayMillis = 100 ,
+  debounceDelayMillis = 100,
   enableFacets = true
 }) => {
   const [state, setState] = useState<SearchState>({

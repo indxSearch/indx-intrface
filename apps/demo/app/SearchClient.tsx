@@ -1,9 +1,9 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import '@indxsearch/intrface/styles.css';
+import styles from './SearchClient.module.css';
 import { Indx, Spark } from '@indxsearch/pixl';
 import { Base } from '@indxsearch/systm';
-import styles from './SearchClient.module.css';
 import { SearchProvider, SearchInput, SearchResults, RangeFilterPanel, ValueFilterPanel, ActiveFiltersPanel, SortByPanel } from '@indxsearch/intrface';
 
 export function SearchClient({ dataset }: { dataset: string }) {
@@ -11,7 +11,7 @@ export function SearchClient({ dataset }: { dataset: string }) {
   const email = process.env.NEXT_PUBLIC_INDX_EMAIL!;
   const password = process.env.NEXT_PUBLIC_INDX_PASSWORD!;
   return (
-    <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={false} enableFacets={true} maxResults={20}>
+    <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={true} enableFacets={true} maxResults={20}>
       <SearchUI dataset={dataset} showFilters={true} />
     </SearchProvider>
   );
@@ -111,6 +111,7 @@ function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilter
                 <ActiveFiltersPanel />
                 <SortByPanel displayType='radio' collapsible={false} />
                 <SortByPanel startCollapsed={true}/>
+                <RangeFilterPanel label="Speed" field="speed" displayType="slider" />
                 <RangeFilterPanel label="Speed" field="speed" displayType="input" />
                 <ValueFilterPanel label="Primary type" layout='grid' field="type1" preserveBlankFacetState={true} preserveBlankFacetStateOrder={false} sortFacetsBy='alphabetical' displayType='button' />
                 <ValueFilterPanel label="Secondary type" field="type2" startCollapsed={true} displayType='button' layout='grid' showCount={false} sortFacetsBy='alphabetical' />
