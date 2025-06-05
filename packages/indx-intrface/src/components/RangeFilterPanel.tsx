@@ -6,22 +6,26 @@ import { InputField, FilterPanelBase } from '@indxsearch/systm';
 export interface RangeFilterPanelProps {
   field: string;
   label?: string;
+  expectedMin?: number;
+  expectedMax?: number;
   displayType?: 'slider' | 'input';
 }
 
 export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   field,
   label,
+  expectedMin = 0,
+  expectedMax = 1000,
   displayType = 'input',
 }) => {
   const {
-    state: { rangeFilters, rangeBounds, facetStats, isLoading },
+    state: { rangeFilters, rangeBounds, facetStats },
     setRangeFilter,
   } = useSearchContext();
 
   // 1) Global bounds (only on new query)
-  const globalMin = rangeBounds?.[field]?.min ?? 0;
-  const globalMax = rangeBounds?.[field]?.max ?? 1000;
+  const globalMin = rangeBounds?.[field]?.min ?? expectedMin;
+  const globalMax = rangeBounds?.[field]?.max ?? expectedMax;
 
   // 2) Live (filtered) bounds under all active filters (incl. value‐filter on this field)
   const liveMin = facetStats?.[field]?.min ?? globalMin;

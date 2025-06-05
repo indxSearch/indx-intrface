@@ -61,7 +61,7 @@ export const SearchProvider: React.FC<{
   dataset,
   allowEmptySearch = false,
   maxResults = 10,
-  debounceDelayMillis = 100,
+  debounceDelayMillis = 300, // debounce faceted searches only
   enableFacets = true,
 }) => {
   const [state, setState] = useState<SearchState>({

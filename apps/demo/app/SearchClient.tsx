@@ -11,7 +11,7 @@ export function SearchClient({ dataset }: { dataset: string }) {
   const email = process.env.NEXT_PUBLIC_INDX_EMAIL!;
   const password = process.env.NEXT_PUBLIC_INDX_PASSWORD!;
   return (
-    <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={true} enableFacets={true} maxResults={20} debounceDelayMillis={300}>
+    <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={true} enableFacets={true} maxResults={20} debounceDelayMillis={250}>
       <SearchUI dataset={dataset} showFilters={true} />
     </SearchProvider>
   );
@@ -111,7 +111,7 @@ function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilter
                 <ActiveFiltersPanel />
                 <SortByPanel displayType='radio' collapsible={false} />
                 <SortByPanel startCollapsed={true}/>
-                <RangeFilterPanel label="Speed" field="speed" displayType="slider" />
+                <RangeFilterPanel label="Speed" field="speed" displayType="slider" expectedMin={5} expectedMax={180} />
                 <RangeFilterPanel label="Speed" field="speed" displayType="input" />
                 <ValueFilterPanel label="Primary type" layout='grid' field="type1" preserveBlankFacetState={true} preserveBlankFacetStateOrder={false} sortFacetsBy='alphabetical' displayType='button' />
                 <ValueFilterPanel label="Secondary type" field="type2" startCollapsed={true} displayType='button' layout='grid' showCount={false} sortFacetsBy='alphabetical' />
