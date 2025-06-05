@@ -15,83 +15,55 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   displayType = 'input',
 }) => {
   const {
-    state: {
-      rangeFilters,
-      rangeBounds,
-      facetStats,
-      facetStatsForSliderBounds,
-      filters
-    },
+    state: { rangeFilters, rangeBounds, facetStats },
     setRangeFilter,
   } = useSearchContext();
 
-  // Check if any non-range filters are active (facets or another range)
-  const hasOtherFilters =
-    (filters && Object.keys(filters).length > 0) ||
-    (rangeFilters &&
-      Object.entries(rangeFilters).some(
-        ([key, _]) => key !== field // any other field has a range filter
-      )
-    );
-
-  // If only this range filter is set, treat as "unfiltered"
-  const useFilteredBounds = hasOtherFilters;
-
-  // Global (historic) min/max for full slider bar
+  // 1) Determine the global min/max for this field.
+  //    (from rangeBounds, which only updates on query changes)
   const globalMin = rangeBounds?.[field]?.min ?? 0;
   const globalMax = rangeBounds?.[field]?.max ?? 1000;
 
-  // Current (faceted/filtered) min/max for restricting handles (if snapshot is missing, fallback)
-  const filteredMin = facetStats?.[field]?.min ?? globalMin;
-  const filteredMax = facetStats?.[field]?.max ?? globalMax;
+  // 2) Determine the “live” min/max under all current filters,
+  //    including this field’s own range. Used to draw the blue overlay.
+  const liveMin = facetStats?.[field]?.min ?? globalMin;
+  const liveMax = facetStats?.[field]?.max ?? globalMax;
 
-  // Use the SNAPSHOT if available, else fallback
-  const allowedMin = useFilteredBounds
-    ? facetStatsForSliderBounds?.[field]?.min ?? filteredMin
-    : globalMin;
+  // 3) Determine the current slider thumbs—either the user’s explicit range,
+  //    or if none exists, default to [globalMin, globalMax].
+  const currentMin = rangeFilters?.[field]?.min ?? globalMin;
+  const currentMax = rangeFilters?.[field]?.max ?? globalMax;
 
-  const allowedMax = useFilteredBounds
-    ? facetStatsForSliderBounds?.[field]?.max ?? filteredMax
-    : globalMax;
+  // 4) Keep a local copy of thumbs for smooth dragging.
+  const [sliderValue, setSliderValue] = React.useState<[number, number]>([
+    currentMin,
+    currentMax,
+  ]);
 
-  // Use the currently set filter values or default to bounds
-  const currentMin = rangeFilters?.[field]?.min ?? allowedMin;
-  const currentMax = rangeFilters?.[field]?.max ?? allowedMax;
-
-  // Local slider state for smoother UI updates
-  const [sliderValue, setSliderValue] = React.useState<[number, number]>([currentMin, currentMax]);
-
-  // Sync local state with external changes
   React.useEffect(() => {
     setSliderValue([currentMin, currentMax]);
-  }, [currentMin, currentMax, allowedMin, allowedMax]);
+  }, [currentMin, currentMax]);
 
-  // Clamp slider to available range on move
+  // 5) Handle dragging: let thumbnails move anywhere in [globalMin, globalMax]
   const handleSliderChange = (values: number[]) => {
-    const [min, max] = values;
-    const clampedMin = Math.max(allowedMin, Math.min(allowedMax, min));
-    const clampedMax = Math.max(allowedMin, Math.min(allowedMax, max));
-    setSliderValue([clampedMin, clampedMax]);
+    setSliderValue([values[0], values[1]]);
   };
 
-  // Commit on mouse up / drag end
   const handleSliderCommit = (values: number[]) => {
-    const [min, max] = values;
-    setRangeFilter(field, min, max);
+    setRangeFilter(field, values[0], values[1]);
   };
 
-  // Handle number input (manual min/max entry)
+  // 6) Handle manual number input edits:
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
-    if (!isNaN(value) && value <= currentMax && value >= allowedMin) {
-      setRangeFilter(field, value, currentMax);
+    if (!isNaN(value) && value <= sliderValue[1] && value >= globalMin) {
+      setRangeFilter(field, value, sliderValue[1]);
     }
   };
-
   const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
-    if (!isNaN(value) && value >= currentMin && value <= allowedMax) {
-      setRangeFilter(field, currentMin, value);
+    if (!isNaN(value) && value >= sliderValue[0] && value <= globalMax) {
+      setRangeFilter(field, sliderValue[0], value);
     }
   };
 
@@ -113,17 +85,17 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
                   ...props.style,
                   height: '8px',
                   width: '100%',
-                  background: '#eee', // global track (full range)
+                  background: '#eee', // full global range
                   borderRadius: '4px',
                   position: 'relative',
                 }}
               >
-                {/* Overlay: filtered/active range */}
+                {/* Blue overlay for live hits (liveMin → liveMax) */}
                 <div
                   style={{
                     position: 'absolute',
-                    left: `${((allowedMin - globalMin) / (globalMax - globalMin)) * 100}%`,
-                    width: `${((allowedMax - allowedMin) / (globalMax - globalMin)) * 100}%`,
+                    left: `${((liveMin - globalMin) / (globalMax - globalMin)) * 100}%`,
+                    width: `${((liveMax - liveMin) / (globalMax - globalMin)) * 100}%`,
                     height: '100%',
                     background: '#b0d4ff',
                     zIndex: 1,
@@ -153,15 +125,22 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
               );
             }}
           />
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginTop: '6px' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              fontSize: '0.85rem',
+              marginTop: '6px',
+            }}
+          >
             <span>
-              {allowedMin}
+              {liveMin}
               <small style={{ color: '#888', marginLeft: 4 }}>
                 (min {globalMin})
               </small>
             </span>
             <span>
-              {allowedMax}
+              {liveMax}
               <small style={{ color: '#888', marginLeft: 4 }}>
                 (max {globalMax})
               </small>
@@ -172,24 +151,24 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
     );
   }
 
-  // Fallback to number input fields
+  // Fallback to numeric inputs
   return (
     <FilterPanelBase title={label}>
       <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
         <InputField
           label="Min:"
           type="number"
-          value={currentMin}
-          min={allowedMin}
-          max={currentMax}
+          value={sliderValue[0]}
+          min={globalMin}
+          max={sliderValue[1]}
           onChange={handleMinChange}
         />
         <InputField
           label="Max:"
           type="number"
-          value={currentMax}
-          min={currentMin}
-          max={allowedMax}
+          value={sliderValue[1]}
+          min={sliderValue[0]}
+          max={globalMax}
           onChange={handleMaxChange}
         />
       </div>
