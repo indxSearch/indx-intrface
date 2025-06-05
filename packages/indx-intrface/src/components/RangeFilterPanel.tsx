@@ -91,16 +91,16 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
 
   // ─────────────────────────────────────────────────────────────────────────────
   // 9) If no real span under live filters, show message
-  if (displayType === 'slider' && isDisabled) {
-    return (
-      <FilterPanelBase title={label}>
-        <div>
-          No adjustable range (all results have the same value:{' '}
-          <strong>{liveMin}</strong>).
-        </div>
-      </FilterPanelBase>
-    );
-  }
+  // if (displayType === 'slider' && isDisabled) {
+  //   return (
+  //     <FilterPanelBase title={label}>
+  //       <div>
+  //         No adjustable range (all results have the same value:{' '}
+  //         <strong>{liveMin}</strong>).
+  //       </div>
+  //     </FilterPanelBase>
+  //   );
+  // }
 
   // ─────────────────────────────────────────────────────────────────────────────
   // 10) Render slider (thumbs at `sliderValue`, rail always covers [globalMin→globalMax])
