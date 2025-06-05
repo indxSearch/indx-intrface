@@ -228,7 +228,7 @@ export const SearchProvider: React.FC<{
               )
             )
           )
-        );
+        )
         const valueFilterResponses = valueFilterResponsesNested.flat();
 
         // 2) Build range‐filter proxies
