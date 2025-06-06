@@ -32,5 +32,8 @@
       "require": "./dist/index.umd.js"
     },
     "./styles.css": "./dist/systm.css"
+  },
+  "dependencies": {
+    "react-range": "^1.10.0"
   }
 }

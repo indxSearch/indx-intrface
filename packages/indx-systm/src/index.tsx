@@ -8,3 +8,4 @@ export type InputSize = 'micro' | 'default' | 'large';
 export { InputField } from './components/InputField/InputField';
 export { RadioButton } from './components/RadioButton/RadioButton';
 export { ToggleSwitch } from './components/ToggleSwitch/ToggleSwitch';
+export { Slider } from './components/Slider/Slider';

@@ -121,11 +121,12 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
                 {...props}
                 style={{
                   ...props.style,
-                  height: '8px',
+                  height: '4px',
                   width: '100%',
                   background: '#eee', // full global track
                   borderRadius: '4px',
                   position: 'relative',
+                  zIndex: 0,
                 }}
               >
                 {/* Blue overlay for “live” hits (liveMin→liveMax) */}
@@ -135,7 +136,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
                     left: `${((liveMin - globalMin) / (globalMax - globalMin)) * 100}%`,
                     width: `${((liveMax - liveMin) / (globalMax - globalMin)) * 100}%`,
                     height: '100%',
-                    background: '#b0d4ff',
+                    background: '#000',
                     zIndex: 1,
                     pointerEvents: 'none',
                     borderRadius: '4px',
@@ -152,20 +153,21 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
                   {...restProps}
                   style={{
                     ...restProps.style,
-                    height: '20px',
-                    width: '20px',
-                    backgroundColor: '#1976d2',
+                    height: '18px',
+                    width: '18px',
+                    backgroundColor: '#fff',
                     borderRadius: '50%',
-                    border: '2px solid #fff',
+                    border: '3px solid #000',
                     boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
                     opacity: isDisabled ? 0.5 : 1,
                     cursor: isDisabled ? 'not-allowed' : 'grab',
+                    zIndex: 100
                   }}
                 />
               );
             }}
           />
-          <div
+          {/* <div
             style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -185,7 +187,25 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
                 (max {globalMax})
               </small>
             </span>
-          </div>
+          </div> */}
+        </div>
+        <div style={{ display: 'flex', flex: 'flex-grow', gap: '10px', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+          <InputField
+            type="number"
+            value={sliderValue[0]}
+            min={globalMin}
+            max={sliderValue[1] - 1}
+            onChange={handleMinChange}
+            disabled={isDisabled}
+          />
+          <InputField
+            type="number"
+            value={sliderValue[1]}
+            min={sliderValue[0] + 1}
+            max={globalMax}
+            onChange={handleMaxChange}
+            disabled={isDisabled}
+          />
         </div>
       </FilterPanelBase>
     );
