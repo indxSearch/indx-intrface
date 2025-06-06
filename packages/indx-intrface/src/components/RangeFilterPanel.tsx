@@ -1,7 +1,8 @@
+// packages/intrface/src/components/RangeFilterPanel.tsx
+
 import React from 'react';
-import { Range } from 'react-range';
 import { useSearchContext } from '../context/SearchContext';
-import { InputField, FilterPanelBase } from '@indxsearch/systm';
+import { Slider, InputField, FilterPanelBase } from '@indxsearch/systm';
 
 export interface RangeFilterPanelProps {
   field: string;
@@ -31,7 +32,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   const liveMin = facetStats?.[field]?.min ?? globalMin;
   const liveMax = facetStats?.[field]?.max ?? globalMax;
 
-  // 3) If liveMin===liveMax, disable/hide slider
+  // 3) If liveMin === liveMax, disable/hide slider
   const isDisabled = liveMin === liveMax;
 
   // 4) The “official” thumbs from context, or fallback to global
@@ -71,7 +72,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   };
 
   // ─────────────────────────────────────────────────────────────────────────────
-  // 8) Manual number‐input handlers (all within [globalMin,globalMax])
+  // 8) Manual number‐input handlers (all within [globalMin, globalMax])
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isDisabled) return;
     const value = Number(e.target.value);
@@ -90,106 +91,32 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   };
 
   // ─────────────────────────────────────────────────────────────────────────────
-  // 9) If no real span under live filters, show message
-  // if (displayType === 'slider' && isDisabled) {
-  //   return (
-  //     <FilterPanelBase title={label}>
-  //       <div>
-  //         No adjustable range (all results have the same value:{' '}
-  //         <strong>{liveMin}</strong>).
-  //       </div>
-  //     </FilterPanelBase>
-  //   );
-  // }
-
-  // ─────────────────────────────────────────────────────────────────────────────
-  // 10) Render slider (thumbs at `sliderValue`, rail always covers [globalMin→globalMax])
+  // 9) Render slider (thumbs at `sliderValue`, rail always covers [globalMin→globalMax])
   if (displayType === 'slider') {
     return (
       <FilterPanelBase title={label}>
-        <div style={{ padding: '1rem 0' }}>
-          <Range
-            step={1}
+        <div style={{ padding: '10px 10px 20px 10px' }}>
+          <Slider
             min={globalMin}
             max={globalMax}
-            values={sliderValue}
-            onChange={handleSliderChange}
-            onFinalChange={handleSliderCommit}
+            value={[sliderValue[0], sliderValue[1]]}
+            isRange
+            onChange={(vals) => handleSliderChange(vals as [number, number])}
+            onFinalChange={(vals) => handleSliderCommit(vals as [number, number])}
             disabled={isDisabled}
-            renderTrack={({ props, children }) => (
-              <div
-                {...props}
-                style={{
-                  ...props.style,
-                  height: '4px',
-                  width: '100%',
-                  background: '#eee', // full global track
-                  borderRadius: '4px',
-                  position: 'relative',
-                  zIndex: 0,
-                }}
-              >
-                {/* Blue overlay for “live” hits (liveMin→liveMax) */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: `${((liveMin - globalMin) / (globalMax - globalMin)) * 100}%`,
-                    width: `${((liveMax - liveMin) / (globalMax - globalMin)) * 100}%`,
-                    height: '100%',
-                    background: '#000',
-                    zIndex: 1,
-                    pointerEvents: 'none',
-                    borderRadius: '4px',
-                  }}
-                />
-                {children}
-              </div>
-            )}
-            renderThumb={({ props }) => {
-              const { key, ...restProps } = props;
-              return (
-                <div
-                  key={key}
-                  {...restProps}
-                  style={{
-                    ...restProps.style,
-                    height: '18px',
-                    width: '18px',
-                    backgroundColor: '#fff',
-                    borderRadius: '50%',
-                    border: '3px solid #000',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-                    opacity: isDisabled ? 0.5 : 1,
-                    cursor: isDisabled ? 'not-allowed' : 'grab',
-                    zIndex: 100
-                  }}
-                />
-              );
-            }}
+            activeMin={liveMin}
+            activeMax={liveMax}
           />
-          {/* <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              fontSize: '0.85rem',
-              marginTop: '6px',
-            }}
-          >
-            <span>
-              {liveMin}
-              <small style={{ color: '#888', marginLeft: 4 }}>
-                (min {globalMin})
-              </small>
-            </span>
-            <span>
-              {liveMax}
-              <small style={{ color: '#888', marginLeft: 4 }}>
-                (max {globalMax})
-              </small>
-            </span>
-          </div> */}
         </div>
-        <div style={{ display: 'flex', flex: 'flex-grow', gap: '10px', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div
+          style={{
+            display: 'flex',
+            flex: 'flex-grow',
+            gap: '10px',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+          }}
+        >
           <InputField
             type="number"
             value={sliderValue[0]}
@@ -207,6 +134,17 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
             disabled={isDisabled}
           />
         </div>
+        {isDisabled && (
+          <div
+            style={{
+              color: '#d32f2f',
+              fontSize: '0.85rem',
+              marginTop: '6px',
+            }}
+          >
+            No adjustable range (all results have the same value: {liveMin}).
+          </div>
+        )}
       </FilterPanelBase>
     );
   }
@@ -236,7 +174,13 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
         />
       </div>
       {isDisabled && (
-        <div style={{ color: '#d32f2f', fontSize: '0.85rem', marginTop: '6px' }}>
+        <div
+          style={{
+            color: '#d32f2f',
+            fontSize: '0.85rem',
+            marginTop: '6px',
+          }}
+        >
           No adjustable range (all results have the same value: {liveMin}).
         </div>
       )}

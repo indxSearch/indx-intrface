@@ -111,11 +111,13 @@ function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilter
                 <ActiveFiltersPanel />
                 <SortByPanel displayType='radio' collapsible={false} />
                 <SortByPanel startCollapsed={true}/>
-                <RangeFilterPanel label="Speed" field="speed" displayType="slider" expectedMin={5} expectedMax={180} />
-                <RangeFilterPanel label="Speed" field="speed" displayType="input" />
-                <ValueFilterPanel label="Primary type" layout='grid' field="type1" preserveBlankFacetState={true} preserveBlankFacetStateOrder={false} sortFacetsBy='alphabetical' displayType='button' />
-                <ValueFilterPanel label="Secondary type" field="type2" startCollapsed={true} displayType='button' layout='grid' showCount={false} sortFacetsBy='alphabetical' />
+                <ValueFilterPanel label="Primary type" layout='grid' field="type1" preserveBlankFacetState={true} preserveBlankFacetStateOrder={false} displayType='button' limit={30} />
+                <ValueFilterPanel label="Secondary type" field="type2" startCollapsed={true} displayType='button' layout='grid' />
                 <ValueFilterPanel label="Legendary" field="is_legendary" preserveBlankFacetState={true} displayType='toggle' />
+                <RangeFilterPanel label="Speed" field="speed" displayType="slider" expectedMin={5} expectedMax={180} />
+                <RangeFilterPanel label="Attack" field="attack" displayType='slider' />
+                <RangeFilterPanel label="Speed" field="speed" displayType="input" />
+                <RangeFilterPanel label="HP" field="hp" displayType="slider" />
                 <ValueFilterPanel label="Speed" field="speed" displayType='button' preserveBlankFacetStateOrder={false} sortFacetsBy='numeric' startCollapsed={true}/>
                 <ValueFilterPanel label="Attack" field="attack" layout='grid' startCollapsed={true} showCount={true} />
                 <ValueFilterPanel label="HP" startCollapsed={true} field="hp" />
