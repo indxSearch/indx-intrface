@@ -1,5 +1,3 @@
-// packages/intrface/src/components/RangeFilterPanel.tsx
-
 import React from 'react';
 import { useSearchContext } from '../context/SearchContext';
 import { Slider, InputField, FilterPanelBase } from '@indxsearch/systm';
@@ -7,9 +5,12 @@ import { Slider, InputField, FilterPanelBase } from '@indxsearch/systm';
 export interface RangeFilterPanelProps {
   field: string;
   label?: string;
+  displayType?: 'slider' | 'input';
   expectedMin?: number;
   expectedMax?: number;
-  displayType?: 'slider' | 'input';
+  collapsible?: boolean; // If filter panel should be able to be collapsed
+  startCollapsed?: boolean; // If filter should display as collapsed from init
+  showActivePanel?: boolean; // Change background color of panel when filtered
 }
 
 export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
@@ -18,10 +19,14 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   expectedMin = 0,
   expectedMax = 1000,
   displayType = 'input',
+  showActivePanel = false,
+  collapsible = true,
+  startCollapsed = false
 }) => {
   const {
     state: { rangeFilters, rangeBounds, facetStats },
     setRangeFilter,
+    resetSingleFilter
   } = useSearchContext();
 
   // 1) Global bounds (only on new query)
@@ -35,12 +40,13 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   // 3) If liveMin === liveMax, disable/hide slider
   const isDisabled = liveMin === liveMax;
 
-  // Check if the range is faceted (live bounds differ from global bounds)
-  const isFaceted = liveMin !== globalMin || liveMax !== globalMax;
-
   // 4) The "official" thumbs from context, or fallback to global
   const ctxMin = rangeFilters?.[field]?.min ?? globalMin;
   const ctxMax = rangeFilters?.[field]?.max ?? globalMax;
+
+  // Check if the range is faceted (live bounds differ from global bounds)
+  const isFaceted = liveMin !== globalMin || liveMax !== globalMax;
+  const isSelfActive = ctxMin !== globalMin || ctxMax !== globalMax;
 
   // 5) Local sliderValue (thumb positions). Initialize once to [ctxMin, ctxMax].
   //    After that, we never overwrite it unless the user drags.
@@ -71,7 +77,11 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
     m = Math.max(globalMin, Math.min(globalMax, m));
     M = Math.max(globalMin, Math.min(globalMax, M));
     setSliderValue([m, M]);
-    setRangeFilter(field, m, M);
+    if (m === globalMin && M === globalMax) {
+      resetSingleFilter(field); // clears the filter
+    } else {
+      setRangeFilter(field, m, M);
+    }
   };
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -97,7 +107,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   // 9) Render slider (thumbs at `sliderValue`, rail always covers [globalMin→globalMax])
   if (displayType === 'slider') {
     return (
-      <FilterPanelBase title={label}>
+      <FilterPanelBase title={label} collapsed={startCollapsed} collapsible={collapsible} activeFilter={showActivePanel && isSelfActive}>
         <div style={{ padding: '10px 10px 20px 10px' }}>
           <Slider
             min={globalMin}
@@ -110,7 +120,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
             activeMin={liveMin}
             activeMax={liveMax}
             isFaceted={isFaceted}
-            highlightFaceted={false}
+            highlightFaceted={isSelfActive}
           />
         </div>
         <div

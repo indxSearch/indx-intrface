@@ -115,9 +115,9 @@ function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilter
                 <ValueFilterPanel label="Secondary type" field="type2" startCollapsed={true} displayType='button' layout='grid' />
                 <ValueFilterPanel label="Legendary" field="is_legendary" preserveBlankFacetState={true} displayType='toggle' />
                 <RangeFilterPanel label="Speed" field="speed" displayType="slider" expectedMin={5} expectedMax={180} />
-                <RangeFilterPanel label="Attack" field="attack" displayType='slider' />
-                <RangeFilterPanel label="Speed" field="speed" displayType="input" />
-                <RangeFilterPanel label="HP" field="hp" displayType="slider" />
+                <RangeFilterPanel label="Attack" field="attack" displayType='slider' startCollapsed={true} />
+                {/* <RangeFilterPanel label="Speed" field="speed" displayType="input" /> */}
+                <RangeFilterPanel label="HP" field="hp" displayType="slider" startCollapsed={true} />
                 <ValueFilterPanel label="Speed" field="speed" displayType='button' preserveBlankFacetStateOrder={false} sortFacetsBy='numeric' startCollapsed={true}/>
                 <ValueFilterPanel label="Attack" field="attack" layout='grid' startCollapsed={true} showCount={true} />
                 <ValueFilterPanel label="HP" startCollapsed={true} field="hp" />
