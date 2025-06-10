@@ -55,6 +55,40 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
     ctxMax,
   ]);
 
+  // Track if values are invalid with a delay
+  const [isMinInvalid, setIsMinInvalid] = React.useState(false);
+  const [isMaxInvalid, setIsMaxInvalid] = React.useState(false);
+
+  // Debounced invalid state updates
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      const [min, max] = sliderValue;
+      setIsMinInvalid(min < globalMin || min >= max);
+      setIsMaxInvalid(max > globalMax || max <= min);
+    }, 300); // 300ms delay before showing invalid state
+
+    return () => clearTimeout(timer);
+  }, [sliderValue, globalMin, globalMax]);
+
+  // Debounced filter update
+  React.useEffect(() => {
+    const [min, max] = sliderValue;
+    const isValidMin = min >= globalMin && min < max;
+    const isValidMax = max <= globalMax && max > min;
+
+    if (isValidMin && isValidMax) {
+      const timer = setTimeout(() => {
+        if (min === globalMin && max === globalMax) {
+          resetSingleFilter(field);
+        } else {
+          setRangeFilter(field, min, max);
+        }
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [sliderValue, globalMin, globalMax, field]);
+
   // ─────────────────────────────────────────────────────────────────────────────
   // 6) If context had a saved rangeFilter (ctxMin/ctxMax), sync ONCE on mount or when
   //    'field' changes. BUT do not respond to bound‐changes.
@@ -68,51 +102,91 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   // 7) Drag handlers (only update local thumb position until let‐go)
   const handleSliderChange = (values: number[]) => {
     if (isDisabled) return;
-    setSliderValue([values[0], values[1]]);
+    // Clamp values to valid ranges
+    const [m, M] = values;
+    const clampedMin = Math.max(globalMin, Math.min(globalMax, m));
+    const clampedMax = Math.max(globalMin, Math.min(globalMax, M));
+    // Ensure min doesn't exceed max
+    const finalMin = Math.min(clampedMin, clampedMax);
+    const finalMax = Math.max(clampedMin, clampedMax);
+    setSliderValue([finalMin, finalMax]);
   };
+
   const handleSliderCommit = (values: number[]) => {
     if (isDisabled) return;
     let [m, M] = values;
     // Clamp into [globalMin, globalMax] on commit
     m = Math.max(globalMin, Math.min(globalMax, m));
     M = Math.max(globalMin, Math.min(globalMax, M));
+    // Ensure min doesn't exceed max
+    m = Math.min(m, M);
+    M = Math.max(m, M);
     setSliderValue([m, M]);
-    if (m === globalMin && M === globalMax) {
-      resetSingleFilter(field); // clears the filter
-    } else {
-      setRangeFilter(field, m, M);
-    }
   };
 
-  // ─────────────────────────────────────────────────────────────────────────────
   // 8) Manual number‐input handlers (all within [globalMin, globalMax])
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isDisabled) return;
     const value = Number(e.target.value);
-    if (!isNaN(value) && value < sliderValue[1] && value >= globalMin) {
+    if (!isNaN(value)) {
       setSliderValue([value, sliderValue[1]]);
-      setRangeFilter(field, value, sliderValue[1]);
     }
   };
+
   const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isDisabled) return;
     const value = Number(e.target.value);
-    if (!isNaN(value) && value > sliderValue[0] && value <= globalMax) {
+    if (!isNaN(value)) {
       setSliderValue([sliderValue[0], value]);
-      setRangeFilter(field, sliderValue[0], value);
+    }
+  };
+
+  const handleMinBlur = () => {
+    const value = sliderValue[0];
+    const clampedValue = Math.max(globalMin, Math.min(globalMax, value));
+    // Only update if the value is within valid range
+    if (clampedValue >= globalMin && clampedValue < sliderValue[1]) {
+      setSliderValue([clampedValue, sliderValue[1]]);
+    } else {
+      // Reset to last valid value
+      setSliderValue([globalMin, sliderValue[1]]);
+    }
+  };
+
+  const handleMaxBlur = () => {
+    const value = sliderValue[1];
+    const clampedValue = Math.max(globalMin, Math.min(globalMax, value));
+    // Only update if the value is within valid range
+    if (clampedValue <= globalMax && clampedValue > sliderValue[0]) {
+      setSliderValue([sliderValue[0], clampedValue]);
+    } else {
+      // Reset to last valid value
+      setSliderValue([sliderValue[0], globalMax]);
     }
   };
 
   // ─────────────────────────────────────────────────────────────────────────────
   // 9) Render slider (thumbs at `sliderValue`, rail always covers [globalMin→globalMax])
   if (displayType === 'slider') {
+    // Calculate clamped values for the slider
+    const [min, max] = sliderValue;
+    const clampedMin = Math.max(globalMin, Math.min(globalMax, min));
+    const clampedMax = Math.max(globalMin, Math.min(globalMax, max));
+    const finalMin = Math.min(clampedMin, clampedMax);
+    const finalMax = Math.max(clampedMin, clampedMax);
+
     return (
       <FilterPanelBase title={label} collapsed={startCollapsed} collapsible={collapsible} activeFilter={showActivePanel && isSelfActive}>
+        {isDisabled && (
+          <div style={{fontSize: '10px', marginBottom: '10px'}}>
+            No adjustable range (all results have the same value: {liveMin}).
+          </div>
+        )}
         <div style={{ padding: '10px 10px 20px 10px' }}>
           <Slider
             min={globalMin}
             max={globalMax}
-            value={[sliderValue[0], sliderValue[1]]}
+            value={[finalMin, finalMax]}
             isRange
             onChange={(vals) => handleSliderChange(vals as [number, number])}
             onFinalChange={(vals) => handleSliderCommit(vals as [number, number])}
@@ -138,7 +212,9 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
             min={globalMin}
             max={sliderValue[1] - 1}
             onChange={handleMinChange}
+            onBlur={handleMinBlur}
             disabled={isDisabled}
+            isValid={!isMinInvalid}
           />
           <InputField
             type="number"
@@ -146,20 +222,11 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
             min={sliderValue[0] + 1}
             max={globalMax}
             onChange={handleMaxChange}
+            onBlur={handleMaxBlur}
             disabled={isDisabled}
+            isValid={!isMaxInvalid}
           />
         </div>
-        {isDisabled && (
-          <div
-            style={{
-              color: '#d32f2f',
-              fontSize: '0.85rem',
-              marginTop: '6px',
-            }}
-          >
-            No adjustable range (all results have the same value: {liveMin}).
-          </div>
-        )}
       </FilterPanelBase>
     );
   }
@@ -176,7 +243,9 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
           min={globalMin}
           max={sliderValue[1] - 1}
           onChange={handleMinChange}
+          onBlur={handleMinBlur}
           disabled={isDisabled}
+          isValid={!isMinInvalid}
         />
         <InputField
           label="Max:"
@@ -185,17 +254,13 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
           min={sliderValue[0] + 1}
           max={globalMax}
           onChange={handleMaxChange}
+          onBlur={handleMaxBlur}
           disabled={isDisabled}
+          isValid={!isMaxInvalid}
         />
       </div>
       {isDisabled && (
-        <div
-          style={{
-            color: '#d32f2f',
-            fontSize: '0.85rem',
-            marginTop: '6px',
-          }}
-        >
+        <div style={{fontSize: '10px'}}>
           No adjustable range (all results have the same value: {liveMin}).
         </div>
       )}

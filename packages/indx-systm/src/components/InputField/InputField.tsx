@@ -5,14 +5,15 @@ export interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElem
   label?: string;
   error?: string;
   className?: string;
+  isValid?: boolean;
 }
 
-export function InputField({ label, error, className = '', ...props }: InputFieldProps) {
+export function InputField({ label, error, className = '', isValid = true, ...props }: InputFieldProps) {
   return (
     <div className={`${styles.wrapper} ${className}`}>
       {label && <label className={styles.label}>{label}</label>}
       <input
-        className={`${styles.input} ${error ? styles.error : ''}`}
+        className={`${styles.input} ${error ? styles.error : ''} ${!isValid ? styles.invalid : ''}`}
         {...props}
       />
       {error && <span className={styles.errorText}>{error}</span>}
