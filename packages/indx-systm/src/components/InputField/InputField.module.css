@@ -74,6 +74,9 @@
 .invalid {
   border-color: var(--CSignal);
 }
+:global(.dark) .invalid {
+  border-color: var(--CSignal);
+}
 
 .invalid:focus {
     outline: none;
