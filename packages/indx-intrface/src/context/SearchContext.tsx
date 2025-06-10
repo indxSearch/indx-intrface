@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, useRef } from 'react';
 
 export interface SearchState {
   query: string;
@@ -92,6 +92,13 @@ export const SearchProvider: React.FC<{
   const [fixedFacetStats, setFixedFacetStats] = useState<Record<string, { min: number; max: number }>>({});
   const [lastQueryText, setLastQueryText] = useState<string>('');
   const [rangeBounds, setRangeBounds] = useState<Record<string, { min: number; max: number }>>({});
+
+  // Cache for initial blank search data
+  const initialBlankSearchData = useRef<{
+    facets: any;
+    facetStats: Record<string, { min: number; max: number }>;
+    facetKeys: Record<string, string[]>;
+  } | null>(null);
 
   const setQuery = useCallback((query: string) => {
     setState(prev => ({
@@ -490,9 +497,7 @@ export const SearchProvider: React.FC<{
           }
         }
 
-        setInitialFacetStats(newFacetStats);
-
-        // Extract facet keys for non-coverage fallback (if needed)
+        // Extract facet keys for non-coverage fallback
         const extractedFacetKeys: Record<string, string[]> = {};
         if (blankSearchData.facets) {
           for (const [field, values] of Object.entries(blankSearchData.facets)) {
@@ -501,9 +506,16 @@ export const SearchProvider: React.FC<{
             }
           }
         }
-        setInitialFacetKeys(extractedFacetKeys);
 
-        // Set initial global rangeBounds and facetStats
+        // Cache the initial blank search data
+        initialBlankSearchData.current = {
+          facets: blankSearchData.facets,
+          facetStats: newFacetStats,
+          facetKeys: extractedFacetKeys
+        };
+
+        setInitialFacetStats(newFacetStats);
+        setInitialFacetKeys(extractedFacetKeys);
         setRangeBounds(newFacetStats);
         setState(prev => ({
           ...prev,
