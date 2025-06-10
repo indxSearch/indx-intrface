@@ -15,6 +15,7 @@ interface BaseSliderProps {
   activeMin?: number;    // live-range lower bound
   activeMax?: number;    // live-range upper bound
   isFaceted?: boolean;   // whether the range has been faceted
+  highlightFaceted?: boolean;
   onChange: (val: SingleValue | RangeValue) => void;
   onFinalChange?: (val: SingleValue | RangeValue) => void;
 }
@@ -33,6 +34,7 @@ export const Slider: React.FC<SliderProps> = (props) => {
     activeMin,
     activeMax,
     isFaceted = false,
+    highlightFaceted = true,
     onChange,
     onFinalChange,
   } = props as BaseSliderProps;
@@ -97,7 +99,7 @@ export const Slider: React.FC<SliderProps> = (props) => {
                 {/* ─── Live-overlay track ─── */}
                 {hasLiveOverlay && (
                   <div
-                    className={`${styles.livetrack} ${isFaceted ? styles.livetrackFaceted : styles.livetrackDefault}`}
+                    className={`${styles.livetrack} ${isFaceted && highlightFaceted ? styles.livetrackFaceted : styles.livetrackDefault}`}
                     style={{
                       left: `${liveLeftPct}%`,
                       width: `${liveWidthPct}%`,

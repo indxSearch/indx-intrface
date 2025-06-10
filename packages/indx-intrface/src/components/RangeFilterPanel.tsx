@@ -110,6 +110,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
             activeMin={liveMin}
             activeMax={liveMax}
             isFaceted={isFaceted}
+            highlightFaceted={false}
           />
         </div>
         <div
