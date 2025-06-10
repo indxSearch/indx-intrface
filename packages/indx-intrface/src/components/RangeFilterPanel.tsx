@@ -109,34 +109,34 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
 
   // ─────────────────────────────────────────────────────────────────────────────
   // 7) Drag handlers (only update local thumb position until let‐go)
-  const handleSliderChange = (values: number[]) => {
+  const handleSliderChange = React.useCallback((values: number[]) => {
     if (isDisabled) return;
     setSliderValue([values[0], values[1]]);
-  };
+  }, [isDisabled]);
 
-  const handleSliderCommit = (values: number[]) => {
+  const handleSliderCommit = React.useCallback((values: number[]) => {
     if (isDisabled) return;
     setSliderValue([values[0], values[1]]);
-  };
+  }, [isDisabled]);
 
   // 8) Manual number‐input handlers (all within [globalMin, globalMax])
-  const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMinChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (isDisabled) return;
     const value = Number(e.target.value);
     if (!isNaN(value)) {
       setSliderValue([value, sliderValue[1]]);
     }
-  };
+  }, [isDisabled, sliderValue[1]]);
 
-  const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMaxChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (isDisabled) return;
     const value = Number(e.target.value);
     if (!isNaN(value)) {
       setSliderValue([sliderValue[0], value]);
     }
-  };
+  }, [isDisabled, sliderValue[0]]);
 
-  const handleMinBlur = () => {
+  const handleMinBlur = React.useCallback(() => {
     const value = sliderValue[0];
     const clampedValue = Math.max(globalMin, Math.min(globalMax, value));
     // Only update if the value is within valid range
@@ -146,9 +146,9 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
       // Reset to last valid value
       setSliderValue([globalMin, sliderValue[1]]);
     }
-  };
+  }, [sliderValue, globalMin, globalMax]);
 
-  const handleMaxBlur = () => {
+  const handleMaxBlur = React.useCallback(() => {
     const value = sliderValue[1];
     const clampedValue = Math.max(globalMin, Math.min(globalMax, value));
     // Only update if the value is within valid range
@@ -158,7 +158,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
       // Reset to last valid value
       setSliderValue([sliderValue[0], globalMax]);
     }
-  };
+  }, [sliderValue, globalMin, globalMax]);
 
   // ─────────────────────────────────────────────────────────────────────────────
   // 9) Render slider (thumbs at `sliderValue`, rail always covers [globalMin→globalMax])

@@ -390,6 +390,7 @@ export const SearchProvider: React.FC<{
     [performSearch, state.debounceDelayMillis]
   );
 
+  // Effect for query changes - immediate results, debounced facets
   useEffect(() => {
     const trimmedQuery = state.query.trim();
     const isFirstLoad = lastQueryText === '' && trimmedQuery === '';
@@ -400,8 +401,8 @@ export const SearchProvider: React.FC<{
       performSearch({ enableFacets: facetsEnabled });
     } else {
       if (facetsEnabled) {
-        searchBasic();
-        searchWithFacets();
+        searchBasic();  // Immediate results
+        searchWithFacets();  // Debounced facets
       } else {
         performSearch({ enableFacets: false });
       }
@@ -410,17 +411,15 @@ export const SearchProvider: React.FC<{
     return () => {
       searchWithFacets.cancel?.();
     };
-  }, [
-    state.query,
-    state.filters,
-    state.rangeFilters,
-    allowEmptySearch,
-    lastQueryText,
-    searchBasic,
-    searchWithFacets,
-    performSearch,
-    facetsEnabled,
-  ]);
+  }, [state.query, allowEmptySearch, lastQueryText, searchBasic, searchWithFacets, performSearch, facetsEnabled]);
+
+  // Effect for filter changes - immediate search with facets
+  useEffect(() => {
+    // Only trigger on actual filter changes, not query changes
+    if (facetsEnabled && state.query === lastQueryText) {
+      performSearch({ enableFacets: true });  // Immediate results + facets
+    }
+  }, [state.filters, state.rangeFilters, facetsEnabled, performSearch, state.query, lastQueryText]);
 
   useEffect(() => {
     const login = async () => {
