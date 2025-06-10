@@ -1,0 +1,49 @@
+:root {
+  --slider-bg: #eee;
+  --slider-selected: #999;
+  --slider-live-default: #000;
+  --slider-live-faceted: #f00;
+  --slider-thumb-border: #000;
+  --slider-thumb-bg: #fff;
+  --slider-thumb-disabled-bg: #ccc;
+}
+.basetrack {
+    position: relative;
+    height: 4px;
+    width: 100%;
+    background-color: #eee;
+    border-radius: 4px;
+}
+.selectedtrack {
+    position: absolute;
+    height: 100%;
+    background-color: #999;
+    pointer-events: none;
+    border-radius: 4px;
+}
+.livetrack {
+    position: absolute;
+    height: 100%;
+    pointer-events: none;
+    border-radius: 4px;
+}
+.livetrackFaceted {
+  background-color: var(--slider-live-faceted);
+}
+.livetrackDefault {
+  background-color: var(--slider-live-default);
+}
+.thumbs {
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  border: 3px solid var(--slider-thumb-border);
+  background-color: var(--slider-thumb-bg);
+  cursor: grab;
+  transition: background-color 0.3s ease;
+}
+
+.thumbs.disabled {
+  background-color: var(--slider-thumb-disabled-bg);
+  cursor: not-allowed;
+}

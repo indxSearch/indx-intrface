@@ -35,7 +35,10 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   // 3) If liveMin === liveMax, disable/hide slider
   const isDisabled = liveMin === liveMax;
 
-  // 4) The “official” thumbs from context, or fallback to global
+  // Check if the range is faceted (live bounds differ from global bounds)
+  const isFaceted = liveMin !== globalMin || liveMax !== globalMax;
+
+  // 4) The "official" thumbs from context, or fallback to global
   const ctxMin = rangeFilters?.[field]?.min ?? globalMin;
   const ctxMax = rangeFilters?.[field]?.max ?? globalMax;
 
@@ -106,6 +109,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
             disabled={isDisabled}
             activeMin={liveMin}
             activeMax={liveMax}
+            isFaceted={isFaceted}
           />
         </div>
         <div

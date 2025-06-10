@@ -14,13 +14,14 @@ interface BaseSliderProps {
   className?: string;    // optional wrapper class
   activeMin?: number;    // live-range lower bound
   activeMax?: number;    // live-range upper bound
+  isFaceted?: boolean;   // whether the range has been faceted
   onChange: (val: SingleValue | RangeValue) => void;
   onFinalChange?: (val: SingleValue | RangeValue) => void;
 }
 
 type SliderProps =
   | (BaseSliderProps & { value: SingleValue; isRange?: false })
-  | (BaseSliderProps & { value: RangeValue; isRange: true });
+  | (BaseSliderProps & { value: RangeValue; isRange: true; isFaceted?: boolean });
 
 export const Slider: React.FC<SliderProps> = (props) => {
   const {
@@ -31,12 +32,13 @@ export const Slider: React.FC<SliderProps> = (props) => {
     className,
     activeMin,
     activeMax,
+    isFaceted = false,
     onChange,
     onFinalChange,
   } = props as BaseSliderProps;
 
   if ('isRange' in props && props.isRange) {
-    // ─────────── Two-thumb “range” mode ───────────
+    // ─────────── Two-thumb "range" mode ───────────
     const valuePair = props.value as RangeValue;
     const [v0, v1] = valuePair;
 
@@ -80,41 +82,26 @@ export const Slider: React.FC<SliderProps> = (props) => {
                 className={styles.basetrack}
                 style={{
                   ...restTrackProps.style,
-                  position: 'relative',
-                  height: '4px',
-                  width: '100%',
-                  background: '#eee', // Base track (z=0)
-                  borderRadius: '4px',
                 }}
               >
                 {/* ─── Selected-range track ─── */}
                 <div
                   className={styles.selectedtrack}
                   style={{
-                    position: 'absolute',
                     left: `${selectedLeftPct}%`,
                     width: `${selectedWidthPct}%`,
-                    height: '100%',
-                    background: '#999', // your chosen color
-                    zIndex: 1,
-                    pointerEvents: 'none',
-                    borderRadius: '4px',
+                    zIndex: '1'
                   }}
                 />
 
                 {/* ─── Live-overlay track ─── */}
                 {hasLiveOverlay && (
                   <div
-                    className={styles.livetrack}
+                    className={`${styles.livetrack} ${isFaceted ? styles.livetrackFaceted : styles.livetrackDefault}`}
                     style={{
-                      position: 'absolute',
                       left: `${liveLeftPct}%`,
                       width: `${liveWidthPct}%`,
-                      height: '100%',
-                      background: '#000',
-                      zIndex: 2,
-                      pointerEvents: 'none',
-                      borderRadius: '4px',
+                      zIndex: '2',
                     }}
                   />
                 )}
@@ -129,17 +116,10 @@ export const Slider: React.FC<SliderProps> = (props) => {
               <div
                 key={key}
                 {...restThumbProps}
-                className={styles.thumbs}
+                className={`${styles.thumbs} ${disabled ? styles.disabled : ''}`}
                 style={{
                   ...restThumbProps.style,
-                  height: '18px',
-                  width: '18px',
-                  backgroundColor: disabled ? '#ccc' : '#fff',
-                  borderRadius: '50%',
-                  border: '3px solid #000',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-                  cursor: disabled ? 'not-allowed' : 'grab',
-                  zIndex: 3,
+                  zIndex: '3'
                 }}
               />
             );
@@ -148,7 +128,7 @@ export const Slider: React.FC<SliderProps> = (props) => {
       </div>
     );
   } else {
-    // ─────────── Single-thumb “value” mode ───────────
+    // ─────────── Single-thumb "value" mode ───────────
     const singleValue = props.value as SingleValue;
 
     return (
@@ -185,6 +165,7 @@ export const Slider: React.FC<SliderProps> = (props) => {
               <div
                 key={key}
                 {...restTrackProps}
+                className={styles.basetrack}
                 style={{
                   ...restTrackProps.style,
                   position: 'relative',
@@ -197,15 +178,11 @@ export const Slider: React.FC<SliderProps> = (props) => {
                 {/* ─── Live-overlay track ─── */}
                 {hasLiveOverlay && (
                   <div
+                    className={`${styles.livetrack} ${isFaceted ? styles.livetrackFaceted : styles.livetrackDefault}`}
                     style={{
-                      position: 'absolute',
                       left: `${liveLeftPct}%`,
                       width: `${liveWidthPct}%`,
-                      height: '100%',
-                      background: '#000',
-                      zIndex: 2,
-                      pointerEvents: 'none',
-                      borderRadius: '4px',
+                      zIndex: '2',
                     }}
                   />
                 )}
@@ -220,16 +197,10 @@ export const Slider: React.FC<SliderProps> = (props) => {
               <div
                 key={key}
                 {...restThumbProps}
+                className={`${styles.thumbs} ${disabled ? styles.disabled : ''}`}
                 style={{
                   ...restThumbProps.style,
-                  height: '18px',
-                  width: '18px',
-                  backgroundColor: disabled ? '#ccc' : '#fff',
-                  borderRadius: '50%',
-                  border: '3px solid #000',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-                  cursor: disabled ? 'not-allowed' : 'grab',
-                  zIndex: 3,
+                  zIndex: '3'
                 }}
               />
             );
