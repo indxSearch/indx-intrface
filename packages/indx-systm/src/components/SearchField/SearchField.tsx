@@ -25,6 +25,7 @@ export interface SearchFieldProps extends React.InputHTMLAttributes<HTMLInputEle
   searchIconColor?: string;
   inputSize?: InputSize;
   inputState?: InputState;
+  children?: React.ReactNode; // Add this line
 }
 
 export function SearchField({
@@ -36,6 +37,7 @@ export function SearchField({
   searchIconColor,
   inputSize = 'default',
   inputState = 'default',
+  children,
   ...props
 }: SearchFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -80,6 +82,7 @@ export function SearchField({
           }}
           {...props}
         />
+        {children && <div className={styles.rightContent}>{children}</div>}
       </div>
       {error && <span className={styles.errorText}>{error}</span>}
     </div>
