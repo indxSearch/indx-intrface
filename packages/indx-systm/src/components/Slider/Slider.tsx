@@ -70,7 +70,7 @@ export const Slider: React.FC<SliderProps> = (props) => {
               typeof activeMin === 'number' &&
               typeof activeMax === 'number' &&
               activeMax > activeMin &&
-              max > min;
+              (activeMin > min || activeMax < max);
 
             if (hasLiveOverlay) {
               liveLeftPct = ((activeMin! - min) / span) * 100;
@@ -156,7 +156,7 @@ export const Slider: React.FC<SliderProps> = (props) => {
               typeof activeMin === 'number' &&
               typeof activeMax === 'number' &&
               activeMax > activeMin &&
-              max > min;
+              (activeMin > min || activeMax < max);
 
             if (hasLiveOverlay) {
               liveLeftPct = ((activeMin! - min) / span) * 100;
