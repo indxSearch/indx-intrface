@@ -109,7 +109,7 @@ function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilter
             {showFilters && (
               <div className={styles.filters}>
                 <ActiveFiltersPanel />
-                <SortByPanel displayType='radio' collapsible={false} />
+                <SortByPanel displayType='radio' />
                 <SortByPanel startCollapsed={true}/>
                 <ValueFilterPanel label="Primary type" layout='grid' field="type1" preserveBlankFacetState={true} preserveBlankFacetStateOrder={false} displayType='button' limit={30} />
                 <ValueFilterPanel label="Secondary type" field="type2" startCollapsed={true} displayType='button' layout='grid' />

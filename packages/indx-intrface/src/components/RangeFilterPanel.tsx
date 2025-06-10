@@ -59,35 +59,44 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   const [isMinInvalid, setIsMinInvalid] = React.useState(false);
   const [isMaxInvalid, setIsMaxInvalid] = React.useState(false);
 
-  // Debounced invalid state updates
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      const [min, max] = sliderValue;
-      setIsMinInvalid(min < globalMin || min >= max);
-      setIsMaxInvalid(max > globalMax || max <= min);
-    }, 300); // 300ms delay before showing invalid state
+  // Memoize clamped values calculation
+  const { finalMin, finalMax, isValidMin, isValidMax } = React.useMemo(() => {
+    const [min, max] = sliderValue;
+    const clampedMin = Math.max(globalMin, Math.min(globalMax, min));
+    const clampedMax = Math.max(globalMin, Math.min(globalMax, max));
+    const finalMin = Math.min(clampedMin, clampedMax);
+    const finalMax = Math.max(clampedMin, clampedMax);
+    const isValidMin = finalMin >= globalMin && finalMin < finalMax;
+    const isValidMax = finalMax <= globalMax && finalMax > finalMin;
 
-    return () => clearTimeout(timer);
+    return { finalMin, finalMax, isValidMin, isValidMax };
   }, [sliderValue, globalMin, globalMax]);
 
-  // Debounced filter update
+  // Combined debounced effect for invalid state and filter updates
   React.useEffect(() => {
-    const [min, max] = sliderValue;
-    const isValidMin = min >= globalMin && min < max;
-    const isValidMax = max <= globalMax && max > min;
+    // First timeout for invalid state (300ms)
+    const invalidTimer = setTimeout(() => {
+      setIsMinInvalid(!isValidMin);
+      setIsMaxInvalid(!isValidMax);
+    }, 300);
 
-    if (isValidMin && isValidMax) {
-      const timer = setTimeout(() => {
-        if (min === globalMin && max === globalMax) {
+    // Second timeout for filter update (500ms)
+    const filterTimer = setTimeout(() => {
+      if (isValidMin && isValidMax) {
+        if (finalMin === globalMin && finalMax === globalMax) {
           resetSingleFilter(field);
         } else {
-          setRangeFilter(field, min, max);
+          setRangeFilter(field, finalMin, finalMax);
         }
-      }, 500);
+      }
+    }, 500);
 
-      return () => clearTimeout(timer);
-    }
-  }, [sliderValue, globalMin, globalMax, field]);
+    // Cleanup both timeouts
+    return () => {
+      clearTimeout(invalidTimer);
+      clearTimeout(filterTimer);
+    };
+  }, [finalMin, finalMax, isValidMin, isValidMax, globalMin, globalMax, field]);
 
   // ─────────────────────────────────────────────────────────────────────────────
   // 6) If context had a saved rangeFilter (ctxMin/ctxMax), sync ONCE on mount or when
@@ -102,26 +111,12 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   // 7) Drag handlers (only update local thumb position until let‐go)
   const handleSliderChange = (values: number[]) => {
     if (isDisabled) return;
-    // Clamp values to valid ranges
-    const [m, M] = values;
-    const clampedMin = Math.max(globalMin, Math.min(globalMax, m));
-    const clampedMax = Math.max(globalMin, Math.min(globalMax, M));
-    // Ensure min doesn't exceed max
-    const finalMin = Math.min(clampedMin, clampedMax);
-    const finalMax = Math.max(clampedMin, clampedMax);
-    setSliderValue([finalMin, finalMax]);
+    setSliderValue([values[0], values[1]]);
   };
 
   const handleSliderCommit = (values: number[]) => {
     if (isDisabled) return;
-    let [m, M] = values;
-    // Clamp into [globalMin, globalMax] on commit
-    m = Math.max(globalMin, Math.min(globalMax, m));
-    M = Math.max(globalMin, Math.min(globalMax, M));
-    // Ensure min doesn't exceed max
-    m = Math.min(m, M);
-    M = Math.max(m, M);
-    setSliderValue([m, M]);
+    setSliderValue([values[0], values[1]]);
   };
 
   // 8) Manual number‐input handlers (all within [globalMin, globalMax])
@@ -168,13 +163,6 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   // ─────────────────────────────────────────────────────────────────────────────
   // 9) Render slider (thumbs at `sliderValue`, rail always covers [globalMin→globalMax])
   if (displayType === 'slider') {
-    // Calculate clamped values for the slider
-    const [min, max] = sliderValue;
-    const clampedMin = Math.max(globalMin, Math.min(globalMax, min));
-    const clampedMax = Math.max(globalMin, Math.min(globalMax, max));
-    const finalMin = Math.min(clampedMin, clampedMax);
-    const finalMax = Math.max(clampedMin, clampedMax);
-
     return (
       <FilterPanelBase title={label} collapsed={startCollapsed} collapsible={collapsible} activeFilter={showActivePanel && isSelfActive}>
         {isDisabled && (
