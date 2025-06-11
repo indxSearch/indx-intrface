@@ -17,6 +17,18 @@ export function SearchClient({ dataset }: { dataset: string }) {
   );
 }
 
+type Fields = {
+  name: string;
+  is_legendary?: boolean;
+  type1?: string;
+  type2?: string;
+  hp?: number;
+  speed?: number;
+  attack?: number;
+  abilities?: string[];
+};
+
+
 function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilters?: boolean }) {
   /* SYSTEM THEME */
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -67,7 +79,7 @@ function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilter
                   'abilities'
                 ]}
               >
-                {(item: Record<string, any>) => {
+                {(item: Fields) => {
                   const {
                     name,
                     is_legendary,
