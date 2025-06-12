@@ -1,38 +1,40 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, useRef } from 'react';
 
 export interface SearchState {
-  query: string;
-  results: any[] | null;
-  isLoading: boolean;
-  resultsSuppressed?: boolean;
-  debounceDelayMillis?: number;
-  error?: string;
-  facets?: any | null;
-  filterableFields?: string[];
-  facetableFields?: string[];
-  sortableFields?: string[]; // Optional: list of fields that can be used for sorting
-  filters: Record<string, string[]>;
-  rangeFilters: Record<string, { min: number; max: number }>;
-  facetStats?: Record<string, { min: number; max: number }>; // live
-  rangeBounds?: Record<string, { min: number; max: number }>; // init only, updated on query changes only
-  sortBy?: string;
-  sortAscending?: boolean;
+  query: string; // The current search query text entered by the user
+  results: any[] | null; // The array of search results, or null if no search has been performed yet
+  isLoading: boolean; // Whether a search is currently in progress
+  resultsSuppressed?: boolean; // Whether results should be hidden (e.g. when query is empty and allowEmptySearch is false)
+  debounceDelayMillis?: number; // The delay in milliseconds before performing a faceted search after typing stops
+  error?: string; // Any error message that occurred during the last search
+  facets?: any | null; // The current facet counts and values for each facetable field
+  filterableFields?: string[]; // List of fields that can be used for filtering
+  facetableFields?: string[]; // List of fields that can be used for faceting
+  sortableFields?: string[]; // List of fields that can be used for sorting results
+  filters: Record<string, string[]>; // Current active filters, mapping field names to arrays of selected values
+  rangeFilters: Record<string, { min: number; max: number }>; // Current active range filters, mapping field names to min/max values
+  facetStats?: Record<string, { min: number; max: number }>; // Current facet statistics (min/max values) for numeric fields, updated with each search
+  rangeBounds?: Record<string, { min: number; max: number }>; // Initial range bounds for numeric fields, only updated when query changes
+  sortBy?: string; // The field currently being used to sort results
+  sortAscending?: boolean; // Whether the current sort is ascending (true) or descending (false)
 }
 
 export interface SearchContextType {
-  state: SearchState;
-  isFetchingInitial: boolean;
-  setQuery: (query: string) => void;
-  toggleFilter: (field: string, value: string) => void;
-  setRangeFilter: (field: string, min: number, max: number) => void;
-  resetFilters: () => void;
-  resetSingleFilter: (field: string, value?: string) => void;
-  setSort: (field: string | null, ascending: boolean) => void;
-  setDebounceDelay?: (ms: number) => void;
+  state: SearchState; // The current search state containing all search-related data
+  isFetchingInitial: boolean; // Whether the initial data (fields, facets) is still being loaded
+  setQuery: (query: string) => void; // Updates the search query text
+  toggleFilter: (field: string, value: string) => void; // Toggles a value filter on/off for a given field
+  setRangeFilter: (field: string, min: number, max: number) => void; // Sets min/max values for a range filter
+  resetFilters: () => void; // Clears all active filters and range filters
+  resetSingleFilter: (field: string, value?: string) => void; // Resets a specific value filter or range filter
+  setSort: (field: string | null, ascending: boolean) => void; // Sets the sort field and direction
+  setDebounceDelay?: (ms: number) => void; // Optional: Updates the debounce delay for faceted searches
 }
 
+// Create the search context
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
+// Debounce function to prevent excessive calls to the search API
 function debounce<F extends (...args: any[]) => void>(fn: F, delay: number) {
   let timer: ReturnType<typeof setTimeout>;
   const debounced = (...args: Parameters<F>) => {
@@ -43,6 +45,7 @@ function debounce<F extends (...args: any[]) => void>(fn: F, delay: number) {
   return debounced;
 }
 
+// SearchProvider component that manages the search state and provides the search context
 export const SearchProvider: React.FC<{
   children: React.ReactNode;
   email: string;
@@ -81,17 +84,18 @@ export const SearchProvider: React.FC<{
     }));
   }, [debounceDelayMillis]);
 
-  const [token, setToken] = useState<string | null>(null);
-  const [facetsEnabled] = useState(enableFacets);
-  const [filterableFields, setFilterableFields] = useState<string[]>([]);
-  const [facetableFields, setFacetableFields] = useState<string[]>([]);
-  const [sortableFields, setSortableFields] = useState<string[]>([]);
-  const [isFetchingInitial, setIsFetchingInitial] = useState(true);
-  const [initialFacetStats, setInitialFacetStats] = useState<Record<string, { min: number; max: number }>>({});
-  const [initialFacetKeys, setInitialFacetKeys] = useState<Record<string, string[]>>({});
-  const [fixedFacetStats, setFixedFacetStats] = useState<Record<string, { min: number; max: number }>>({});
-  const [lastQueryText, setLastQueryText] = useState<string>('');
-  const [rangeBounds, setRangeBounds] = useState<Record<string, { min: number; max: number }>>({});
+  // State variables for managing the search process
+  const [token, setToken] = useState<string | null>(null); // The authentication token for API requests
+  const [facetsEnabled] = useState(enableFacets); // Whether faceting is enabled
+  const [filterableFields, setFilterableFields] = useState<string[]>([]); // List of fields that can be used for filtering
+  const [facetableFields, setFacetableFields] = useState<string[]>([]); // List of fields that can be used for faceting
+  const [sortableFields, setSortableFields] = useState<string[]>([]); // List of fields that can be used for sorting results
+  const [isFetchingInitial, setIsFetchingInitial] = useState(true); // Whether the initial data (fields, facets) is still being loaded
+  const [initialFacetStats, setInitialFacetStats] = useState<Record<string, { min: number; max: number }>>({}); // Initial facet statistics (min/max values) for numeric fields
+  const [initialFacetKeys, setInitialFacetKeys] = useState<Record<string, string[]>>({}); // Initial facet keys for non-coverage fields
+  const [fixedFacetStats, setFixedFacetStats] = useState<Record<string, { min: number; max: number }>>({}); // Fixed facet statistics (min/max values) for numeric fields
+  const [lastQueryText, setLastQueryText] = useState<string>(''); // The last query text entered by the user
+  const [rangeBounds, setRangeBounds] = useState<Record<string, { min: number; max: number }>>({}); // Initial range bounds for numeric fields, only updated when query changes
 
   // Cache for initial blank search data
   const initialBlankSearchData = useRef<{
@@ -100,6 +104,7 @@ export const SearchProvider: React.FC<{
     facetKeys: Record<string, string[]>;
   } | null>(null);
 
+  // Function to update the search query text
   const setQuery = useCallback((query: string) => {
     setState(prev => ({
       ...prev,
@@ -109,6 +114,7 @@ export const SearchProvider: React.FC<{
     }));
   }, []);
 
+  // Function to update the debounce delay for faceted searches
   const setDebounceDelay = useCallback((ms: number) => {
     setState(prev => ({
       ...prev,
@@ -116,6 +122,7 @@ export const SearchProvider: React.FC<{
     }));
   }, []);
 
+  // Function to toggle a value filter on/off for a given field
   const toggleFilter = useCallback((field: string, value: string) => {
     setState(prev => {
       const updatedFilters = { ...prev.filters };
@@ -137,6 +144,7 @@ export const SearchProvider: React.FC<{
     });
   }, []);
 
+  // Function to set min/max values for a range filter
   const setRangeFilter = useCallback((field: string, min: number, max: number) => {
     setState(prev => ({
       ...prev,
@@ -147,6 +155,7 @@ export const SearchProvider: React.FC<{
     }));
   }, []);
 
+  // Function to clear all active filters and range filters
   const resetFilters = useCallback(() => {
     setState(prev => ({
       ...prev,
@@ -155,6 +164,7 @@ export const SearchProvider: React.FC<{
     }));
   }, []);
 
+  // Function to reset a specific value filter or range filter
   const resetSingleFilter = useCallback((field: string, value?: string) => {
     setState(prev => {
       const updatedFilters = { ...prev.filters };
@@ -180,6 +190,7 @@ export const SearchProvider: React.FC<{
     });
   }, []);
 
+  // Function to set the sort field and direction
   const setSort = useCallback((field: string | null, ascending: boolean) => {
     setState(prev => ({
       ...prev,
@@ -188,13 +199,14 @@ export const SearchProvider: React.FC<{
     }));
   }, []);
 
+  // Function to combine multiple filters into a single filter proxy
   async function combineFilters(filters: any[], url: string, dataset: string, token: string): Promise<any> {
     if (filters.length === 0) return null;
     if (filters.length === 1) return filters[0];
 
-    let current = filters[0];
-    for (let i = 1; i < filters.length; i++) {
-      const response = await fetch(`${url}/api/CombineFilters/${dataset}`, {
+    let current = filters[0]; // Start with the first filter
+    for (let i = 1; i < filters.length; i++) { // Iterate through the remaining filters
+      const response = await fetch(`${url}/api/CombineFilters/${dataset}`, { // Combine the current filter with the next filter
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -202,29 +214,30 @@ export const SearchProvider: React.FC<{
         },
         body: JSON.stringify({ A: current, B: filters[i], useAndOperation: true }),
       });
-      if (!response.ok) {
-        const err = await response.json();
-        console.error('CombineFilters failed:', err);
-        throw new Error('CombineFilters failed');
+      if (!response.ok) { // If the response is not ok, throw an error
+        const err = await response.json(); // Get the error message
+        console.error('CombineFilters failed:', err); // Log the error
+        throw new Error('CombineFilters failed'); // Throw an error
       }
-      current = await response.json();
+      current = await response.json(); // Update the current filter with the combined filter
     }
-    return current;
+    return current; // Return the final combined filter
   }
 
-  const performSearch = useCallback(
-    async ({ enableFacets }: { enableFacets: boolean }) => {
-      if (!token) return;
-      setState(prev => ({ ...prev, isLoading: true }));
+  // Function to perform the actual search
+  const performSearch = useCallback( 
+    async ({ enableFacets }: { enableFacets: boolean }) => { 
+      if (!token) return; // If the token is not set, return
+      setState(prev => ({ ...prev, isLoading: true })); // Set the loading state to true
 
       try {
         // 1) Build value‐filter proxies
-        const filterEntries = Object.entries(state.filters ?? {});
-        const valueFilterResponsesNested: any[][] = await Promise.all(
-          filterEntries.map(async ([field, values]) =>
+        const filterEntries = Object.entries(state.filters ?? {}); // Get the filter entries from the state
+        const valueFilterResponsesNested: any[][] = await Promise.all( // Create an array of value filter responses
+          filterEntries.map(async ([field, values]) => 
             Promise.all(
               values.map(value =>
-                fetch(`${url}/api/CreateValueFilter/${dataset}`, {
+                fetch(`${url}/api/CreateValueFilter/${dataset}`, { 
                   method: 'PUT',
                   headers: {
                     'Content-Type': 'application/json',
@@ -236,11 +249,11 @@ export const SearchProvider: React.FC<{
             )
           )
         )
-        const valueFilterResponses = valueFilterResponsesNested.flat();
+        const valueFilterResponses = valueFilterResponsesNested.flat(); // Flatten the array of value filter responses
 
         // 2) Build range‐filter proxies
-        const rangeFilterEntries = Object.entries(state.rangeFilters ?? {});
-        const rangeFilterResponses: any[] = await Promise.all(
+        const rangeFilterEntries = Object.entries(state.rangeFilters ?? {}); // Get the range filter entries from the state
+        const rangeFilterResponses: any[] = await Promise.all( // Create an array of range filter responses
           rangeFilterEntries.map(([field, { min, max }]) =>
             fetch(`${url}/api/CreateRangeFilter/${dataset}`, {
               method: 'PUT',
@@ -260,14 +273,15 @@ export const SearchProvider: React.FC<{
         const filterProxy = await combineFilters(allFilters, url, dataset, token);
 
         // 4) Determine if we should fetch results
-        const shouldFetchResults = allowEmptySearch || state.query.trim() !== '';
-        const searchBody: any = {
-          text: state.query,
-          maxNumberOfRecordsToReturn: shouldFetchResults ? maxResults : 0,
-          ...(filterProxy ? { filter: filterProxy } : {}),
-          ...(enableFacets ? { enableFacets: true } : {}),
-          ...(state.sortBy ? { sortBy: state.sortBy } : {}),
-          ...(state.sortAscending !== undefined ? { sortAscending: state.sortAscending } : {}),
+        const shouldFetchResults = allowEmptySearch || state.query.trim() !== ''; // If the query is empty and allowEmptySearch is false, do not fetch results
+        const searchBody: any = { // The body of the search request
+          text: state.query, // The search query text
+          maxNumberOfRecordsToReturn: shouldFetchResults ? maxResults : 0, // The maximum number of records to return
+          ...(filterProxy ? { filter: filterProxy } : {}), // The filter proxy
+          ...(enableFacets ? { enableFacets: true } : {}), // Whether faceting is enabled
+          ...(state.sortBy ? { sortBy: state.sortBy } : {}), // The field to sort by
+          ...(state.sortAscending !== undefined ? { sortAscending: state.sortAscending } : {}), // The sort direction
+          // Lots of more options possible here, but we'll keep it simple for now
         };
 
         // 5) Execute the search
@@ -279,13 +293,13 @@ export const SearchProvider: React.FC<{
           },
           body: JSON.stringify(searchBody),
         });
-        const searchData = await searchResponse.json();
+        const searchData = await searchResponse.json(); // The search data
 
         // 6) Fetch actual documents if needed
-        const keys = (searchData.records || []).map((record: any) => record.documentKey);
-        let documents: any[] = [];
-        if (shouldFetchResults && keys.length > 0) {
-          const jsonResponse = await fetch(`${url}/api/GetJson/${dataset}`, {
+        const keys = (searchData.records || []).map((record: any) => record.documentKey); // The keys of the documents to fetch
+        let documents: any[] = []; // The documents
+        if (shouldFetchResults && keys.length > 0) { // If the documents should be fetched and there are keys
+          const jsonResponse = await fetch(`${url}/api/GetJson/${dataset}`, { // Fetch the documents
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -293,19 +307,19 @@ export const SearchProvider: React.FC<{
             },
             body: JSON.stringify(keys),
           });
-          documents = await jsonResponse.json();
+          documents = await jsonResponse.json(); // The documents
         }
 
         // 7) Build new facetStats (live min/max under all filters)
-        let newFacetStats: Record<string, { min: number; max: number }> = {};
-        if (enableFacets && searchData.facets) {
-          for (const [field, values] of Object.entries(searchData.facets)) {
-            if (Array.isArray(values) && values.length > 0) {
-              const numericValues = (values as any[])
-                .map(v => Number(v.key))
-                .filter((v: number) => !isNaN(v));
-              if (numericValues.length > 0) {
-                newFacetStats[field] = {
+        let newFacetStats: Record<string, { min: number; max: number }> = {}; 
+        if (enableFacets && searchData.facets) { // If faceting is enabled and there are facets
+          for (const [field, values] of Object.entries(searchData.facets)) { // Iterate through the facets
+            if (Array.isArray(values) && values.length > 0) { // If the values are an array and there are values
+              const numericValues = (values as any[]) // Convert the values to numbers
+                .map(v => Number(v.key)) // Convert the values to numbers
+                .filter((v: number) => !isNaN(v)); // Filter out any non-numeric values
+              if (numericValues.length > 0) { // If there are numeric values
+                newFacetStats[field] = { // Update the facet stats
                   min: Math.min(...numericValues),
                   max: Math.max(...numericValues),
                 };
@@ -321,28 +335,28 @@ export const SearchProvider: React.FC<{
         let mergedFacetStats = state.facetStats ?? {};
         if (queryChanged) {
           // On brand‐new query, restart from the initial blank‐search stats
-          mergedFacetStats = { ...initialFacetStats, ...newFacetStats };
-          setFixedFacetStats(mergedFacetStats);
-          setLastQueryText(state.query);
+          mergedFacetStats = { ...initialFacetStats, ...newFacetStats }; 
+          setFixedFacetStats(mergedFacetStats); // Set the fixed facet stats. These will be used to display the initial facet stats for non-coverage hits (large typos)
+          setLastQueryText(state.query); // Set the last query text. This is used to determine if the query has changed
         } else {
-          // Otherwise, overlay new stats on top of existing fixed stats
+          // Otherwise, overlay new stats on top of existing fixed stats. This is used to display the updated facet stats for coverage hits (near-exact matches)
           mergedFacetStats = { ...fixedFacetStats, ...newFacetStats };
         }
 
         // 10) Update rangeBounds only if the query text changed
         if (queryChanged) {
-          const updatedBounds = { ...rangeBounds };
-          for (const [field, stats] of Object.entries(newFacetStats)) {
-            updatedBounds[field] = stats;
+          const updatedBounds = { ...rangeBounds }; // Create a new range bounds object
+          for (const [field, stats] of Object.entries(newFacetStats)) { // Iterate through the new facet stats
+            updatedBounds[field] = stats; // Update the range bounds
           }
-          setRangeBounds(updatedBounds);
+          setRangeBounds(updatedBounds); // Set the range bounds
         }
 
         // 11) Prepare displayFacets (for non‐coverage fields if needed)
-        let displayFacets: any = searchData.facets;
-        if (enableFacets && (!displayFacets || Object.keys(displayFacets).length === 0)) {
-          displayFacets = {};
-          for (const [field, keys] of Object.entries(initialFacetKeys)) {
+        let displayFacets: any = searchData.facets; // The facets to display
+        if (enableFacets && (!displayFacets || Object.keys(displayFacets).length === 0)) { // If faceting is enabled and there are no facets
+          displayFacets = {}; // Create a new facets object
+          for (const [field, keys] of Object.entries(initialFacetKeys)) { // Iterate through the initial facet keys
             displayFacets[field] = (keys as string[]).map(key => ({ key, value: null }));
           }
         }
@@ -371,40 +385,42 @@ export const SearchProvider: React.FC<{
       }
     },
     [
-      state.query,
-      state.filters,
-      state.rangeFilters,
-      state.sortBy,
-      state.sortAscending,
-      token,
-      url,
-      dataset,
-      maxResults,
-      initialFacetStats,
-      fixedFacetStats,
-      lastQueryText,
-      rangeBounds,
-      initialFacetKeys,
+      state.query, // The current search query text entered by the user
+      state.filters, // The current active filters
+      state.rangeFilters, // The current active range filters
+      state.sortBy, // The field currently being used to sort results
+      state.sortAscending, // Whether the current sort is ascending (true) or descending (false)
+      token, // The authentication token for API requests
+      url, // The URL of the search API
+      dataset, // The dataset to search
+      maxResults, // The maximum number of records to return
+      initialFacetStats, // The initial facet stats (min/max values) for numeric fields
+      fixedFacetStats, // The fixed facet stats (min/max values) for numeric fields
+      lastQueryText, // The last query text entered by the user
+      rangeBounds, // The initial range bounds for numeric fields, only updated when query changes
+      initialFacetKeys, // The initial facet keys for non-coverage fields
     ]
   );
 
-  const searchBasic = useCallback(() => {
-    performSearch({ enableFacets: false });
+  // Function to perform a basic search (no facets)
+  const searchBasic = useCallback(() => { 
+    performSearch({ enableFacets: false }); // Perform a basic search (no facets)
   }, [performSearch]);
 
+  // Function to perform a search with facets
   const searchWithFacets = useMemo(
-    () => debounce(() => performSearch({ enableFacets: true }), state.debounceDelayMillis ?? 50),
+    () => debounce(() => performSearch({ enableFacets: true }), state.debounceDelayMillis ?? 50), // Debounce the search with facets
     [performSearch, state.debounceDelayMillis]
   );
 
   // Effect for query changes - immediate results, debounced facets
   useEffect(() => {
-    const trimmedQuery = state.query.trim();
-    const isFirstLoad = lastQueryText === '' && trimmedQuery === '';
-    const isEmptySearch = trimmedQuery === '' && allowEmptySearch;
+    const trimmedQuery = state.query.trim(); // Trim the query text
+    const isFirstLoad = lastQueryText === '' && trimmedQuery === ''; // If the query is empty and the last query text is empty
+    const isEmptySearch = trimmedQuery === '' && allowEmptySearch; // If the query is empty and allowEmptySearch is false
 
-    if (isFirstLoad || isEmptySearch) {
-      searchWithFacets.cancel?.();
+    if (isFirstLoad || isEmptySearch) { 
+      searchWithFacets.cancel?.(); 
       performSearch({ enableFacets: facetsEnabled });
     } else {
       if (facetsEnabled) {
