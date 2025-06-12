@@ -104,6 +104,10 @@ export const SearchProvider: React.FC<{
     facetKeys: Record<string, string[]>;
   } | null>(null);
 
+  // Add AbortController refs
+  const searchAbortController = useRef<AbortController | null>(null);
+  const filterAbortController = useRef<AbortController | null>(null);
+
   // Function to update the search query text
   const setQuery = useCallback((query: string) => {
     setState(prev => ({
@@ -227,13 +231,19 @@ export const SearchProvider: React.FC<{
   // Function to perform the actual search
   const performSearch = useCallback( 
     async ({ enableFacets }: { enableFacets: boolean }) => { 
-      if (!token) return; // If the token is not set, return
-      setState(prev => ({ ...prev, isLoading: true })); // Set the loading state to true
+      if (!token) return;
+      setState(prev => ({ ...prev, isLoading: true }));
+
+      // Cancel any in-flight search
+      if (searchAbortController.current) {
+        searchAbortController.current.abort();
+      }
+      searchAbortController.current = new AbortController();
 
       try {
         // 1) Build value‐filter proxies
-        const filterEntries = Object.entries(state.filters ?? {}); // Get the filter entries from the state
-        const valueFilterResponsesNested: any[][] = await Promise.all( // Create an array of value filter responses
+        const filterEntries = Object.entries(state.filters ?? {});
+        const valueFilterResponsesNested: any[][] = await Promise.all(
           filterEntries.map(async ([field, values]) => 
             Promise.all(
               values.map(value =>
@@ -244,16 +254,17 @@ export const SearchProvider: React.FC<{
                     'Authorization': `Bearer ${token}`,
                   },
                   body: JSON.stringify({ FieldName: field, Value: value }),
+                  signal: filterAbortController.current?.signal
                 }).then(res => res.json())
               )
             )
           )
-        )
-        const valueFilterResponses = valueFilterResponsesNested.flat(); // Flatten the array of value filter responses
+        );
+        const valueFilterResponses = valueFilterResponsesNested.flat();
 
         // 2) Build range‐filter proxies
-        const rangeFilterEntries = Object.entries(state.rangeFilters ?? {}); // Get the range filter entries from the state
-        const rangeFilterResponses: any[] = await Promise.all( // Create an array of range filter responses
+        const rangeFilterEntries = Object.entries(state.rangeFilters ?? {});
+        const rangeFilterResponses: any[] = await Promise.all(
           rangeFilterEntries.map(([field, { min, max }]) =>
             fetch(`${url}/api/CreateRangeFilter/${dataset}`, {
               method: 'PUT',
@@ -262,6 +273,7 @@ export const SearchProvider: React.FC<{
                 'Authorization': `Bearer ${token}`,
               },
               body: JSON.stringify({ FieldName: field, LowerLimit: min, UpperLimit: max }),
+              signal: filterAbortController.current?.signal
             }).then(res => res.json())
           )
         );
@@ -273,15 +285,14 @@ export const SearchProvider: React.FC<{
         const filterProxy = await combineFilters(allFilters, url, dataset, token);
 
         // 4) Determine if we should fetch results
-        const shouldFetchResults = allowEmptySearch || state.query.trim() !== ''; // If the query is empty and allowEmptySearch is false, do not fetch results
-        const searchBody: any = { // The body of the search request
-          text: state.query, // The search query text
-          maxNumberOfRecordsToReturn: shouldFetchResults ? maxResults : 0, // The maximum number of records to return
-          ...(filterProxy ? { filter: filterProxy } : {}), // The filter proxy
-          ...(enableFacets ? { enableFacets: true } : {}), // Whether faceting is enabled
-          ...(state.sortBy ? { sortBy: state.sortBy } : {}), // The field to sort by
-          ...(state.sortAscending !== undefined ? { sortAscending: state.sortAscending } : {}), // The sort direction
-          // Lots of more options possible here, but we'll keep it simple for now
+        const shouldFetchResults = allowEmptySearch || state.query.trim() !== '';
+        const searchBody = {
+          text: state.query,
+          maxNumberOfRecordsToReturn: shouldFetchResults ? maxResults : 0,
+          ...(filterProxy ? { filter: filterProxy } : {}),
+          ...(enableFacets ? { enableFacets: true } : {}),
+          ...(state.sortBy ? { sortBy: state.sortBy } : {}),
+          ...(state.sortAscending !== undefined ? { sortAscending: state.sortAscending } : {})
         };
 
         // 5) Execute the search
@@ -292,22 +303,24 @@ export const SearchProvider: React.FC<{
             'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify(searchBody),
+          signal: searchAbortController.current.signal
         });
-        const searchData = await searchResponse.json(); // The search data
+        const searchData = await searchResponse.json();
 
         // 6) Fetch actual documents if needed
-        const keys = (searchData.records || []).map((record: any) => record.documentKey); // The keys of the documents to fetch
-        let documents: any[] = []; // The documents
-        if (shouldFetchResults && keys.length > 0) { // If the documents should be fetched and there are keys
-          const jsonResponse = await fetch(`${url}/api/GetJson/${dataset}`, { // Fetch the documents
+        const keys = (searchData.records || []).map((record: any) => record.documentKey);
+        let documents: any[] = [];
+        if (shouldFetchResults && keys.length > 0) {
+          const jsonResponse = await fetch(`${url}/api/GetJson/${dataset}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify(keys),
+            signal: searchAbortController.current.signal
           });
-          documents = await jsonResponse.json(); // The documents
+          documents = await jsonResponse.json();
         }
 
         // 7) Build new facetStats (live min/max under all filters)
@@ -409,15 +422,15 @@ export const SearchProvider: React.FC<{
 
   // Function to perform a search with facets
   const searchWithFacets = useMemo(
-    () => debounce(() => performSearch({ enableFacets: true }), state.debounceDelayMillis ?? 50), // Debounce the search with facets
+    () => debounce(() => performSearch({ enableFacets: true }), state.debounceDelayMillis ?? 500), // Debounce the search with facets
     [performSearch, state.debounceDelayMillis]
   );
 
   // Effect for query changes - immediate results, debounced facets
   useEffect(() => {
-    const trimmedQuery = state.query.trim(); // Trim the query text
-    const isFirstLoad = lastQueryText === '' && trimmedQuery === ''; // If the query is empty and the last query text is empty
-    const isEmptySearch = trimmedQuery === '' && allowEmptySearch; // If the query is empty and allowEmptySearch is false
+    const trimmedQuery = state.query.trim();
+    const isFirstLoad = lastQueryText === '' && trimmedQuery === '';
+    const isEmptySearch = trimmedQuery === '' && allowEmptySearch;
 
     if (isFirstLoad || isEmptySearch) { 
       searchWithFacets.cancel?.(); 
@@ -433,6 +446,13 @@ export const SearchProvider: React.FC<{
 
     return () => {
       searchWithFacets.cancel?.();
+      // Cancel any in-flight requests when the effect cleanup runs
+      if (searchAbortController.current) {
+        searchAbortController.current.abort();
+      }
+      if (filterAbortController.current) {
+        filterAbortController.current.abort();
+      }
     };
   }, [state.query, allowEmptySearch, lastQueryText, searchBasic, searchWithFacets, performSearch, facetsEnabled]);
 
@@ -442,9 +462,16 @@ export const SearchProvider: React.FC<{
     if (facetsEnabled && state.query === lastQueryText) {
       performSearch({ enableFacets: true });  // Immediate results + facets
     }
+
+    return () => {
+      // Cancel any in-flight filter requests when filters change
+      if (filterAbortController.current) {
+        filterAbortController.current.abort();
+      }
+    };
   }, [state.filters, state.rangeFilters, facetsEnabled, performSearch, state.query, lastQueryText]);
 
-  useEffect(() => {
+  useEffect(() => { // Effect for login - fetch filterable, facetable, sortable fields and initial blank search
     const login = async () => {
       try {
         if (!email || !password) {
