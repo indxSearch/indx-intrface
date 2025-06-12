@@ -67,6 +67,8 @@ export const SearchProvider: React.FC<{
   debounceDelayMillis = 300, // debounce faceted searches only
   enableFacets = true,
 }) => {
+  // Track the latest search request to prevent race conditions
+  const latestRequestId = useRef(0);
   const [state, setState] = useState<SearchState>({
     query: '',
     results: null,
@@ -225,9 +227,10 @@ export const SearchProvider: React.FC<{
   }
 
   // Function to perform the actual search
-  const performSearch = useCallback( 
-    async ({ enableFacets }: { enableFacets: boolean }) => { 
+  const performSearch = useCallback(
+    async ({ enableFacets }: { enableFacets: boolean }) => {
       if (!token) return;
+      const currentRequestId = ++latestRequestId.current;
       setState(prev => ({ ...prev, isLoading: true }));
 
       try {
@@ -361,6 +364,9 @@ export const SearchProvider: React.FC<{
         }
 
         // 12) Final state update
+        if (currentRequestId !== latestRequestId.current) {
+          return; // A newer request has been made — ignore this one
+        }
         setState(prev => ({
           ...prev,
           results: documents,
@@ -375,6 +381,9 @@ export const SearchProvider: React.FC<{
         }));
       } catch (error) {
         console.error('Search failed:', error);
+        if (currentRequestId !== latestRequestId.current) {
+          return; // A newer request has been made — ignore this one
+        }
         setState(prev => ({
           ...prev,
           results: null,
