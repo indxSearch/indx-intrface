@@ -5,7 +5,7 @@ export interface SearchState {
   results: any[] | null; // The array of search results, or null if no search has been performed yet
   isLoading: boolean; // Whether a search is currently in progress
   resultsSuppressed?: boolean; // Whether results should be hidden (e.g. when query is empty and allowEmptySearch is false)
-  debounceDelayMillis?: number; // The delay in milliseconds before performing a faceted search after typing stops
+  facetDebounceDelayMillis?: number; // The delay in milliseconds before performing a faceted search after typing stops
   error?: string; // Any error message that occurred during the last search
   facets?: any | null; // The current facet counts and values for each facetable field
   filterableFields?: string[]; // List of fields that can be used for filtering
@@ -54,7 +54,7 @@ export const SearchProvider: React.FC<{
   dataset: string;
   allowEmptySearch?: boolean;
   maxResults?: number;
-  debounceDelayMillis?: number;
+  facetDebounceDelayMillis?: number;
   enableFacets?: boolean;
 }> = ({
   children,
@@ -64,16 +64,15 @@ export const SearchProvider: React.FC<{
   dataset,
   allowEmptySearch = false,
   maxResults = 10,
-  debounceDelayMillis = 300, // debounce faceted searches only
+  facetDebounceDelayMillis = 200, // debounce faceted searches only
   enableFacets = true,
 }) => {
-  // Track the latest search request to prevent race conditions
-  const latestRequestId = useRef(0);
+  const latestRequestId = useRef(0); // Track the latest search request to prevent race conditions
   const [state, setState] = useState<SearchState>({
     query: '',
     results: null,
     isLoading: false,
-    debounceDelayMillis,
+    facetDebounceDelayMillis,
     filters: {},
     rangeFilters: {},
     facetStats: {},
@@ -82,9 +81,9 @@ export const SearchProvider: React.FC<{
   useEffect(() => {
     setState(prev => ({
       ...prev,
-      debounceDelayMillis,
+      facetDebounceDelayMillis,
     }));
-  }, [debounceDelayMillis]);
+  }, [facetDebounceDelayMillis]);
 
   // State variables for managing the search process
   const [token, setToken] = useState<string | null>(null); // The authentication token for API requests
@@ -120,7 +119,7 @@ export const SearchProvider: React.FC<{
   const setDebounceDelay = useCallback((ms: number) => {
     setState(prev => ({
       ...prev,
-      debounceDelayMillis: ms,
+      facetDebounceDelayMillis: ms,
     }));
   }, []);
 
@@ -417,8 +416,8 @@ export const SearchProvider: React.FC<{
 
   // Function to perform a search with facets
   const searchWithFacets = useMemo(
-    () => debounce(() => performSearch({ enableFacets: true }), state.debounceDelayMillis ?? 500),
-    [performSearch, state.debounceDelayMillis]
+    () => debounce(() => performSearch({ enableFacets: true }), state.facetDebounceDelayMillis ?? 500),
+    [performSearch, state.facetDebounceDelayMillis]
   );
 
   // Effect for query changes - immediate results, debounced facets
