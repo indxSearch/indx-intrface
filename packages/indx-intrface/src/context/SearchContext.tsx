@@ -104,10 +104,6 @@ export const SearchProvider: React.FC<{
     facetKeys: Record<string, string[]>;
   } | null>(null);
 
-  // Add AbortController refs
-  const searchAbortController = useRef<AbortController | null>(null);
-  const filterAbortController = useRef<AbortController | null>(null);
-
   // Function to update the search query text
   const setQuery = useCallback((query: string) => {
     setState(prev => ({
@@ -234,12 +230,6 @@ export const SearchProvider: React.FC<{
       if (!token) return;
       setState(prev => ({ ...prev, isLoading: true }));
 
-      // Cancel any in-flight search
-      if (searchAbortController.current) {
-        searchAbortController.current.abort();
-      }
-      searchAbortController.current = new AbortController();
-
       try {
         // 1) Build value‐filter proxies
         const filterEntries = Object.entries(state.filters ?? {});
@@ -254,7 +244,6 @@ export const SearchProvider: React.FC<{
                     'Authorization': `Bearer ${token}`,
                   },
                   body: JSON.stringify({ FieldName: field, Value: value }),
-                  signal: filterAbortController.current?.signal
                 }).then(res => res.json())
               )
             )
@@ -273,7 +262,6 @@ export const SearchProvider: React.FC<{
                 'Authorization': `Bearer ${token}`,
               },
               body: JSON.stringify({ FieldName: field, LowerLimit: min, UpperLimit: max }),
-              signal: filterAbortController.current?.signal
             }).then(res => res.json())
           )
         );
@@ -303,7 +291,6 @@ export const SearchProvider: React.FC<{
             'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify(searchBody),
-          signal: searchAbortController.current.signal
         });
         const searchData = await searchResponse.json();
 
@@ -318,7 +305,6 @@ export const SearchProvider: React.FC<{
               'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify(keys),
-            signal: searchAbortController.current.signal
           });
           documents = await jsonResponse.json();
         }
@@ -398,31 +384,31 @@ export const SearchProvider: React.FC<{
       }
     },
     [
-      state.query, // The current search query text entered by the user
-      state.filters, // The current active filters
-      state.rangeFilters, // The current active range filters
-      state.sortBy, // The field currently being used to sort results
-      state.sortAscending, // Whether the current sort is ascending (true) or descending (false)
-      token, // The authentication token for API requests
-      url, // The URL of the search API
-      dataset, // The dataset to search
-      maxResults, // The maximum number of records to return
-      initialFacetStats, // The initial facet stats (min/max values) for numeric fields
-      fixedFacetStats, // The fixed facet stats (min/max values) for numeric fields
-      lastQueryText, // The last query text entered by the user
-      rangeBounds, // The initial range bounds for numeric fields, only updated when query changes
-      initialFacetKeys, // The initial facet keys for non-coverage fields
+      state.query,
+      state.filters,
+      state.rangeFilters,
+      state.sortBy,
+      state.sortAscending,
+      token,
+      url,
+      dataset,
+      maxResults,
+      initialFacetStats,
+      fixedFacetStats,
+      lastQueryText,
+      rangeBounds,
+      initialFacetKeys,
     ]
   );
 
   // Function to perform a basic search (no facets)
   const searchBasic = useCallback(() => { 
-    performSearch({ enableFacets: false }); // Perform a basic search (no facets)
+    performSearch({ enableFacets: false });
   }, [performSearch]);
 
   // Function to perform a search with facets
   const searchWithFacets = useMemo(
-    () => debounce(() => performSearch({ enableFacets: true }), state.debounceDelayMillis ?? 500), // Debounce the search with facets
+    () => debounce(() => performSearch({ enableFacets: true }), state.debounceDelayMillis ?? 500),
     [performSearch, state.debounceDelayMillis]
   );
 
@@ -446,13 +432,6 @@ export const SearchProvider: React.FC<{
 
     return () => {
       searchWithFacets.cancel?.();
-      // Cancel any in-flight requests when the effect cleanup runs
-      if (searchAbortController.current) {
-        searchAbortController.current.abort();
-      }
-      if (filterAbortController.current) {
-        filterAbortController.current.abort();
-      }
     };
   }, [state.query, allowEmptySearch, lastQueryText, searchBasic, searchWithFacets, performSearch, facetsEnabled]);
 
@@ -462,16 +441,9 @@ export const SearchProvider: React.FC<{
     if (facetsEnabled && state.query === lastQueryText) {
       performSearch({ enableFacets: true });  // Immediate results + facets
     }
-
-    return () => {
-      // Cancel any in-flight filter requests when filters change
-      if (filterAbortController.current) {
-        filterAbortController.current.abort();
-      }
-    };
   }, [state.filters, state.rangeFilters, facetsEnabled, performSearch, state.query, lastQueryText]);
 
-  useEffect(() => { // Effect for login - fetch filterable, facetable, sortable fields and initial blank search
+  useEffect(() => {
     const login = async () => {
       try {
         if (!email || !password) {
