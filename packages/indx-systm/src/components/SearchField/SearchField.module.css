@@ -50,6 +50,8 @@
 	background-color: rgba(0,0,0, 0.2);
 }
 
+
+
 .input::placeholder {
 	opacity: 0.3;
 	color: black;
@@ -154,4 +156,13 @@
 .errorText {
 	font: var(--text-micro);
 	color: var(--CSignal);
+}
+
+.focus {
+  border: 1px solid var(--highlight-color);
+  outline: none;
+}
+.input.focus {
+  border-color: var(--highlight-color);
+  box-shadow: 0 0 0 2px var(--highlight-color);
 }

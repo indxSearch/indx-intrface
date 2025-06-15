@@ -25,6 +25,7 @@ export interface SearchFieldProps extends React.InputHTMLAttributes<HTMLInputEle
   searchIconColor?: string;
   inputSize?: InputSize;
   inputState?: InputState;
+  showFocusBorder?: boolean;
   children?: React.ReactNode; // Add this line
 }
 
@@ -37,6 +38,7 @@ export function SearchField({
   searchIconColor,
   inputSize = 'default',
   inputState = 'default',
+  showFocusBorder = false,
   children,
   ...props
 }: SearchFieldProps) {
@@ -67,7 +69,7 @@ export function SearchField({
         )}
         <input
           ref={inputRef}
-          className={`${styles.input} ${error ? styles.error : ''}`}
+          className={`${styles.input} ${showFocusBorder ? styles.focus : ''} ${error ? styles.error : ''}`}
           style={inlineStyles}
           onFocus={(e) => {
             setIsFocused(true);

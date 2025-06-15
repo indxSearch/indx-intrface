@@ -6,6 +6,7 @@ import type { InputSize } from '@indxsearch/systm';
 export interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   inputSize?: InputSize; // Optional prop with valid values
   showClear?: Boolean;
+  showFocus?: Boolean;
 }
 
 export const SearchInput: React.FC<SearchInputProps> = ({ 
@@ -14,6 +15,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   autoFocus = false,
   inputSize = 'default',
   showClear = true,
+  showFocus = false,
   ...rest
 }) => {
   const { state: { query, filters, rangeFilters }, setQuery } = useSearchContext();
@@ -30,6 +32,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       className={className}
       showSearchIcon={true}
       inputSize={inputSize}
+      showFocusBorder={true}
       inputState={hasFilters ? 'filtered' : 'default'}
       {...rest}
     >
