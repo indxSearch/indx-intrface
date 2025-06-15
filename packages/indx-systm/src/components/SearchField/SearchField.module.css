@@ -50,6 +50,14 @@
 	background-color: rgba(0,0,0, 0.2);
 }
 
+/* FOCUS BORDER VISIBLE PROP */
+.input.focus:focus {
+	box-shadow: 0 0 0 2px var(--CPureBlue);
+}
+:global(.dark) .input.focus:focus {
+	box-shadow: 0 0 0 2px var(--CB3);
+}
+
 
 
 .input::placeholder {
@@ -156,13 +164,4 @@
 .errorText {
 	font: var(--text-micro);
 	color: var(--CSignal);
-}
-
-.focus {
-  border: 1px solid var(--highlight-color);
-  outline: none;
-}
-.input.focus {
-  border-color: var(--highlight-color);
-  box-shadow: 0 0 0 2px var(--highlight-color);
 }

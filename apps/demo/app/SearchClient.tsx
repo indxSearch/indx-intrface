@@ -55,6 +55,7 @@ function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilter
           <div className={styles.header}>
             <SearchInput
               placeholder="Type to search"
+              showFocus={true}
               className={styles.searchInput}
             />
             <div id={styles.meta}>
