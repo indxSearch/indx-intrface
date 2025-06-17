@@ -6,6 +6,10 @@
   gap: 8px;
 }
 
+.radioWrapper:hover .customRadio {
+  border-color: var(--CMediumGray);
+}
+
 .radioInput {
   display: none;
 }

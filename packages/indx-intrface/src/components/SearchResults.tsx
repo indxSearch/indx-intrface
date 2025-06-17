@@ -50,7 +50,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ fields, children }
           displayData = { ...parsed };
         }
 
-        // 2) Strip array‐like strings (e.g. "['Run Away','Guts']") into real string[]
+        // 2) Strip array‐like strings into real string[]
         for (const key in displayData) {
           const val = displayData[key];
           if (typeof val === 'string' && val.startsWith('[') && val.endsWith(']')) {
