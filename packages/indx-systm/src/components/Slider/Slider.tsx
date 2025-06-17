@@ -170,11 +170,6 @@ export const Slider: React.FC<SliderProps> = (props) => {
                 className={styles.basetrack}
                 style={{
                   ...restTrackProps.style,
-                  position: 'relative',
-                  height: '4px',
-                  width: '100%',
-                  background: '#eee',
-                  borderRadius: '4px',
                 }}
               >
                 {/* ─── Live-overlay track ─── */}

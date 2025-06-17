@@ -54,7 +54,6 @@ function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilter
         <Base className={styles.component}>
           <div className={styles.header}>
             <SearchInput
-              placeholder="Find a pokemon"
               showFocus={true}
               className={styles.searchInput}
             />

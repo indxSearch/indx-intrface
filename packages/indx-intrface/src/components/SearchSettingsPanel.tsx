@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styles from './SearchSettingsPanel.module.css';
 import { useSearchContext } from '../context/SearchContext';
 import { FilterPanelBase } from '@indxsearch/systm';
-import { InputField, ToggleSwitch, Button } from '@indxsearch/systm';
+import { InputField, ToggleSwitch, Button, Slider } from '@indxsearch/systm';
 import { ArrowRight, ArrowDown } from "@indxsearch/pixl";
 
 export function SearchSettingsPanel() {
@@ -84,6 +84,35 @@ export function SearchSettingsPanel() {
                 }
                 }}
             />
+            <div style={{ padding: '10px 10px 20px 10px' }}>
+                <Slider
+                    min={0}
+                    max={255}
+                    step={1}
+                    value={searchSettings.minimumScore}
+                    onChange={(val) => {
+                    // val is a SingleValue (number)
+                    setSearchSettings({ minimumScore: val as number });
+                    }}
+                />
+            </div>
+        </li>
+        <li>
+        <InputField
+            label="Placeholder text"
+            type="text"
+            value={searchSettings.placeholderText}
+            onChange={e => {
+            setSearchSettings({ placeholderText: e.target.value });
+            }}
+        />
+        </li>
+        <li>
+          <ToggleSwitch
+            label="Show score"
+            checked={searchSettings.showScore}
+            onChange={value => handleToggle('showScore', value)}
+          />
         </li>
         <li>
           <ToggleSwitch

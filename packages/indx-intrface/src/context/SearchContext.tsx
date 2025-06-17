@@ -7,6 +7,8 @@ export interface SearchSettings {
   removeDuplicates: boolean;
   coverageSetup: CoverageSetup;
   minimumScore: number;
+  showScore: boolean;
+  placeholderText: string;
 }
 
 export interface CoverageSetup {
@@ -122,6 +124,8 @@ export const SearchProvider: React.FC<{
       enableCoverage,
       removeDuplicates,
       minimumScore: 0,
+      showScore: true,
+      placeholderText: 'Type to search',
       coverageSetup: {
         // ALL DEFAULT VALUES
         levenshteinMaxWordSize: 20,

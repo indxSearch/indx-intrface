@@ -11,7 +11,7 @@ export interface SearchResultsProps {
 
 export const SearchResults: React.FC<SearchResultsProps> = ({ fields, children }) => {
   const {
-    state: { results, resultsSuppressed },
+    state: { results, resultsSuppressed, searchSettings },
     isFetchingInitial,
   } = useSearchContext();
 
@@ -68,7 +68,11 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ fields, children }
         // 3) Pass the transformed displayData into the render‐prop
         return (
           <div key={idx} className={styles.row}>
-            <div className={styles.indexNumber}>{idx}</div>{children(displayData)}<div className={styles.scoreNumber}>{score}</div>
+            <div className={styles.indexNumber}>{idx}</div>
+            {children(displayData)}
+            {searchSettings.showScore && (
+              <div className={styles.scoreNumber}>{score}</div>
+            )}
           </div>
         );
       })}

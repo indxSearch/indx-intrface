@@ -11,23 +11,25 @@ export interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputEle
 
 export const SearchInput: React.FC<SearchInputProps> = ({ 
   className,
-  placeholder = 'Type to search',
+  placeholder,
   autoFocus = false,
   inputSize = 'default',
   showClear = true,
   showFocus = false,
   ...rest
 }) => {
-  const { state: { query, filters, rangeFilters }, setQuery } = useSearchContext();
+  const { state: { query, filters, rangeFilters, searchSettings }, setQuery } = useSearchContext();
   const hasFilters = Object.keys(filters).length > 0 || Object.keys(rangeFilters).length > 0;
   const hasValue = query.length > 0;
+
+  const effectivePlaceholder = placeholder ?? searchSettings.placeholderText;
   
   return (
     <SearchField
       type="text"
       value={query}
       onChange={e => setQuery(e.target.value)}
-      placeholder={placeholder}
+      placeholder={effectivePlaceholder}
       autoFocus={autoFocus}
       className={className}
       showSearchIcon={true}
