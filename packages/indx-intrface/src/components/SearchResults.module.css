@@ -59,6 +59,13 @@
     font: var(--text-mini-light);
     color: var(--CBlueGray);
 }
+.scoreNumber {
+    position: absolute;
+    top: 25px;
+    right: 5px;
+    font: var(--text-mini-light);
+    color: var(--CBlueGray);
+}
 .row span {
     color: var(--CB4);
     background-color: var(--CLightGray);

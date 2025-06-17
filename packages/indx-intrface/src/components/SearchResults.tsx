@@ -25,7 +25,9 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ fields, children }
 
   return (
     <div className={styles.container}>
-      {results.map((rawItem, idx) => {
+      {results.map((result, idx) => {
+        const rawItem = result.document;
+        const score = result.score;
         let parsed: Record<string, any>;
         try {
           parsed = typeof rawItem === 'string' ? JSON.parse(rawItem) : rawItem;
@@ -66,7 +68,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ fields, children }
         // 3) Pass the transformed displayData into the render‐prop
         return (
           <div key={idx} className={styles.row}>
-            <div className={styles.indexNumber}>{idx}</div>{children(displayData)}
+            <div className={styles.indexNumber}>{idx}</div>{children(displayData)}<div className={styles.scoreNumber}>{score}</div>
           </div>
         );
       })}

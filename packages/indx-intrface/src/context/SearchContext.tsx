@@ -1,8 +1,14 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, useRef } from 'react';
 
+export interface SearchResult {
+  document: any;         // The actual document
+  documentKey: string;   // The document key
+  score: number;         // The search score
+}
+
 export interface SearchState {
   query: string; // The current search query text entered by the user
-  results: any[] | null; // The array of search results, or null if no search has been performed yet
+  results: SearchResult[] | null; // The array of search results, or null if no search has been performed yet
   isLoading: boolean; // Whether a search is currently in progress
   resultsSuppressed?: boolean; // Whether results should be hidden (e.g. when query is empty and allowEmptySearch is false)
   facetDebounceDelayMillis?: number; // The delay in milliseconds before performing a faceted search after typing stops
@@ -297,8 +303,11 @@ export const SearchProvider: React.FC<{
         const searchData = await searchResponse.json();
 
         // 6) Fetch actual documents if needed
-        const keys = (searchData.records || []).map((record: any) => record.documentKey);
-        let documents: any[] = [];
+        const records = searchData.records || [];
+        const keys = records.map((record: any) => record.documentKey);
+        const scores = records.map((record: any) => record.score);
+
+        let combinedResults: any[] = [];
         if (shouldFetchResults && keys.length > 0) {
           const jsonResponse = await fetch(`${url}/api/GetJson/${dataset}`, {
             method: 'POST',
@@ -308,19 +317,26 @@ export const SearchProvider: React.FC<{
             },
             body: JSON.stringify(keys),
           });
-          documents = await jsonResponse.json();
+          const documentsData = await jsonResponse.json();
+
+          // Combine document + key + score
+          combinedResults = documentsData.map((doc: any, idx: number) => ({
+            document: doc,
+            documentKey: keys[idx],
+            score: scores[idx],
+          }));
         }
 
         // 7) Build new facetStats (live min/max under all filters)
         let newFacetStats: Record<string, { min: number; max: number }> = {}; 
-        if (enableFacets && searchData.facets) { // If faceting is enabled and there are facets
-          for (const [field, values] of Object.entries(searchData.facets)) { // Iterate through the facets
-            if (Array.isArray(values) && values.length > 0) { // If the values are an array and there are values
-              const numericValues = (values as any[]) // Convert the values to numbers
-                .map(v => Number(v.key)) // Convert the values to numbers
-                .filter((v: number) => !isNaN(v)); // Filter out any non-numeric values
-              if (numericValues.length > 0) { // If there are numeric values
-                newFacetStats[field] = { // Update the facet stats
+        if (enableFacets && searchData.facets) {
+          for (const [field, values] of Object.entries(searchData.facets)) {
+            if (Array.isArray(values) && values.length > 0) {
+              const numericValues = (values as any[])
+                .map(v => Number(v.key))
+                .filter((v: number) => !isNaN(v));
+              if (numericValues.length > 0) {
+                newFacetStats[field] = {
                   min: Math.min(...numericValues),
                   max: Math.max(...numericValues),
                 };
@@ -335,29 +351,27 @@ export const SearchProvider: React.FC<{
         // 9) Merge facetStats (old vs new) for display purposes
         let mergedFacetStats = state.facetStats ?? {};
         if (queryChanged) {
-          // On brand‐new query, restart from the initial blank‐search stats
-          mergedFacetStats = { ...initialFacetStats, ...newFacetStats }; 
-          setFixedFacetStats(mergedFacetStats); // Set the fixed facet stats. These will be used to display the initial facet stats for non-coverage hits (large typos)
-          setLastQueryText(state.query); // Set the last query text. This is used to determine if the query has changed
+          mergedFacetStats = { ...initialFacetStats, ...newFacetStats };
+          setFixedFacetStats(mergedFacetStats);
+          setLastQueryText(state.query);
         } else {
-          // Otherwise, overlay new stats on top of existing fixed stats. This is used to display the updated facet stats for coverage hits (near-exact matches)
           mergedFacetStats = { ...fixedFacetStats, ...newFacetStats };
         }
 
         // 10) Update rangeBounds only if the query text changed
         if (queryChanged) {
-          const updatedBounds = { ...rangeBounds }; // Create a new range bounds object
-          for (const [field, stats] of Object.entries(newFacetStats)) { // Iterate through the new facet stats
-            updatedBounds[field] = stats; // Update the range bounds
+          const updatedBounds = { ...rangeBounds };
+          for (const [field, stats] of Object.entries(newFacetStats)) {
+            updatedBounds[field] = stats;
           }
-          setRangeBounds(updatedBounds); // Set the range bounds
+          setRangeBounds(updatedBounds);
         }
 
         // 11) Prepare displayFacets (for non‐coverage fields if needed)
-        let displayFacets: any = searchData.facets; // The facets to display
-        if (enableFacets && (!displayFacets || Object.keys(displayFacets).length === 0)) { // If faceting is enabled and there are no facets
-          displayFacets = {}; // Create a new facets object
-          for (const [field, keys] of Object.entries(initialFacetKeys)) { // Iterate through the initial facet keys
+        let displayFacets: any = searchData.facets;
+        if (enableFacets && (!displayFacets || Object.keys(displayFacets).length === 0)) {
+          displayFacets = {};
+          for (const [field, keys] of Object.entries(initialFacetKeys)) {
             displayFacets[field] = (keys as string[]).map(key => ({ key, value: null }));
           }
         }
@@ -368,7 +382,7 @@ export const SearchProvider: React.FC<{
         }
         setState(prev => ({
           ...prev,
-          results: documents,
+          results: combinedResults,
           resultsSuppressed: !shouldFetchResults,
           ...(enableFacets
             ? {
@@ -408,6 +422,7 @@ export const SearchProvider: React.FC<{
       initialFacetKeys,
     ]
   );
+
 
   // Function to perform a basic search (no facets)
   const searchBasic = useCallback(() => { 
