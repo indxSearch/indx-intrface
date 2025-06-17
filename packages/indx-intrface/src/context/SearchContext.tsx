@@ -1,9 +1,32 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, useRef } from 'react';
 
+export interface SearchSettings {
+  maxNumberOfRecordsToReturn: number;
+  coverageDepth: number;
+  enableCoverage: boolean;
+  removeDuplicates: boolean;
+  coverageSetup: CoverageSetup;
+}
+
+export interface CoverageSetup {
+  levenshteinMaxWordSize: number;
+  minWordSize: number;
+  coverageMinWordHitsAbs: number;
+  coverageMinWordHitsRelative: number;
+  coverageQLimitForErrorTolerance: number;
+  coverageLcsErrorToleranceRelativeq: number;
+  coverWholeQuery: boolean;
+  coverWholeWords: boolean;
+  coverFuzzyWords: boolean;
+  coverJoinedWords: boolean;
+  coverPrefixSuffix: boolean;
+  truncate: boolean;
+}
+
 export interface SearchResult {
-  document: any;         // The actual document
-  documentKey: string;   // The document key
-  score: number;         // The search score
+  document: any; // The actual document
+  documentKey: string; // The document key
+  score: number; // The search score
 }
 
 export interface SearchState {
@@ -23,6 +46,7 @@ export interface SearchState {
   rangeBounds?: Record<string, { min: number; max: number }>; // Initial range bounds for numeric fields, only updated when query changes
   sortBy?: string; // The field currently being used to sort results
   sortAscending?: boolean; // Whether the current sort is ascending (true) or descending (false)
+  searchSettings: SearchSettings;
 }
 
 export interface SearchContextType {
@@ -35,6 +59,7 @@ export interface SearchContextType {
   resetSingleFilter: (field: string, value?: string) => void; // Resets a specific value filter or range filter
   setSort: (field: string | null, ascending: boolean) => void; // Sets the sort field and direction
   setDebounceDelay?: (ms: number) => void; // Optional: Updates the debounce delay for faceted searches
+  setSearchSettings: (settings: Partial<SearchSettings>) => void;
 }
 
 // Create the search context
@@ -62,6 +87,10 @@ export const SearchProvider: React.FC<{
   maxResults?: number;
   facetDebounceDelayMillis?: number;
   enableFacets?: boolean;
+  coverageDepth?: number;
+  removeDuplicates?: boolean;
+  enableCoverage?: boolean;
+  initialCoverageSetup?: Partial<CoverageSetup>;
 }> = ({
   children,
   email,
@@ -72,6 +101,10 @@ export const SearchProvider: React.FC<{
   maxResults = 10,
   facetDebounceDelayMillis = 200, // debounce faceted searches only
   enableFacets = true,
+  coverageDepth = 500,
+  removeDuplicates = true,
+  enableCoverage = true,
+  initialCoverageSetup = {},
 }) => {
   const latestRequestId = useRef(0); // Track the latest search request to prevent race conditions
   const [state, setState] = useState<SearchState>({
@@ -82,6 +115,28 @@ export const SearchProvider: React.FC<{
     filters: {},
     rangeFilters: {},
     facetStats: {},
+    searchSettings: {
+      maxNumberOfRecordsToReturn: maxResults,
+      coverageDepth,
+      enableCoverage,
+      removeDuplicates,
+      coverageSetup: {
+        // ALL DEFAULT VALUES
+        levenshteinMaxWordSize: 20,
+        minWordSize: 2,
+        coverageMinWordHitsAbs: 1,
+        coverageMinWordHitsRelative: 0,
+        coverageQLimitForErrorTolerance: 5,
+        coverageLcsErrorToleranceRelativeq: 0.2,
+        coverWholeQuery: true,
+        coverWholeWords: true,
+        coverFuzzyWords: true,
+        coverJoinedWords: true,
+        coverPrefixSuffix: true,
+        truncate: true,
+        ...initialCoverageSetup, // Allow prop-based override
+      },
+    },
   });
 
   useEffect(() => {
@@ -126,6 +181,20 @@ export const SearchProvider: React.FC<{
     setState(prev => ({
       ...prev,
       facetDebounceDelayMillis: ms,
+    }));
+  }, []);
+
+  const setSearchSettings = useCallback((settings: Partial<SearchSettings>) => {
+    setState(prev => ({
+      ...prev,
+      searchSettings: {
+        ...prev.searchSettings,
+        ...settings,
+        coverageSetup: {
+          ...prev.searchSettings.coverageSetup,
+          ...(settings.coverageSetup || {}),
+        },
+      },
     }));
   }, []);
 
@@ -284,11 +353,16 @@ export const SearchProvider: React.FC<{
         const shouldFetchResults = allowEmptySearch || state.query.trim() !== '';
         const searchBody = {
           text: state.query,
-          maxNumberOfRecordsToReturn: shouldFetchResults ? maxResults : 0,
+          // maxNumberOfRecordsToReturn: shouldFetchResults ? maxResults : 0,
+          maxNumberOfRecordsToReturn: shouldFetchResults ? state.searchSettings.maxNumberOfRecordsToReturn : 0,
           ...(filterProxy ? { filter: filterProxy } : {}),
           ...(enableFacets ? { enableFacets: true } : {}),
           ...(state.sortBy ? { sortBy: state.sortBy } : {}),
-          ...(state.sortAscending !== undefined ? { sortAscending: state.sortAscending } : {})
+          ...(state.sortAscending !== undefined ? { sortAscending: state.sortAscending } : {}),
+          enableCoverage: state.searchSettings.enableCoverage,
+          removeDuplicates: state.searchSettings.removeDuplicates,
+          coverageDepth: state.searchSettings.coverageDepth,
+          coverageSetup: state.searchSettings.coverageSetup
         };
 
         // 5) Execute the search
@@ -587,6 +661,7 @@ export const SearchProvider: React.FC<{
         resetSingleFilter,
         setSort,
         setDebounceDelay,
+        setSearchSettings
       }}
     >
       {children}
