@@ -11,7 +11,7 @@ export function SearchClient({ dataset }: { dataset: string }) {
   const email = process.env.NEXT_PUBLIC_INDX_EMAIL!;
   const password = process.env.NEXT_PUBLIC_INDX_PASSWORD!;
   return (
-    <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={true} enableFacets={true} maxResults={20} facetDebounceDelayMillis={100}>
+    <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={true} enableFacets={true} maxResults={10} facetDebounceDelayMillis={100}>
       <SearchUI dataset={dataset} showFilters={true} />
     </SearchProvider>
   );
@@ -54,7 +54,7 @@ function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilter
         <Base className={styles.component}>
           <div className={styles.header}>
             <SearchInput
-              placeholder="Type to search"
+              placeholder="Find a pokemon"
               showFocus={true}
               className={styles.searchInput}
             />

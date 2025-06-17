@@ -6,6 +6,7 @@ export interface SearchSettings {
   enableCoverage: boolean;
   removeDuplicates: boolean;
   coverageSetup: CoverageSetup;
+  minimumScore: number;
 }
 
 export interface CoverageSetup {
@@ -120,6 +121,7 @@ export const SearchProvider: React.FC<{
       coverageDepth,
       enableCoverage,
       removeDuplicates,
+      minimumScore: 0,
       coverageSetup: {
         // ALL DEFAULT VALUES
         levenshteinMaxWordSize: 20,
@@ -454,9 +456,22 @@ export const SearchProvider: React.FC<{
         if (currentRequestId !== latestRequestId.current) {
           return; // A newer request has been made — ignore this one
         }
+        const filteredResults = combinedResults.filter(result => {
+          const query = state.query.trim();
+
+          if (query === '') {
+            return true;  // Accept facet hits (no query)
+          }
+
+          if (query.length === 1) {
+            return true;  // Accept short single-character queries
+          }
+
+          return result.score >= state.searchSettings.minimumScore;  // Apply minimum score for longer queries
+        });
         setState(prev => ({
           ...prev,
-          results: combinedResults,
+          results: filteredResults,
           resultsSuppressed: !shouldFetchResults,
           ...(enableFacets
             ? {
