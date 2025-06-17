@@ -7,3 +7,4 @@ export { ValueFilterPanel } from './components/ValueFilterPanel';
 export { RangeFilterPanel } from './components/RangeFilterPanel';
 export { ActiveFiltersPanel } from './components/ActiveFiltersPanel';
 export { SortByPanel } from './components/SortByPanel';
+export { SearchSettingsPanel } from './components/SearchSettingsPanel';

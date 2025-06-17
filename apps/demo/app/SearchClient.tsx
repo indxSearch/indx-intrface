@@ -4,7 +4,7 @@ import '@indxsearch/intrface/styles.css';
 import styles from './SearchClient.module.css';
 import { Indx, Spark } from '@indxsearch/pixl';
 import { Base } from '@indxsearch/systm';
-import { SearchProvider, SearchInput, SearchResults, RangeFilterPanel, ValueFilterPanel, ActiveFiltersPanel, SortByPanel } from '@indxsearch/intrface';
+import { SearchProvider, SearchInput, SearchResults, RangeFilterPanel, ValueFilterPanel, ActiveFiltersPanel, SortByPanel, SearchSettingsPanel } from '@indxsearch/intrface';
 
 export function SearchClient({ dataset }: { dataset: string }) {
   const url = process.env.NEXT_PUBLIC_INDX_URL!;
@@ -133,6 +133,7 @@ function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilter
                 <ValueFilterPanel label="Speed" field="speed" displayType='button' preserveBlankFacetStateOrder={false} sortFacetsBy='numeric' startCollapsed={true}/>
                 <ValueFilterPanel label="Attack" field="attack" layout='grid' startCollapsed={true} showCount={true} />
                 <ValueFilterPanel label="HP" startCollapsed={true} field="hp" />
+                <SearchSettingsPanel  />
               </div> 
             )}
           </div> {/* END BODY */}
