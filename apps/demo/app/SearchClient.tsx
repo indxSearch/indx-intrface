@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import '@indxsearch/intrface/styles.css';
 import styles from './SearchClient.module.css';
-import { Indx, Spark, Filter } from '@indxsearch/pixl';
+import { Indx, Spark, Sliders_horizontal } from '@indxsearch/pixl';
 import { SearchProvider, useSearchContext, SearchInput, SearchResults, RangeFilterPanel, ValueFilterPanel, ActiveFiltersPanel, SortByPanel, SearchSettingsPanel } from '@indxsearch/intrface';
 import { Base, Button } from '@indxsearch/systm';
 
@@ -183,11 +183,11 @@ function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilter
                 <div className={styles.description}>INDX SEARCH SYSTEM</div>
                 <div className={styles.metainfo}>Dataset: {dataset}</div>
               </div>
-              <div ref={buttonRef} className={styles.filterButtonWrapper} style={{ position: 'relative' }}>
+              <div ref={buttonRef} className={styles.filterButtonWrapper} style={{ position: 'relative', marginRight: '20px' }}>
                 {showFilterButton && (
                   <Button 
                     variant={hasFilters ? 'active' : 'tertiary'}
-                    iconLeft={<Filter/>}
+                    iconRight={<Sliders_horizontal/>}
                     size='micro'
                     onClick={() => setFiltersVisible(prev => !prev)}
                   >
@@ -206,6 +206,9 @@ function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilter
               <Indx size={35} color="var(--icon-color)"/>
             </div>
           </div>
+          {showFilterButton && (
+          <ActiveFiltersPanel />
+          )}
           <div className={styles.body}>
             <div className={styles.results}>
               <Results/>
