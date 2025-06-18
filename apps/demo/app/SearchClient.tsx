@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import '@indxsearch/intrface/styles.css';
 import styles from './SearchClient.module.css';
 import { Indx, Spark } from '@indxsearch/pixl';
-import { Base } from '@indxsearch/systm';
 import { SearchProvider, SearchInput, SearchResults, RangeFilterPanel, ValueFilterPanel, ActiveFiltersPanel, SortByPanel, SearchSettingsPanel } from '@indxsearch/intrface';
+import { Base, Button } from '@indxsearch/systm';
 
 export function SearchClient({ dataset }: { dataset: string }) {
   const url = process.env.NEXT_PUBLIC_INDX_URL!;
@@ -62,6 +62,7 @@ function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilter
                 <div className={styles.description}>INDX SEARCH SYSTEM</div>
                 <div className={styles.metainfo}>Dataset: {dataset}</div>
               </div>
+              <Button variant='tertiary' size='micro'>Pikachu</Button>
               <Indx size={35} color="var(--icon-color)"/>
             </div>
           </div>

@@ -6,7 +6,12 @@ export default defineConfig({
   plugins: [
     react(),
     dts({
-      exclude: ['dist'],
+      // Tell it to emit declarations into dist/
+      outDir: 'dist',
+      // And create a dist/index.d.ts entrypoint for the package.json "types"
+      insertTypesEntry: true,
+      // Don't re-process the dist folder itself
+      exclude: ['dist/**', 'node_modules/**'],
     }),
   ],
   build: {
