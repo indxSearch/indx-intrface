@@ -199,7 +199,9 @@ function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilter
                   style={{ display: filtersVisible ? 'block' : 'none' }}
                 >
                   <Base>
-                    <Filters />
+                    <div className={styles.scrollFilters}>
+                      <Filters />
+                    </div>
                   </Base>
                 </div>
               </div>
