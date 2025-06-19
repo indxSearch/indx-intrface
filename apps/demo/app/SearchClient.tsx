@@ -206,9 +206,6 @@ function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilter
               <Indx size={35} color="var(--icon-color)"/>
             </div>
           </div>
-          {showFilterButton && (
-          <ActiveFiltersPanel />
-          )}
           <div className={styles.body}>
             <div className={styles.results}>
               <Results/>
