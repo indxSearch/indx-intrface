@@ -97,13 +97,12 @@ function Filters() {
       <ValueFilterPanel label="Primary type" layout="grid" field="type1" preserveBlankFacetState={true} preserveBlankFacetStateOrder={false} displayType="button" limit={30} />
       <ValueFilterPanel 
         label="Secondary type" 
-          displayCondition={({ filters, facets }) => {
-            return (
-              (facets.is_legendary && ((facets.is_legendary["true"] ?? 0) > 0)) &&
-              (filters.type1 || []).includes('water') ||
-              (filters.type1 || []).includes('fire')
-            );
-          }}
+        displayCondition={({ filters}) => {
+          return (
+            (filters.type1 || []).includes('water') ||
+            (filters.type1 || []).includes('fire')
+          );
+        }}
         field="type2" 
         startCollapsed={true} 
         displayType="button" 
