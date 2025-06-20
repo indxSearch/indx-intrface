@@ -17,6 +17,12 @@ export interface ValueFilterPanelProps {
   showActivePanel?: boolean; // Change background color of panel when filtered
   showCount?: boolean; // Show histogram of filters
   showNull?: boolean; // If true, include entries with count === null
+  displayIfEmptyQuery?: boolean;
+  displayCondition?: (context: {
+    query: string;
+    filters: Record<string, string[]>;
+    facets: any;
+  }) => boolean;
 }
 
 export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
@@ -32,10 +38,12 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   layout = 'list',
   showActivePanel = false,
   showCount = true,
-  showNull = false
+  showNull = false,
+  displayIfEmptyQuery = true,
+  displayCondition = (_: { query: string; filters: any; facets: any }) => true
 }) => {
   const {
-    state: { facets, filterableFields, facetableFields, filters },
+    state: { facets, filterableFields, facetableFields, filters, query },
     toggleFilter,
     isFetchingInitial
   } = useSearchContext();
@@ -44,6 +52,14 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   const [expanded, setExpanded] = useState(false);
 
   if (isFetchingInitial || !facets) return null;
+
+  if (!displayCondition({ query: query ?? "", filters, facets })) {
+    return null;
+  }
+
+  if (!displayIfEmptyQuery && !query && Object.keys(filters).length < 1 ) {
+    return null;
+  }
 
   // 1) Field validation
   if (!filterableFields?.includes(field) || !facetableFields?.includes(field)) {

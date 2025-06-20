@@ -95,7 +95,20 @@ function Filters() {
       <SortByPanel displayType="radio" />
       <SortByPanel startCollapsed={true} />
       <ValueFilterPanel label="Primary type" layout="grid" field="type1" preserveBlankFacetState={true} preserveBlankFacetStateOrder={false} displayType="button" limit={30} />
-      <ValueFilterPanel label="Secondary type" field="type2" startCollapsed={true} displayType="button" layout="grid" />
+      <ValueFilterPanel 
+        label="Secondary type" 
+          displayCondition={({ filters, facets }) => {
+            return (
+              (facets.is_legendary && ((facets.is_legendary["true"] ?? 0) > 0)) &&
+              (filters.type1 || []).includes('water') ||
+              (filters.type1 || []).includes('fire')
+            );
+          }}
+        field="type2" 
+        startCollapsed={true} 
+        displayType="button" 
+        layout="grid"
+      />
       <ValueFilterPanel label="Legendary" field="is_legendary" preserveBlankFacetState={true} displayType="toggle" />
       <RangeFilterPanel label="Speed" field="speed" displayType="slider" expectedMin={5} expectedMax={180} />
       <RangeFilterPanel label="Attack" field="attack" displayType="slider" startCollapsed={true} />
