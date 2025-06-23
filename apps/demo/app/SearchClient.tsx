@@ -11,7 +11,7 @@ export function SearchClient({ dataset }: { dataset: string }) {
   const email = process.env.NEXT_PUBLIC_INDX_EMAIL!;
   const password = process.env.NEXT_PUBLIC_INDX_PASSWORD!;
   return (
-    <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={true} enableFacets={true} maxResults={10} facetDebounceDelayMillis={100}>
+    <SearchProvider url={url} email={email} password={password} dataset={dataset} allowEmptySearch={true} enableFacets={true} maxResults={10} facetDebounceDelayMillis={200}>
       <SearchUI dataset={dataset} showFilters={true} />
     </SearchProvider>
   );
@@ -122,7 +122,6 @@ function Filters() {
 
 
 function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilters?: boolean }) {
-  /* SYSTEM THEME */
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   useEffect(() => {
     const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
@@ -141,8 +140,18 @@ function SearchUI({ dataset, showFilters = true }: { dataset: string, showFilter
   const buttonRef = useRef<HTMLDivElement>(null);
   const [showFilterButton, setShowFilterButton] = useState(false);
   const [filtersVisible, setFiltersVisible] = useState(false);
-  const { state: { filters, rangeFilters } } = useSearchContext();
+  const { state } = useSearchContext();
+  const { filters, rangeFilters, query, facets } = state;
   const hasFilters = Object.keys(filters).length > 0 || Object.keys(rangeFilters).length > 0;
+
+  // Log when faceted search results arrive to verify debounce behavior
+  useEffect(() => {
+    console.log('[SearchUI] Faceted search results updated', {
+      timestamp: new Date().toISOString(),
+      query,
+      facets,
+    });
+  }, [facets]);
 
   useEffect(() => {
     if (!containerRef.current) return;

@@ -102,7 +102,7 @@ export const SearchProvider: React.FC<{
   dataset,
   allowEmptySearch = false,
   maxResults = 10,
-  facetDebounceDelayMillis = 200, // debounce faceted searches only
+  facetDebounceDelayMillis = 500, // debounce faceted searches only
   enableFacets = true,
   coverageDepth = 500,
   removeDuplicates = true,
@@ -144,6 +144,10 @@ export const SearchProvider: React.FC<{
       },
     },
   });
+
+  useEffect(() => {
+    console.log("SearchContext mounted on client");
+  }, []);
 
   useEffect(() => {
     setState(prev => ({
@@ -359,10 +363,9 @@ export const SearchProvider: React.FC<{
         const shouldFetchResults = allowEmptySearch || state.query.trim() !== '';
         const searchBody = {
           text: state.query,
-          // maxNumberOfRecordsToReturn: shouldFetchResults ? maxResults : 0,
           maxNumberOfRecordsToReturn: shouldFetchResults ? state.searchSettings.maxNumberOfRecordsToReturn : 0,
+          enableFacets,
           ...(filterProxy ? { filter: filterProxy } : {}),
-          ...(enableFacets ? { enableFacets: true } : {}),
           ...(state.sortBy ? { sortBy: state.sortBy } : {}),
           ...(state.sortAscending !== undefined ? { sortAscending: state.sortAscending } : {}),
           enableCoverage: state.searchSettings.enableCoverage,
@@ -370,6 +373,8 @@ export const SearchProvider: React.FC<{
           coverageDepth: state.searchSettings.coverageDepth,
           coverageSetup: state.searchSettings.coverageSetup
         };
+
+        console.log('[performSearch] request body:', JSON.stringify(searchBody, null, 2));
 
         // 5) Execute the search
         const searchResponse = await fetch(`${url}/api/Search/${dataset}`, {
@@ -519,14 +524,19 @@ export const SearchProvider: React.FC<{
 
   // Function to perform a basic search (no facets)
   const searchBasic = useCallback(() => { 
+    console.log('Search fired');
     performSearch({ enableFacets: false });
   }, [performSearch]);
 
   // Function to perform a search with facets
   const searchWithFacets = useMemo(
-    () => debounce(() => performSearch({ enableFacets: true }), state.facetDebounceDelayMillis ?? 500),
-    [performSearch, state.facetDebounceDelayMillis]
-  );
+  () =>
+    debounce(() => {
+      console.log('Debounced searchWithFacets fired');
+      performSearch({ enableFacets: true });
+    }, state.facetDebounceDelayMillis ?? 500),
+  [performSearch, state.facetDebounceDelayMillis]
+);
 
   // Effect for query changes - immediate results, debounced facets
   useEffect(() => {
@@ -553,11 +563,15 @@ export const SearchProvider: React.FC<{
 
   // Effect for filter changes - immediate search with facets
   useEffect(() => {
-    // Only trigger on actual filter changes, not query changes
-    if (facetsEnabled && state.query === lastQueryText) {
-      performSearch({ enableFacets: true });  // Immediate results + facets
+    // Trigger only on filter changes (not on query/lastQuery updates)
+    if (
+      facetsEnabled &&
+      (Object.keys(state.filters).length > 0 || Object.keys(state.rangeFilters).length > 0)
+    ) {
+      console.log('[Search] Performing immediate faceted search due to filter change');
+      performSearch({ enableFacets: true });
     }
-  }, [state.filters, state.rangeFilters, facetsEnabled, performSearch, state.query, lastQueryText]);
+  }, [state.filters, state.rangeFilters, facetsEnabled, performSearch]);
 
   useEffect(() => {
     const login = async () => {
