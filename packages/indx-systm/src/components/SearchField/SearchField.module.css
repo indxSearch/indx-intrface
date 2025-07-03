@@ -52,10 +52,15 @@
 
 /* FOCUS BORDER VISIBLE PROP */
 .input.focus:focus {
-	box-shadow: 0 0 0 2px var(--CPureBlue);
+	/* box-shadow: 0 0 0 2px var(--CPureBlue); */
+	outline: 2px solid var(--CPureBlue);
+	outline-offset: 0;
+	box-shadow: none; /* remove this */
+	border-radius: 8px; /* ensure this is set */
 }
 :global(.dark) .input.focus:focus {
-	box-shadow: 0 0 0 2px var(--CB3);
+	/* box-shadow: 0 0 0 2px var(--CB3); */
+	outline: 2px solid var(--CB3);
 }
 
 
