@@ -50,6 +50,7 @@ export interface SearchState {
   sortBy?: string; // The field currently being used to sort results
   sortAscending?: boolean; // Whether the current sort is ascending (true) or descending (false)
   searchSettings: SearchSettings;
+  truncationIndex?: number;
 }
 
 export interface SearchContextType {
@@ -386,6 +387,7 @@ export const SearchProvider: React.FC<{
           body: JSON.stringify(searchBody),
         });
         const searchData = await searchResponse.json();
+        const truncationIndex = searchData.truncationIndex ?? -1;
 
         // 6) Fetch actual documents if needed
         const records = searchData.records || [];
@@ -489,6 +491,7 @@ export const SearchProvider: React.FC<{
               }
             : {}),
           isLoading: false,
+          truncationIndex,
         }));
       } catch (error) {
         console.error('Search failed:', error);

@@ -38,7 +38,7 @@ export function SearchClient({
       dataset={dataset}
       allowEmptySearch={true}
       enableFacets={true}
-      maxResults={10}
+      maxResults={30}
       facetDebounceDelayMillis={200}
     >
       <SearchLayout
@@ -177,7 +177,7 @@ function SearchLayout({
           </div>
           <div className={styles.body}>
             <div className={styles.results}>
-              <SearchResults fields={fields}>
+              <SearchResults fields={fields} resultsPerPage={10}>
                 {renderResult}
               </SearchResults>
             </div>
