@@ -98,7 +98,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ fields, resultsPer
             size="micro"
             onClick={handleLoadMore}
           >
-            Load more
+            Load more {truncationIndex}
           </Button>
         </div>
       )}
