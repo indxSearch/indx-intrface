@@ -115,7 +115,19 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
     displayType === 'toggle' &&
     mergedValuesMap.size === 2 &&
     mergedValuesMap.has('true') &&
-    mergedValuesMap.has('false');
+    (mergedValuesMap.has('false') || mergedValuesMap.has('null'));
+
+  // Treat "null" key as "false" for booleans
+  if (mergedValuesMap.has('null')) {
+    const nullCount = mergedValuesMap.get('null') ?? 0;
+
+    // Merge the count into the "false" key
+    const existingFalseCount = mergedValuesMap.get('false') ?? 0;
+    mergedValuesMap.set('false', (existingFalseCount ?? 0) + nullCount);
+
+    // Remove the "null" key to avoid showing it separately
+    mergedValuesMap.delete('null');
+  }
 
   if (displayType === 'toggle' && !isBooleanFacet) {
     return (
