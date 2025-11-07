@@ -10,7 +10,7 @@ A powerful, flexible React search UI library for INDX Search API.
 - 📱 **Mobile-responsive** - Built-in responsive design
 - ⚡ **Debounced searches** - Optimized performance
 - 🎨 **Customizable rendering** - Full control over result display
-- 🔒 **Secure authentication** - Token-based authentication
+- 🔒 **Secure authentication** - Session-based authentication with automatic login
 
 ## Installation
 
@@ -20,56 +20,33 @@ npm install @indxsearch/intrface @indxsearch/systm @indxsearch/pixl
 
 ## Quick Start
 
-### 1. Get Your Authentication Token
+### 1. Set Up Environment Variables
 
-Before you can use the search interface, you need to get an authentication token from your INDX server.
-
-**Get a token using this command:**
-
-```bash
-curl -X POST 'https://your-indx-server.com/api/Login?userEmail=your@email.com&userPassWord=yourpassword' \
-  -H 'accept: */*' \
-  -d ''
-```
-
-**Response:**
-```json
-{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}
-```
-
-Copy the token value from the response. This is what you'll use to authenticate your app.
-
-**For local development:**
-```bash
-curl -X POST 'http://localhost:38171/api/Login?userEmail=your@email.com&userPassWord=yourpassword' \
-  -H 'accept: */*' \
-  -d ''
-```
-
-### 2. Set Up Environment Variables
-
-Create a `.env.local` file in your project root:
+Create a `.env.local` file in your project root with your INDX credentials:
 
 ```bash
 # INDX Server Configuration
 NEXT_PUBLIC_INDX_URL=https://your-indx-server.com
 
-# Authentication Token
-NEXT_PUBLIC_INDX_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+# Authentication Credentials
+NEXT_PUBLIC_INDX_EMAIL=your@email.com
+NEXT_PUBLIC_INDX_PASSWORD=yourpassword
 ```
 
 **For local development:**
 ```bash
 NEXT_PUBLIC_INDX_URL=http://localhost:38171
-NEXT_PUBLIC_INDX_TOKEN=your-token-here
+NEXT_PUBLIC_INDX_EMAIL=your@email.com
+NEXT_PUBLIC_INDX_PASSWORD=yourpassword
 ```
 
 **Security Notes:**
 - Never commit `.env.local` to version control
-- Store tokens securely in environment variables
-- Tokens can expire - get a fresh token using the Login API when needed
+- Store credentials securely in environment variables
+- The library automatically calls the Login API on initialization to get a fresh session token
+- Session tokens are managed internally and refreshed as needed
 
-### 3. Import Styles
+### 2. Import Styles
 
 Import the CSS file in your app entry point:
 
@@ -77,7 +54,7 @@ Import the CSS file in your app entry point:
 import '@indxsearch/intrface/styles.css';
 ```
 
-### 4. Basic Implementation
+### 3. Basic Implementation
 
 ```typescript
 'use client';
@@ -87,8 +64,9 @@ export default function SearchPage() {
   return (
     <SearchProvider
       url={process.env.NEXT_PUBLIC_INDX_URL!}
-      dataset="products" // Specify dataset name directly
-      token={process.env.NEXT_PUBLIC_INDX_TOKEN!}
+      email={process.env.NEXT_PUBLIC_INDX_EMAIL!}
+      password={process.env.NEXT_PUBLIC_INDX_PASSWORD!}
+      dataset="products"
     >
       <SearchInput placeholder="Search products..." />
 
@@ -112,47 +90,48 @@ export default function SearchPage() {
 
 ```typescript
 // products page
-<SearchProvider url={url} dataset="products" token={token}>
+<SearchProvider url={url} email={email} password={password} dataset="products">
   {/* ... */}
 </SearchProvider>
 
 // articles page
-<SearchProvider url={url} dataset="articles" token={token}>
+<SearchProvider url={url} email={email} password={password} dataset="articles">
   {/* ... */}
 </SearchProvider>
 ```
 
 ## Authentication
 
-The library uses token-based authentication. Get your token using the Login API endpoint:
+The library uses **session-based authentication** that automatically logs in when the app initializes.
 
-```bash
-curl -X POST 'https://your-indx-server.com/api/Login?userEmail=your@email.com&userPassWord=yourpassword' \
-  -H 'accept: */*' \
-  -d ''
-```
+### How It Works
 
-**Response:**
-```json
-{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}
-```
-
-Then use the token in your SearchProvider:
+1. You provide your email and password to `SearchProvider`
+2. On mount, the library automatically calls the Login API endpoint
+3. A fresh session token is obtained and used for all subsequent requests
+4. No need to manually manage tokens - it's all handled internally
 
 ```typescript
 <SearchProvider
   url="https://your-indx-server.com"
+  email="your@email.com"
+  password="yourpassword"
   dataset="products"
-  token={process.env.NEXT_PUBLIC_INDX_TOKEN!}
 >
   {/* Your search UI */}
 </SearchProvider>
 ```
 
-**Token Management:**
-- Tokens can expire - when you get a 401 error, request a new token
-- Store tokens securely in environment variables
-- Never commit tokens to version control
+**Authentication Benefits:**
+- ✅ Automatic login on app initialization
+- ✅ Fresh session tokens on every app load
+- ✅ No manual token management required
+- ✅ Works reliably after server restarts
+
+**Security Best Practices:**
+- Store credentials in environment variables (`.env.local`)
+- Never commit credentials to version control
+- Use secure HTTPS connections in production
 
 ## Error Handling
 
@@ -161,7 +140,8 @@ The library includes comprehensive error handling with helpful console messages:
 ### Automatic Error Detection
 
 The SearchProvider automatically validates:
-- ✅ Token format (JWT structure)
+- ✅ Authentication credentials (email/password)
+- ✅ Login success and token retrieval
 - ✅ Dataset existence and status
 - ✅ Dataset readiness (indexing complete)
 - ✅ Empty dataset warnings
@@ -181,7 +161,7 @@ Wrap your search interface with `SearchErrorBoundary` for graceful error handlin
 import { SearchErrorBoundary, SearchProvider } from '@indxsearch/intrface';
 
 <SearchErrorBoundary>
-  <SearchProvider url={url} dataset={dataset} token={token}>
+  <SearchProvider url={url} email={email} password={password} dataset={dataset}>
     {/* Your search UI */}
   </SearchProvider>
 </SearchErrorBoundary>
@@ -198,7 +178,7 @@ import { SearchErrorBoundary, SearchProvider } from '@indxsearch/intrface';
     </div>
   )}
 >
-  <SearchProvider {...props}>
+  <SearchProvider url={url} email={email} password={password} dataset={dataset}>
     {children}
   </SearchProvider>
 </SearchErrorBoundary>
@@ -289,8 +269,9 @@ export default function AdvancedSearch() {
   return (
     <SearchProvider
       url={process.env.NEXT_PUBLIC_INDX_URL!}
-      dataset="products" // Specify your dataset name
-      token={process.env.NEXT_PUBLIC_INDX_TOKEN!}
+      email={process.env.NEXT_PUBLIC_INDX_EMAIL!}
+      password={process.env.NEXT_PUBLIC_INDX_PASSWORD!}
+      dataset="products"
       allowEmptySearch={true}
       enableFacets={true}
       maxResults={20}
@@ -337,8 +318,9 @@ export default function AdvancedSearch() {
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `url` | `string` | ✅ | - | INDX server URL |
+| `email` | `string` | ✅ | - | User email for authentication |
+| `password` | `string` | ✅ | - | User password for authentication |
 | `dataset` | `string` | ✅ | - | Dataset name |
-| `token` | `string` | ✅ | - | Authentication token |
 | `allowEmptySearch` | `boolean` | ❌ | `false` | Show results without query |
 | `enableFacets` | `boolean` | ❌ | `true` | Enable faceted search |
 | `maxResults` | `number` | ❌ | `10` | Max results per search |
@@ -386,22 +368,24 @@ export default function AdvancedSearch() {
 
 ## Troubleshooting
 
-### "Authentication required" error
+### "Login failed" error
 
-**Problem:** No valid authentication provided
-
-**Solution:** Ensure you provide either:
-- A valid token via `token` prop, OR
-- Email and password via `email` and `password` props
-
-### "401 Unauthorized" errors
-
-**Problem:** Invalid or expired token
+**Problem:** Authentication credentials are invalid
 
 **Solutions:**
-1. Generate a new token from your INDX dashboard
-2. Use email/password authentication instead
-3. Verify your credentials are correct
+1. Verify your email and password are correct
+2. Check that the credentials match your INDX account
+3. Ensure the INDX server URL is correct
+4. Check browser console for detailed error messages
+
+### "401 Unauthorized" errors after successful login
+
+**Problem:** Session token became invalid
+
+**Solutions:**
+1. Refresh the page to get a new session token (automatic login)
+2. Verify the server is running and accessible
+3. Check server logs for authentication issues
 
 ### "Failed to fetch" errors
 
@@ -437,7 +421,7 @@ export default function AdvancedSearch() {
 ### Example 1: E-commerce Search
 
 ```typescript
-<SearchProvider url={url} dataset="products" token={token}>
+<SearchProvider url={url} email={email} password={password} dataset="products">
   <div className="search-page">
     <SearchInput placeholder="Search products..." />
 
@@ -464,7 +448,7 @@ export default function AdvancedSearch() {
 ### Example 2: Document Search
 
 ```typescript
-<SearchProvider url={url} dataset="documents" token={token}>
+<SearchProvider url={url} email={email} password={password} dataset="documents">
   <SearchInput placeholder="Search documents..." />
 
   <ValueFilterPanel field="docType" label="Type" />
