@@ -30,11 +30,6 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
     allowEmptySearch
   } = useSearchContext();
 
-  // Don't show if query is empty and allowEmptySearch is false
-  if (!allowEmptySearch && !query) {
-    return null;
-  }
-
   // 1) Global bounds (only on new query)
   const globalMin = rangeBounds?.[field]?.min ?? expectedMin;
   const globalMax = rangeBounds?.[field]?.max ?? expectedMax;
@@ -165,6 +160,12 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
       setSliderValue([sliderValue[0], globalMax]);
     }
   }, [sliderValue, globalMin, globalMax]);
+
+  // Don't show if query is empty and allowEmptySearch is false
+  // (Must come after all hooks to follow Rules of Hooks)
+  if (!allowEmptySearch && !query) {
+    return null;
+  }
 
   // ─────────────────────────────────────────────────────────────────────────────
   // 9) Render slider (thumbs at `sliderValue`, rail always covers [globalMin→globalMax])
