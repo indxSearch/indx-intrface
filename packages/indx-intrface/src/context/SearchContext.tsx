@@ -160,6 +160,20 @@ export const SearchProvider: React.FC<{
   // State variables for managing the search process
   const [token, setToken] = useState<string | null>(null); // The authentication token for API requests
   const [facetsEnabled] = useState(enableFacets); // Whether faceting is enabled
+
+  // Authenticated fetch wrapper - mimics C# HttpClient with default Bearer token
+  const authenticatedFetch = useCallback((url: string, options: RequestInit = {}) => {
+    if (!token) {
+      throw new Error('No authentication token available');
+    }
+    return fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+  }, [token]);
   const [filterableFields, setFilterableFields] = useState<string[]>([]); // List of fields that can be used for filtering
   const [facetableFields, setFacetableFields] = useState<string[]>([]); // List of fields that can be used for faceting
   const [sortableFields, setSortableFields] = useState<string[]>([]); // List of fields that can be used for sorting results
@@ -287,17 +301,16 @@ export const SearchProvider: React.FC<{
   }, []);
 
   // Function to combine multiple filters into a single filter proxy
-  async function combineFilters(filters: any[], url: string, dataset: string, token: string): Promise<any> {
+  const combineFilters = useCallback(async (filters: any[], url: string, dataset: string): Promise<any> => {
     if (filters.length === 0) return null;
     if (filters.length === 1) return filters[0];
 
     let current = filters[0]; // Start with the first filter
     for (let i = 1; i < filters.length; i++) { // Iterate through the remaining filters
-      const response = await fetch(`${url}/api/CombineFilters/${dataset}`, { // Combine the current filter with the next filter
+      const response = await authenticatedFetch(`${url}/api/CombineFilters/${dataset}`, { // Combine the current filter with the next filter
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ A: current, B: filters[i], useAndOperation: true }),
       });
@@ -309,7 +322,7 @@ export const SearchProvider: React.FC<{
       current = await response.json(); // Update the current filter with the combined filter
     }
     return current; // Return the final combined filter
-  }
+  }, [authenticatedFetch]);
 
   // Function to perform the actual search
   const performSearch = useCallback(
@@ -322,14 +335,13 @@ export const SearchProvider: React.FC<{
         // 1) Build value‐filter proxies
         const filterEntries = Object.entries(state.filters ?? {});
         const valueFilterResponsesNested: any[][] = await Promise.all(
-          filterEntries.map(async ([field, values]) => 
+          filterEntries.map(async ([field, values]) =>
             Promise.all(
               values.map(value =>
-                fetch(`${url}/api/CreateValueFilter/${dataset}`, { 
+                authenticatedFetch(`${url}/api/CreateValueFilter/${dataset}`, {
                   method: 'PUT',
                   headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
                   },
                   body: JSON.stringify({ FieldName: field, Value: value }),
                 }).then(res => res.json())
@@ -343,11 +355,10 @@ export const SearchProvider: React.FC<{
         const rangeFilterEntries = Object.entries(state.rangeFilters ?? {});
         const rangeFilterResponses: any[] = await Promise.all(
           rangeFilterEntries.map(([field, { min, max }]) =>
-            fetch(`${url}/api/CreateRangeFilter/${dataset}`, {
+            authenticatedFetch(`${url}/api/CreateRangeFilter/${dataset}`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
               },
               body: JSON.stringify({ FieldName: field, LowerLimit: min, UpperLimit: max }),
             }).then(res => res.json())
@@ -358,7 +369,7 @@ export const SearchProvider: React.FC<{
         const allFilters = [...valueFilterResponses, ...rangeFilterResponses].filter(
           f => f && typeof f.hashString === 'string'
         );
-        const filterProxy = await combineFilters(allFilters, url, dataset, token);
+        const filterProxy = await combineFilters(allFilters, url, dataset);
 
         // 4) Determine if we should fetch results
         const shouldFetchResults = allowEmptySearch || state.query.trim() !== '';
@@ -378,11 +389,10 @@ export const SearchProvider: React.FC<{
         console.log('[performSearch] request body:', JSON.stringify(searchBody, null, 2));
 
         // 5) Execute the search
-        const searchResponse = await fetch(`${url}/api/Search/${dataset}`, {
+        const searchResponse = await authenticatedFetch(`${url}/api/Search/${dataset}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify(searchBody),
         });
@@ -396,11 +406,10 @@ export const SearchProvider: React.FC<{
 
         let combinedResults: any[] = [];
         if (shouldFetchResults && keys.length > 0) {
-          const jsonResponse = await fetch(`${url}/api/GetJson/${dataset}`, {
+          const jsonResponse = await authenticatedFetch(`${url}/api/GetJson/${dataset}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify(keys),
           });
@@ -512,7 +521,8 @@ export const SearchProvider: React.FC<{
       state.rangeFilters,
       state.sortBy,
       state.sortAscending,
-      token,
+      authenticatedFetch,
+      combineFilters,
       url,
       dataset,
       maxResults,
@@ -595,37 +605,61 @@ export const SearchProvider: React.FC<{
         setToken(data.token);
 
         // Fetch filterable, facetable, sortable fields
+        const authFetch = (fetchUrl: string) => fetch(fetchUrl, {
+          method: 'GET',
+          headers: {
+            accept: 'text/plain',
+            'Authorization': `Bearer ${data.token}`
+          },
+        });
+
         const [filterableRes, facetableRes, sortableRes] = await Promise.all([
-          fetch(`${url}/api/GetFilterableFields/${dataset}`, {
-            method: 'GET',
-            headers: { accept: 'text/plain', Authorization: `Bearer ${data.token}` },
-          }),
-          fetch(`${url}/api/GetFacetableFields/${dataset}`, {
-            method: 'GET',
-            headers: { accept: 'text/plain', Authorization: `Bearer ${data.token}` },
-          }),
-          fetch(`${url}/api/GetSortableFields/${dataset}`, {
-            method: 'GET',
-            headers: { accept: 'text/plain', Authorization: `Bearer ${data.token}` },
-          }),
+          authFetch(`${url}/api/GetFilterableFields/${dataset}`),
+          authFetch(`${url}/api/GetFacetableFields/${dataset}`),
+          authFetch(`${url}/api/GetSortableFields/${dataset}`),
         ]);
-        const filterable = await filterableRes.json();
-        const facetable = await facetableRes.json();
-        const sortable = await sortableRes.json();
+
+        const filterable = await filterableRes.json().catch(err => {
+          console.error('Failed to parse GetFilterableFields response:', err);
+          return [];
+        });
+        const facetable = await facetableRes.json().catch(err => {
+          console.error('Failed to parse GetFacetableFields response:', err);
+          return [];
+        });
+        const sortable = await sortableRes.json().catch(err => {
+          console.error('Failed to parse GetSortableFields response:', err);
+          return [];
+        });
         setFilterableFields(filterable || []);
         setFacetableFields(facetable || []);
         setSortableFields(sortable || []);
 
         // Run initial blank search (no query, no filters) to get global bounds
-        const blankSearchResponse = await fetch(`${url}/api/Search/${dataset}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${data.token}`,
-          },
-          body: JSON.stringify({ text: '', maxNumberOfRecordsToReturn: 0, enableFacets: true }),
-        });
-        const blankSearchData = await blankSearchResponse.json();
+        let blankSearchData: any = { facets: {} };
+        try {
+          const blankSearchResponse = await fetch(`${url}/api/Search/${dataset}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${data.token}`,
+            },
+            body: JSON.stringify({ text: '', maxNumberOfRecordsToReturn: 0, enableFacets: true }),
+          });
+
+          if (blankSearchResponse.ok) {
+            blankSearchData = await blankSearchResponse.json().catch(err => {
+              console.warn('Failed to parse blank search response:', err);
+              return { facets: {} };
+            });
+          } else {
+            console.warn('Blank search failed:', blankSearchResponse.status, blankSearchResponse.statusText);
+            console.warn('Continuing without initial facet data - facets will be populated after first search');
+          }
+        } catch (err) {
+          console.warn('Blank search error:', err);
+          console.warn('Continuing without initial facet data - facets will be populated after first search');
+        }
 
         // Build initial facet stats from blank search
         const newFacetStats: Record<string, { min: number; max: number }> = {};
