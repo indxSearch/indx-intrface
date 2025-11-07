@@ -9,8 +9,8 @@ export interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputEle
   showFocus?: boolean;
 }
 
-export const SearchInput: React.FC<SearchInputProps> = ({ 
-  className,
+export const SearchInput: React.FC<SearchInputProps> = ({
+  className = '',
   autoFocus = false,
   inputSize = 'default',
   showClear = true,

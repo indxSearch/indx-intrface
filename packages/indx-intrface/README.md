@@ -154,6 +154,72 @@ Then use the token in your SearchProvider:
 - Store tokens securely in environment variables
 - Never commit tokens to version control
 
+## Error Handling
+
+The library includes comprehensive error handling with helpful console messages:
+
+### Automatic Error Detection
+
+The SearchProvider automatically validates:
+- ✅ Token format (JWT structure)
+- ✅ Dataset existence and status
+- ✅ Dataset readiness (indexing complete)
+- ✅ Empty dataset warnings
+- ✅ Network connectivity
+
+All errors include:
+- Clear error messages
+- Specific problem identification
+- Actionable fix suggestions
+- Example commands to resolve issues
+
+### Error Boundary (Optional)
+
+Wrap your search interface with `SearchErrorBoundary` for graceful error handling:
+
+```typescript
+import { SearchErrorBoundary, SearchProvider } from '@indxsearch/intrface';
+
+<SearchErrorBoundary>
+  <SearchProvider url={url} dataset={dataset} token={token}>
+    {/* Your search UI */}
+  </SearchProvider>
+</SearchErrorBoundary>
+```
+
+**Custom error UI:**
+```typescript
+<SearchErrorBoundary
+  fallback={(error, reset) => (
+    <div>
+      <h2>Search Error</h2>
+      <p>{error.message}</p>
+      <button onClick={reset}>Try Again</button>
+    </div>
+  )}
+>
+  <SearchProvider {...props}>
+    {children}
+  </SearchProvider>
+</SearchErrorBoundary>
+```
+
+### Console Error Messages
+
+All errors show in the browser console with emoji indicators:
+- ✅ = Success
+- 🔍 = Checking something
+- ⚠️ = Warning (non-critical)
+- ❌ = Error (needs fixing)
+- 💡 = Helpful suggestion
+
+**Example:**
+```
+[Auth] ❌ Dataset "products" not found (404)
+[Auth] 💡 Available datasets can be checked with: curl -X GET ...
+[Auth] 💡 Make sure you spelled the dataset name correctly
+```
+
 ## Adding Filters
 
 ### Value Filters (Exact Match)

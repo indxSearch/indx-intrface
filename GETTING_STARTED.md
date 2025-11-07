@@ -109,43 +109,127 @@ Open your browser and navigate to your search page. You should see a working sea
 ## Verification Checklist
 
 ✅ **Check the browser console for:**
-- `[Auth] Using provided token` message
-- No authentication errors
-- Search requests completing successfully
+- `[Auth] ✅ Token format validated` message
+- `[Auth] 📊 Dataset status:` with your dataset info
+- `[Auth] ✅ Dataset has X records` message
+- `[Auth] ✅ Initialization complete` message
+- No red error messages
 
 ✅ **You should see:**
 - A search input field
 - Results appearing when you type (if `allowEmptySearch` is enabled, results show immediately)
 
+**💡 Pro Tip:** The console now provides detailed error messages with emoji indicators:
+- ✅ = Success
+- 🔍 = Checking something
+- ⚠️ = Warning (non-critical issue)
+- ❌ = Error (needs fixing)
+- 💡 = Helpful suggestion
+
 ## Common Issues
 
-### "Authentication required" error
+**💡 All errors now show helpful messages in the browser console with specific instructions.**
 
-Your environment variables aren't loaded.
+### Missing token / "Authentication token is required"
 
-**Fix:** Restart your dev server after creating `.env.local`.
+**Problem:** `NEXT_PUBLIC_INDX_TOKEN` not found
 
-### "401 Unauthorized" error
+**Console shows:**
+```
+[Auth] ❌ Missing authentication token
+[Auth] 💡 Add NEXT_PUBLIC_INDX_TOKEN to your .env.local file
+[Auth] 💡 Get a token with: curl -X POST "http://localhost:38171/api/Login?..."
+```
 
-Your token is invalid or expired.
+**Fix:**
+1. Run the curl command from Step 2 to get a token
+2. Add it to `.env.local`
+3. Restart your dev server
 
-**Fix:** Get a fresh token using the curl command from Step 2, then update `.env.local`.
+### "Invalid token format"
 
-### No results showing
+**Problem:** Token in `.env.local` is malformed or incomplete
 
-Your dataset might not be set up yet.
+**Console shows:**
+```
+[Auth] ❌ Invalid token format - JWT tokens should have 3 parts
+[Auth] 💡 Your token has X parts. Expected format: header.payload.signature
+```
 
-**Fix:** Verify your dataset exists and is indexed:
+**Fix:** Copy the full token from the Login API response (including all three parts)
+
+### "401 Unauthorized" / "Authentication failed"
+
+**Problem:** Token is expired or invalid
+
+**Console shows:**
+```
+[Auth] ❌ Authentication failed (401 Unauthorized)
+[Auth] 💡 Your token may be expired or invalid
+[Auth] 💡 Get a fresh token with: curl -X POST ...
+```
+
+**Fix:** Get a fresh token using the curl command from Step 2, then update `.env.local`
+
+### "Dataset not found (404)"
+
+**Problem:** Dataset name doesn't exist on the server
+
+**Console shows:**
+```
+[Auth] ❌ Dataset "your-dataset-name" not found (404)
+[Auth] 💡 Available datasets can be checked with: curl -X GET ...
+[Auth] 💡 Make sure you spelled the dataset name correctly
+```
+
+**Fix:**
+1. Check available datasets with:
 ```bash
 curl -X GET 'http://localhost:38171/api/GetUserDataSets' \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
+2. Update the `dataset` prop in your SearchProvider to match an existing dataset
 
-### CORS errors
+### Empty dataset warning
 
-Your server isn't configured to allow requests from your app's origin.
+**Problem:** Dataset exists but has no documents
 
-**Fix:** For local development, ensure your API server is running on `localhost:38171`. For production, contact your server administrator.
+**Console shows:**
+```
+[Auth] ⚠️ Dataset "your-dataset-name" is empty (0 records)
+[Auth] 💡 Add documents to your dataset before searching
+[Auth] 💡 Search will work but return no results
+```
+
+**Fix:** Add documents to your dataset before searching
+
+### Dataset not ready
+
+**Problem:** Dataset is still indexing
+
+**Console shows:**
+```
+[Auth] ⚠️ Dataset is not ready yet. Current state: Indexing
+[Auth] 💡 Wait for indexing to complete before searching
+```
+
+**Fix:** Wait for indexing to complete, then reload the page
+
+### Network errors / "Failed to connect"
+
+**Problem:** Cannot reach INDX server
+
+**Console shows:**
+```
+[Auth] ❌ Network error - cannot connect to INDX server
+[Auth] 💡 Check if the server is running at: http://localhost:38171
+[Auth] 💡 Check your NEXT_PUBLIC_INDX_URL in .env.local
+```
+
+**Fix:**
+1. Verify your INDX server is running
+2. Check the URL in `.env.local` is correct
+3. For local development, it should be `http://localhost:38171`
 
 ## Next Steps
 

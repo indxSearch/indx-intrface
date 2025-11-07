@@ -501,7 +501,25 @@ export const SearchProvider: React.FC<{
           truncationIndex,
         }));
       } catch (error) {
-        console.error('Search failed:', error);
+        console.error('[Search] ❌ Search failed:', error);
+
+        // Provide helpful error messages
+        if (error instanceof TypeError && error.message.includes('fetch')) {
+          console.error('[Search] ❌ Network error - cannot reach INDX server');
+          console.error('[Search] 💡 Check if server is running at:', url);
+        } else if (error instanceof Error) {
+          if (error.message.includes('401')) {
+            console.error('[Search] ❌ Authentication failed');
+            console.error('[Search] 💡 Your token may have expired. Get a fresh token with:');
+            console.error('[Search] 💡 curl -X POST "' + url + '/api/Login?userEmail=your@email.com&userPassWord=yourpassword"');
+          } else if (error.message.includes('404')) {
+            console.error('[Search] ❌ Dataset not found');
+            console.error('[Search] 💡 Check that dataset "' + dataset + '" exists');
+          } else {
+            console.error('[Search] 💡 Error:', error.message);
+          }
+        }
+
         if (currentRequestId !== latestRequestId.current) {
           return; // A newer request has been made — ignore this one
         }
@@ -510,6 +528,7 @@ export const SearchProvider: React.FC<{
           results: null,
           isLoading: false,
           resultsSuppressed: false,
+          error: error instanceof Error ? error.message : 'Search failed',
         }));
       }
     },
@@ -587,11 +606,36 @@ export const SearchProvider: React.FC<{
   useEffect(() => {
     const authenticate = async () => {
       try {
+        // VALIDATION 1: Check if required props are provided
         if (!providedToken) {
-          throw new Error('Authentication token is required');
+          console.error('[Auth] ❌ Missing authentication token');
+          console.error('[Auth] 💡 Add NEXT_PUBLIC_INDX_TOKEN to your .env.local file');
+          console.error('[Auth] 💡 Get a token with: curl -X POST "http://localhost:38171/api/Login?userEmail=your@email.com&userPassWord=yourpassword"');
+          throw new Error('Authentication token is required. Check console for instructions.');
         }
 
-        console.log('[Auth] Using provided token (length:', providedToken.length, ')');
+        if (!url) {
+          console.error('[Auth] ❌ Missing INDX server URL');
+          console.error('[Auth] 💡 Add NEXT_PUBLIC_INDX_URL to your .env.local file');
+          throw new Error('INDX server URL is required. Check console for instructions.');
+        }
+
+        if (!dataset) {
+          console.error('[Auth] ❌ Missing dataset name');
+          console.error('[Auth] 💡 Pass dataset="your-dataset-name" to SearchProvider');
+          throw new Error('Dataset name is required. Check console for instructions.');
+        }
+
+        // VALIDATION 2: Check JWT token format (basic validation)
+        const tokenParts = providedToken.split('.');
+        if (tokenParts.length !== 3) {
+          console.error('[Auth] ❌ Invalid token format - JWT tokens should have 3 parts separated by dots');
+          console.error('[Auth] 💡 Your token has', tokenParts.length, 'parts. Expected format: header.payload.signature');
+          console.error('[Auth] 💡 Get a fresh token with: curl -X POST "' + url + '/api/Login?userEmail=your@email.com&userPassWord=yourpassword"');
+          throw new Error('Invalid token format. Check console for instructions.');
+        }
+
+        console.log('[Auth] ✅ Token format validated (length:', providedToken.length, ')');
         setToken(providedToken);
 
         // Fetch filterable, facetable, sortable fields
@@ -603,6 +647,47 @@ export const SearchProvider: React.FC<{
           },
         });
 
+        // VALIDATION 3: Check dataset status first
+        console.log('[Auth] 🔍 Checking dataset status...');
+        const statusRes = await authFetch(`${url}/api/GetStatus/${dataset}`);
+
+        if (!statusRes.ok) {
+          if (statusRes.status === 401) {
+            console.error('[Auth] ❌ Authentication failed (401 Unauthorized)');
+            console.error('[Auth] 💡 Your token may be expired or invalid');
+            console.error('[Auth] 💡 Get a fresh token with: curl -X POST "' + url + '/api/Login?userEmail=your@email.com&userPassWord=yourpassword"');
+            throw new Error('Authentication failed (401). Token may be expired. Check console for instructions.');
+          } else if (statusRes.status === 404) {
+            console.error('[Auth] ❌ Dataset "' + dataset + '" not found (404)');
+            console.error('[Auth] 💡 Available datasets can be checked with: curl -X GET "' + url + '/api/GetUserDataSets" -H "Authorization: Bearer YOUR_TOKEN"');
+            console.error('[Auth] 💡 Make sure you spelled the dataset name correctly');
+            throw new Error('Dataset "' + dataset + '" not found. Check console for instructions.');
+          } else {
+            const errorText = await statusRes.text();
+            console.error('[Auth] ❌ Failed to get dataset status:', statusRes.status, errorText);
+            console.error('[Auth] 💡 Check if your INDX server is running at:', url);
+            throw new Error('Failed to connect to INDX server. Check console for details.');
+          }
+        }
+
+        const statusData = await statusRes.json();
+        console.log('[Auth] 📊 Dataset status:', statusData);
+
+        // Check if dataset is ready
+        if (statusData.state !== 'Ready') {
+          console.warn('[Auth] ⚠️ Dataset is not ready yet. Current state:', statusData.state);
+          console.warn('[Auth] 💡 Wait for indexing to complete before searching');
+        }
+
+        // Check if dataset is empty
+        if (statusData.numberOfRecords === 0) {
+          console.warn('[Auth] ⚠️ Dataset "' + dataset + '" is empty (0 records)');
+          console.warn('[Auth] 💡 Add documents to your dataset before searching');
+          console.warn('[Auth] 💡 Search will work but return no results');
+        } else {
+          console.log('[Auth] ✅ Dataset has', statusData.numberOfRecords, 'records');
+        }
+
         const [filterableRes, facetableRes, sortableRes] = await Promise.all([
           authFetch(`${url}/api/GetFilterableFields/${dataset}`),
           authFetch(`${url}/api/GetFacetableFields/${dataset}`),
@@ -610,13 +695,16 @@ export const SearchProvider: React.FC<{
         ]);
 
         if (!filterableRes.ok) {
-          console.error('[Auth] GetFilterableFields failed:', filterableRes.status, await filterableRes.text());
+          console.error('[Auth] ❌ GetFilterableFields failed:', filterableRes.status, await filterableRes.text());
+          throw new Error('Failed to get filterable fields. Check console for details.');
         }
         if (!facetableRes.ok) {
-          console.error('[Auth] GetFacetableFields failed:', facetableRes.status, await facetableRes.text());
+          console.error('[Auth] ❌ GetFacetableFields failed:', facetableRes.status, await facetableRes.text());
+          throw new Error('Failed to get facetable fields. Check console for details.');
         }
         if (!sortableRes.ok) {
-          console.error('[Auth] GetSortableFields failed:', sortableRes.status, await sortableRes.text());
+          console.error('[Auth] ❌ GetSortableFields failed:', sortableRes.status, await sortableRes.text());
+          throw new Error('Failed to get sortable fields. Check console for details.');
         }
 
         const filterable = await filterableRes.json().catch(err => {
@@ -703,8 +791,29 @@ export const SearchProvider: React.FC<{
           ...prev,
           facetStats: newFacetStats,
         }));
+
+        console.log('[Auth] ✅ Initialization complete');
       } catch (err) {
-        console.error('Login failed:', err);
+        console.error('[Auth] ❌ Initialization failed:', err);
+
+        // Provide helpful error messages based on error type
+        if (err instanceof Error) {
+          // Already has helpful message from our validations
+          console.error('[Auth] 💡 Error:', err.message);
+        } else if (typeof err === 'object' && err !== null && 'message' in err) {
+          console.error('[Auth] 💡 Error:', (err as any).message);
+        }
+
+        // Check for common network errors
+        if (err instanceof TypeError && err.message.includes('fetch')) {
+          console.error('[Auth] ❌ Network error - cannot connect to INDX server');
+          console.error('[Auth] 💡 Check if the server is running at:', url);
+          console.error('[Auth] 💡 Check your NEXT_PUBLIC_INDX_URL in .env.local');
+          console.error('[Auth] 💡 For local development, it should be: http://localhost:38171');
+        }
+
+        // Re-throw to prevent the component from rendering with bad state
+        throw err;
       } finally {
         setIsFetchingInitial(false);
       }
