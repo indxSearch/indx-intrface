@@ -83,8 +83,7 @@ function debounce<F extends (...args: any[]) => void>(fn: F, delay: number) {
 // SearchProvider component that manages the search state and provides the search context
 export const SearchProvider: React.FC<{
   children: React.ReactNode;
-  email: string;
-  password: string;
+  token: string;
   url: string;
   dataset: string;
   allowEmptySearch?: boolean;
@@ -97,8 +96,7 @@ export const SearchProvider: React.FC<{
   initialCoverageSetup?: Partial<CoverageSetup>;
 }> = ({
   children,
-  email,
-  password,
+  token: providedToken,
   url,
   dataset,
   allowEmptySearch = false,
@@ -587,29 +585,21 @@ export const SearchProvider: React.FC<{
   }, [state.filters, state.rangeFilters, facetsEnabled, performSearch]);
 
   useEffect(() => {
-    const login = async () => {
+    const authenticate = async () => {
       try {
-        if (!email || !password) {
-          throw new Error('Missing email or password in props');
+        if (!providedToken) {
+          throw new Error('Authentication token is required');
         }
 
-        const response = await fetch(
-          `${url}/api/Login?userEmail=${encodeURIComponent(email)}&userPassWord=${encodeURIComponent(password)}`,
-          {
-            method: 'POST',
-            headers: { accept: '*/*' },
-            body: '',
-          }
-        );
-        const data = await response.json();
-        setToken(data.token);
+        console.log('[Auth] Using provided token (length:', providedToken.length, ')');
+        setToken(providedToken);
 
         // Fetch filterable, facetable, sortable fields
         const authFetch = (fetchUrl: string) => fetch(fetchUrl, {
           method: 'GET',
           headers: {
             accept: 'text/plain',
-            'Authorization': `Bearer ${data.token}`
+            'Authorization': `Bearer ${providedToken}`
           },
         });
 
@@ -618,6 +608,16 @@ export const SearchProvider: React.FC<{
           authFetch(`${url}/api/GetFacetableFields/${dataset}`),
           authFetch(`${url}/api/GetSortableFields/${dataset}`),
         ]);
+
+        if (!filterableRes.ok) {
+          console.error('[Auth] GetFilterableFields failed:', filterableRes.status, await filterableRes.text());
+        }
+        if (!facetableRes.ok) {
+          console.error('[Auth] GetFacetableFields failed:', facetableRes.status, await facetableRes.text());
+        }
+        if (!sortableRes.ok) {
+          console.error('[Auth] GetSortableFields failed:', sortableRes.status, await sortableRes.text());
+        }
 
         const filterable = await filterableRes.json().catch(err => {
           console.error('Failed to parse GetFilterableFields response:', err);
@@ -642,7 +642,7 @@ export const SearchProvider: React.FC<{
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${data.token}`,
+              'Authorization': `Bearer ${providedToken}`,
             },
             body: JSON.stringify({ text: '', maxNumberOfRecordsToReturn: 0, enableFacets: true }),
           });
@@ -710,8 +710,8 @@ export const SearchProvider: React.FC<{
       }
     };
 
-    login();
-  }, [email, password, url, dataset]);
+    authenticate();
+  }, [providedToken, url, dataset]);
 
   return (
     <SearchContext.Provider

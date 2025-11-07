@@ -17,6 +17,7 @@ type SearchClientProps = {
   renderResult: (item: any) => React.ReactNode;
   filters: React.ReactNode;
   showFilters?: boolean;
+  token?: string;
 };
 
 export function SearchClient({
@@ -24,17 +25,19 @@ export function SearchClient({
   fields,
   renderResult,
   filters,
-  showFilters = true
+  showFilters = true,
+  token
 }: SearchClientProps) {
   const url = process.env.NEXT_PUBLIC_INDX_URL!;
-  const email = process.env.NEXT_PUBLIC_INDX_EMAIL!;
-  const password = process.env.NEXT_PUBLIC_INDX_PASSWORD!;
+  const envToken = process.env.NEXT_PUBLIC_INDX_TOKEN!;
+
+  // Use token from prop or environment variable
+  const authToken = token || envToken;
 
   return (
     <SearchProvider
       url={url}
-      email={email}
-      password={password}
+      token={authToken}
       dataset={dataset}
       allowEmptySearch={true}
       enableFacets={true}
