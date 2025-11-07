@@ -24,10 +24,16 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   startCollapsed = false
 }) => {
   const {
-    state: { rangeFilters, rangeBounds, facetStats },
+    state: { rangeFilters, rangeBounds, facetStats, query },
     setRangeFilter,
-    resetSingleFilter
+    resetSingleFilter,
+    allowEmptySearch
   } = useSearchContext();
+
+  // Don't show if query is empty and allowEmptySearch is false
+  if (!allowEmptySearch && !query) {
+    return null;
+  }
 
   // 1) Global bounds (only on new query)
   const globalMin = rangeBounds?.[field]?.min ?? expectedMin;

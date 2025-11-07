@@ -39,7 +39,7 @@ export function SearchClient({
       url={url}
       token={authToken}
       dataset={dataset}
-      allowEmptySearch={false}
+      allowEmptySearch={true}
       enableFacets={true}
       maxResults={30}
       facetDebounceDelayMillis={200}

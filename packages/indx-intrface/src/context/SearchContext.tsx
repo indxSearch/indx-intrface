@@ -56,6 +56,7 @@ export interface SearchState {
 export interface SearchContextType {
   state: SearchState; // The current search state containing all search-related data
   isFetchingInitial: boolean; // Whether the initial data (fields, facets) is still being loaded
+  allowEmptySearch: boolean; // Whether empty searches are allowed
   setQuery: (query: string) => void; // Updates the search query text
   toggleFilter: (field: string, value: string) => void; // Toggles a value filter on/off for a given field
   setRangeFilter: (field: string, min: number, max: number) => void; // Sets min/max values for a range filter
@@ -577,14 +578,14 @@ export const SearchProvider: React.FC<{
 
     // Skip search if query is empty and allowEmptySearch is false
     if (shouldSkipEmptySearch) {
-      // Clear results, facets, and set resultsSuppressed to show placeholder
-      setState(prev => ({
-        ...prev,
-        results: [],
-        resultsSuppressed: true,
-        facets: null,
-        facetStats: {},
-      }));
+      // Set resultsSuppressed to show placeholder instead of results
+      // Only update if state actually needs to change to avoid infinite loops
+      if (!state.resultsSuppressed) {
+        setState(prev => ({
+          ...prev,
+          resultsSuppressed: true,
+        }));
+      }
       return;
     }
 
@@ -852,6 +853,7 @@ export const SearchProvider: React.FC<{
           rangeBounds,
         },
         isFetchingInitial,
+        allowEmptySearch,
         setQuery,
         toggleFilter,
         setRangeFilter,

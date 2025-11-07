@@ -45,11 +45,17 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   const {
     state: { facets, filterableFields, facetableFields, filters, query },
     toggleFilter,
-    isFetchingInitial
+    isFetchingInitial,
+    allowEmptySearch
   } = useSearchContext();
 
   const preservedFacetValuesRef = useRef<Record<string, number | null> | null>(null);
   const [expanded, setExpanded] = useState(false);
+
+  // Don't show if query is empty and allowEmptySearch is false
+  if (!allowEmptySearch && !query) {
+    return null;
+  }
 
   if (isFetchingInitial || !facets) return null;
 
