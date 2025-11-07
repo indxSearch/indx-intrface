@@ -573,9 +573,23 @@ export const SearchProvider: React.FC<{
     const trimmedQuery = state.query.trim();
     const isFirstLoad = lastQueryText === '' && trimmedQuery === '';
     const isEmptySearch = trimmedQuery === '' && allowEmptySearch;
+    const shouldSkipEmptySearch = trimmedQuery === '' && !allowEmptySearch;
 
-    if (isFirstLoad || isEmptySearch) { 
-      searchWithFacets.cancel?.(); 
+    // Skip search if query is empty and allowEmptySearch is false
+    if (shouldSkipEmptySearch) {
+      // Clear results, facets, and set resultsSuppressed to show placeholder
+      setState(prev => ({
+        ...prev,
+        results: [],
+        resultsSuppressed: true,
+        facets: null,
+        facetStats: {},
+      }));
+      return;
+    }
+
+    if (isFirstLoad || isEmptySearch) {
+      searchWithFacets.cancel?.();
       performSearch({ enableFacets: facetsEnabled });
     } else {
       if (facetsEnabled) {
@@ -594,14 +608,19 @@ export const SearchProvider: React.FC<{
   // Effect for filter changes - immediate search with facets
   useEffect(() => {
     // Trigger only on filter changes (not on query/lastQuery updates)
+    // Don't search if query is empty and allowEmptySearch is false
+    const trimmedQuery = state.query.trim();
+    const shouldSkipSearch = !allowEmptySearch && trimmedQuery === '';
+
     if (
       facetsEnabled &&
+      !shouldSkipSearch &&
       (Object.keys(state.filters).length > 0 || Object.keys(state.rangeFilters).length > 0)
     ) {
       console.log('[Search] Performing immediate faceted search due to filter change');
       performSearch({ enableFacets: true });
     }
-  }, [state.filters, state.rangeFilters, facetsEnabled, performSearch]);
+  }, [state.filters, state.rangeFilters, facetsEnabled, performSearch, state.query, allowEmptySearch]);
 
   useEffect(() => {
     const authenticate = async () => {

@@ -130,10 +130,17 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   }
 
   if (displayType === 'toggle' && !isBooleanFacet) {
+    // If toggle is requested but facet doesn't have exactly two boolean values,
+    // render a disabled toggle instead of an error
     return (
-      <FilterPanelBase collapsible={false}>
-        <div style={{ color: 'red', fontSize: '12px' }}>
-          Cannot render toggle for "{field}": facet must have exactly two values "true" and "false".
+      <FilterPanelBase collapsible={false} activeFilter={false}>
+        <div className={styles.count}>
+          <ToggleSwitch
+            label={label}
+            checked={false}
+            onChange={() => {}}
+            disabled={true}
+          />
         </div>
       </FilterPanelBase>
     );
