@@ -84,7 +84,8 @@ function debounce<F extends (...args: any[]) => void>(fn: F, delay: number) {
 // SearchProvider component that manages the search state and provides the search context
 export const SearchProvider: React.FC<{
   children: React.ReactNode;
-  token: string;
+  email: string;
+  password: string;
   url: string;
   dataset: string;
   allowEmptySearch?: boolean;
@@ -97,7 +98,8 @@ export const SearchProvider: React.FC<{
   initialCoverageSetup?: Partial<CoverageSetup>;
 }> = ({
   children,
-  token: providedToken,
+  email,
+  password,
   url,
   dataset,
   allowEmptySearch = false,
@@ -627,11 +629,16 @@ export const SearchProvider: React.FC<{
     const authenticate = async () => {
       try {
         // VALIDATION 1: Check if required props are provided
-        if (!providedToken) {
-          console.error('[Auth] ❌ Missing authentication token');
-          console.error('[Auth] 💡 Add NEXT_PUBLIC_INDX_TOKEN to your .env.local file');
-          console.error('[Auth] 💡 Get a token with: curl -X POST "http://localhost:38171/api/Login?userEmail=your@email.com&userPassWord=yourpassword"');
-          throw new Error('Authentication token is required. Check console for instructions.');
+        if (!email) {
+          console.error('[Auth] ❌ Missing email');
+          console.error('[Auth] 💡 Pass email="your@email.com" to SearchProvider');
+          throw new Error('Email is required. Check console for instructions.');
+        }
+
+        if (!password) {
+          console.error('[Auth] ❌ Missing password');
+          console.error('[Auth] 💡 Pass password="yourpassword" to SearchProvider');
+          throw new Error('Password is required. Check console for instructions.');
         }
 
         if (!url) {
@@ -646,24 +653,38 @@ export const SearchProvider: React.FC<{
           throw new Error('Dataset name is required. Check console for instructions.');
         }
 
-        // VALIDATION 2: Check JWT token format (basic validation)
-        const tokenParts = providedToken.split('.');
-        if (tokenParts.length !== 3) {
-          console.error('[Auth] ❌ Invalid token format - JWT tokens should have 3 parts separated by dots');
-          console.error('[Auth] 💡 Your token has', tokenParts.length, 'parts. Expected format: header.payload.signature');
-          console.error('[Auth] 💡 Get a fresh token with: curl -X POST "' + url + '/api/Login?userEmail=your@email.com&userPassWord=yourpassword"');
-          throw new Error('Invalid token format. Check console for instructions.');
+        // STEP 1: Call Login endpoint to get fresh session token
+        console.log('[Auth] 🔐 Logging in to get session token...');
+        const loginUrl = `${url}/api/Login?userEmail=${encodeURIComponent(email)}&userPassWord=${encodeURIComponent(password)}`;
+        const loginRes = await fetch(loginUrl, {
+          method: 'POST',
+          headers: {
+            accept: '*/*'
+          },
+        });
+
+        if (!loginRes.ok) {
+          console.error('[Auth] ❌ Login failed:', loginRes.status, await loginRes.text());
+          throw new Error('Login failed. Check your email and password.');
         }
 
-        console.log('[Auth] ✅ Token format validated (length:', providedToken.length, ')');
-        setToken(providedToken);
+        const loginData = await loginRes.json();
+        const sessionToken = loginData.token;
+
+        if (!sessionToken) {
+          console.error('[Auth] ❌ No token received from login response');
+          throw new Error('No token received from login.');
+        }
+
+        console.log('[Auth] ✅ Login successful, token received (length:', sessionToken.length, ')');
+        setToken(sessionToken);
 
         // Fetch filterable, facetable, sortable fields
         const authFetch = (fetchUrl: string) => fetch(fetchUrl, {
           method: 'GET',
           headers: {
             accept: 'text/plain',
-            'Authorization': `Bearer ${providedToken}`
+            'Authorization': `Bearer ${sessionToken}`
           },
         });
 
@@ -750,7 +771,7 @@ export const SearchProvider: React.FC<{
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${providedToken}`,
+              'Authorization': `Bearer ${sessionToken}`,
             },
             body: JSON.stringify({ text: '', maxNumberOfRecordsToReturn: 0, enableFacets: true }),
           });
@@ -840,7 +861,7 @@ export const SearchProvider: React.FC<{
     };
 
     authenticate();
-  }, [providedToken, url, dataset]);
+  }, [email, password, url, dataset]);
 
   return (
     <SearchContext.Provider
