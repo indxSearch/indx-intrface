@@ -18,8 +18,20 @@
   --CB5: #121215;
   --CB6: #080809;
 
+  --level-0: #FFFFFF;
+  --level-1: #FBFBFB;
+  --level-2: #EFEFEF;
+  --level-3: #CFCFCF;
+  --level-4: #757575;
+  --level-5: #4A4A50;
+  --level-6: #1A1A21;
+  --level-7: #121215;
+  --level-8: #080809;
+  
+
   /* TEXT */
   --font-px: 'PxGrotesk', sans-serif;
+  --font-fg: 'FunktionalGrotesk', sans-serif;
   --text-mini: 400 10px 'PxGrotesk', sans-serif;
   --text-mini-light: 300 10px 'PxGrotesk', sans-serif;
   --text-micro: 400 12px 'PxGrotesk', sans-serif;
@@ -46,6 +58,16 @@
   --base-color: var(--CB5);
   --base-shadow: 0px 0px 50px rgba(0, 0, 0, 0.2);
   --filter-base-color: rgba(0,0,0,0.2);
+
+  --level-0: #080809;
+  --level-1: #121215;
+  --level-2: #1A1A21;
+  --level-3: #393941;
+  --level-4: #565661;
+  --level-5: #8F8F97;
+  --level-6: #EFEFEF;
+  --level-7: #FBFBFB;
+  --level-8: #FFFFFF;
 }
 
 @font-face {
@@ -64,6 +86,28 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'FunktionalGrotesk';
+  src: url('../assets/fonts/book.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'FunktionalGrotesk';
+  src: url('../assets/fonts/light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'FunktionalGrotesk';
+  src: url('../assets/fonts/medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 body {
-  font: var(--text-medium);
+  font: var(--font-fg);
 }

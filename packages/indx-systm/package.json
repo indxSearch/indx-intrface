@@ -1,6 +1,7 @@
 {
   "name": "@indxsearch/systm",
   "version": "1.0.0",
+  "type": "module",
   "main": "dist/index.umd.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -9,19 +10,24 @@
   ],
   "sideEffects": true,
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.json"
+    "build": "vite build && tsc -p tsconfig.json",
+    "dev": "vite build --watch"
   },
   "peerDependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.17",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.5.0",
+    "autoprefixer": "^10.4.22",
     "esbuild-css-modules-plugin": "^3.1.4",
+    "postcss": "^8.5.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "tailwindcss": "^4.1.17",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
     "vite-plugin-dts": "^4.5.4"
