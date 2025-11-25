@@ -37,20 +37,6 @@ export default function SearchFieldPage() {
       </div>
 
       <div className={styles.section}>
-        <h2 className={styles.heading}>Without Search Icon</h2>
-        <div className={styles.column}>
-          <SearchField showSearchIcon={false} placeholder="No icon..." />
-        </div>
-      </div>
-
-      <div className={styles.section}>
-        <h2 className={styles.heading}>Error State</h2>
-        <div className={styles.column}>
-          <SearchField label="Search" error="Search query is too short" defaultValue="ab" />
-        </div>
-      </div>
-
-      <div className={styles.section}>
         <h2 className={styles.heading}>Disabled State</h2>
         <div className={styles.column}>
           <SearchField disabled placeholder="Disabled..." />

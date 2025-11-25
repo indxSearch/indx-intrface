@@ -41,7 +41,7 @@
   --filter-base-color: var(--CSuperLightGray);
 }
 :where(.dark) {
-  --text-color: var(--CLight);
+  --text-color: var(--CLightGray);
   --icon-color: var(--CGray);
   --base-color: var(--CB5);
   --base-shadow: 0px 0px 50px rgba(0, 0, 0, 0.2);

@@ -44,6 +44,13 @@ export function SearchField({
 }: SearchFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(true);
+
+  useEffect(() => {
+    // Check initial value from props
+    const initialValue = props.value || props.defaultValue || '';
+    setIsEmpty(String(initialValue) === '');
+  }, [props.value, props.defaultValue]);
 
   const iconSize = iconSizeMap[inputSize];
   const inlineStyles: React.CSSProperties & { [key: string]: string } = {};
@@ -59,7 +66,7 @@ export function SearchField({
     <div className={`${styles.wrapper} ${className}`}>
       {label && <label className={styles.label}>{label}</label>}
       <div className={`${styles.inputContainer} ${styles[inputSize]} ${styles[inputState]}`}>
-        {showSearchIcon && !isFocused && inputRef.current?.value === '' && (
+        {showSearchIcon && !isFocused && isEmpty && (
           <span className={styles.searchIcon}>
             {React.cloneElement(iconToRender, {
               size: iconSize,
@@ -80,6 +87,7 @@ export function SearchField({
             props.onBlur?.(e);
           }}
           onChange={(e) => {
+            setIsEmpty(e.target.value === '');
             props.onChange?.(e);
           }}
           {...props}

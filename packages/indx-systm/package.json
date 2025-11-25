@@ -35,6 +35,7 @@
     "./styles.css": "./dist/systm.css"
   },
   "dependencies": {
+    "@indxsearch/pixl": "*",
     "react-range": "^1.10.0"
   }
 }
