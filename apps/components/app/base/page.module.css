@@ -1,0 +1,65 @@
+.main {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section {
+  margin-bottom: 3rem;
+}
+
+.title {
+  font: var(--text-extra-large);
+  margin-bottom: 0.5rem;
+}
+
+.desc {
+  font: var(--text-medium-light);
+  color: var(--CMediumGray);
+}
+
+.heading {
+  font: var(--text-large);
+  margin-bottom: 1rem;
+}
+
+.content {
+  font: var(--text-small);
+}
+
+.richContent {
+  font: var(--text-small);
+}
+
+.richContent h3 {
+  font: var(--text-medium);
+  margin-bottom: 0.5rem;
+}
+
+.richContent p {
+  margin-bottom: 0.75rem;
+}
+
+.richContent ul {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.richContent li {
+  margin-bottom: 0.25rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.card h4 {
+  font: var(--text-medium);
+  margin-bottom: 0.5rem;
+}
+
+.card p {
+  font: var(--text-small);
+}

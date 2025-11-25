@@ -1,0 +1,45 @@
+.main {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero {
+  margin-bottom: 2rem;
+}
+
+.title {
+  font: var(--text-extra-large);
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font: var(--text-medium-light);
+  color: var(--CMediumGray);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  padding: 1.5rem;
+  border: 1px solid var(--CGray);
+  border-radius: 8px;
+  background: var(--base-color);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.cardTitle {
+  font: var(--text-medium);
+  margin-bottom: 0.25rem;
+}
+
+.cardDesc {
+  font: var(--text-micro-light);
+  color: var(--CMediumGray);
+}

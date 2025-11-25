@@ -1,0 +1,49 @@
+.main {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section {
+  margin-bottom: 3rem;
+}
+
+.title {
+  font: var(--text-extra-large);
+  margin-bottom: 0.5rem;
+}
+
+.desc {
+  font: var(--text-medium-light);
+  color: var(--CMediumGray);
+}
+
+.heading {
+  font: var(--text-large);
+  margin-bottom: 1rem;
+}
+
+.panelWrapper {
+  max-width: 400px;
+}
+
+.panelStack {
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.panelContent {
+  font: var(--text-small);
+}
+
+.panelContent p {
+  margin-bottom: 0.5rem;
+}
+
+.checkboxList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
