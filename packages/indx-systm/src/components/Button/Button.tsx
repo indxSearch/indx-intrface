@@ -27,12 +27,14 @@ export function Button(
     'items-center',
     'cursor-pointer',
     'rounded',
+    'disabled:opacity-50',
+    'disabled:cursor-not-allowed',
     size === 'micro' && 'text-xs h-6 px-2 gap-[7px]',
     size === 'default' && 'text-sm h-8 px-3 gap-2',
     size === 'large' && 'text-base h-10 px-4 gap-2',
-    variant === 'primary' && 'bg-lv7 text-lv1',
-    variant === 'secondary' && 'border border-lv3 text-lv6',
-    variant === 'ghost' && 'text-lv5',
+    variant === 'primary' && 'bg-[var(--lv7)] text-[var(--lv1)] hover:bg-[var(--lv5)] disabled:hover:bg-[var(--lv7)]',
+    variant === 'secondary' && 'border border-[var(--lv3)] text-[var(--lv6)] hover:bg-[var(--lv2)] disabled:hover:bg-transparent',
+    variant === 'ghost' && 'text-[var(--lv5)] hover:bg-[var(--lv2)] disabled:hover:bg-transparent',
     className,
   );
 

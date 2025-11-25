@@ -1,5 +1,15 @@
 :root {
 
+  --lv0: #FFFFFF;
+  --lv1: #FBFBFB;
+  --lv2: #EFEFEF;
+  --lv3: #CFCFCF;
+  --lv4: #757575;
+  --lv5: #4A4A50;
+  --lv6: #1A1A21;
+  --lv7: #121215;
+  --lv8: #080809;
+
   /* COLORS */
   --CSuperLightGray: #FBFBFB;
   --CLightGray: #EFEFEF;
@@ -17,17 +27,6 @@
   --CB4: #1A1A21;
   --CB5: #121215;
   --CB6: #080809;
-
-  --level-0: #FFFFFF;
-  --level-1: #FBFBFB;
-  --level-2: #EFEFEF;
-  --level-3: #CFCFCF;
-  --level-4: #757575;
-  --level-5: #4A4A50;
-  --level-6: #1A1A21;
-  --level-7: #121215;
-  --level-8: #080809;
-  
 
   /* TEXT */
   --font-px: 'PxGrotesk', sans-serif;
@@ -53,21 +52,21 @@
   --filter-base-color: var(--CSuperLightGray);
 }
 :where(.dark) {
+  --lv0: #080809;
+  --lv1: #121215;
+  --lv2: #1A1A21;
+  --lv3: #393941;
+  --lv4: #565661;
+  --lv5: #8F8F97;
+  --lv6: #EFEFEF;
+  --lv7: #FBFBFB;
+  --lv8: #FFFFFF;
+
   --text-color: var(--CLightGray);
   --icon-color: var(--CGray);
   --base-color: var(--CB5);
   --base-shadow: 0px 0px 50px rgba(0, 0, 0, 0.2);
   --filter-base-color: rgba(0,0,0,0.2);
-
-  --level-0: #080809;
-  --level-1: #121215;
-  --level-2: #1A1A21;
-  --level-3: #393941;
-  --level-4: #565661;
-  --level-5: #8F8F97;
-  --level-6: #EFEFEF;
-  --level-7: #FBFBFB;
-  --level-8: #FFFFFF;
 }
 
 @font-face {
