@@ -11,7 +11,6 @@ export interface RangeFilterPanelProps {
   expectedMax?: number;
   collapsible?: boolean; // If filter panel should be able to be collapsed
   startCollapsed?: boolean; // If filter should display as collapsed from init
-  showActivePanel?: boolean; // Change background color of panel when filtered
 }
 
 export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
@@ -20,7 +19,6 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   expectedMin = 0,
   expectedMax = 1000,
   displayType = 'input',
-  showActivePanel = false,
   collapsible = true,
   startCollapsed = false
 }) => {
@@ -172,7 +170,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   // 9) Render slider (thumbs at `sliderValue`, rail always covers [globalMin→globalMax])
   if (displayType === 'slider') {
     return (
-      <FilterPanelBase title={label} collapsed={startCollapsed} collapsible={collapsible} activeFilter={showActivePanel && isSelfActive}>
+      <FilterPanelBase title={label} collapsed={startCollapsed} collapsible={collapsible}>
         {isDisabled && (
           <div className={styles.disabledMessage}>
             No adjustable range (all results have the same value: {liveMin}).

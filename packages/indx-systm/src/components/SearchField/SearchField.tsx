@@ -9,9 +9,9 @@ interface IconProps {
 
 export type InputSize = 'micro' | 'default';
 
-const iconSizeMap: Record<InputSize, string> = {
-  micro: '14px',
-  default: '21px',
+const iconSizeMap: Record<InputSize, number> = {
+  micro: 14,
+  default: 21,
 };
 
 export interface SearchFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
