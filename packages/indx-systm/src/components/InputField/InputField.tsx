@@ -17,7 +17,7 @@ export function InputField({ label, error, className = '', isValid = true, ...pr
   return (
     <div className={cn('flex flex-col gap-[4px]', className)}>
       {label && (
-        <label className="text-xs text-(--lv3)">
+        <label className="text-xs text-(--lv6)">
           {label}
         </label>
       )}
