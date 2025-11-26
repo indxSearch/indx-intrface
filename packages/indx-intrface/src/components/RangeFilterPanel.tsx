@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSearchContext } from '../context/SearchContext';
 import { Slider, InputField, FilterPanelBase } from '@indxsearch/systm';
+import styles from './RangeFilterPanel.module.css';
 
 export interface RangeFilterPanelProps {
   field: string;
@@ -173,7 +174,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
     return (
       <FilterPanelBase title={label} collapsed={startCollapsed} collapsible={collapsible} activeFilter={showActivePanel && isSelfActive}>
         {isDisabled && (
-          <div style={{fontSize: '10px', marginBottom: '10px'}}>
+          <div className={styles.disabledMessage}>
             No adjustable range (all results have the same value: {liveMin}).
           </div>
         )}
@@ -255,7 +256,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
         />
       </div>
       {isDisabled && (
-        <div style={{fontSize: '10px'}}>
+        <div className={styles.disabledMessage}>
           No adjustable range (all results have the same value: {liveMin}).
         </div>
       )}

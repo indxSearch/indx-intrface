@@ -34,7 +34,6 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       showSearchIcon={true}
       inputSize={inputSize}
       showFocusBorder={showFocus}
-      inputState={hasFilters ? 'filtered' : 'default'}
       {...rest}
     >
       {showClear && hasValue && (

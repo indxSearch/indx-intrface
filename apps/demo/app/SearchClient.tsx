@@ -151,14 +151,10 @@ function SearchLayout({
           <div className={styles.mainContent}>
             <div className={styles.header}>
               <SearchInput
-                showFocus={true}
+                showFocus={false}
                 className={styles.searchInput}
               />
               <div id={styles.meta}>
-                {/* <div className={styles.metafields}>
-                  <div className={styles.description}>INDX SEARCH SYSTEM</div>
-                  <div className={styles.metainfo}>Dataset: {dataset}</div>
-                </div> */}
                 <div ref={buttonRef} className={styles.filterButtonWrapper} style={{ position: 'relative', marginRight: '10px' }}>
                   {showFilterButton && (
                     <Button

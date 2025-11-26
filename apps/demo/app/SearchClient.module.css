@@ -40,21 +40,6 @@
     padding-left: 20px;
 }
 
-.metafields {
-    text-align: left;
-    display: flex;
-    gap: 5px;
-    flex-direction: column;
-}
-
-.description {
-    font: var(--text-mini);
-}
-
-.metainfo {
-    font: var(--text-mini-light);
-}
-
 .searchInput {
     flex: 1;
 }
