@@ -1,12 +1,9 @@
 import React from 'react';
+import styles from './Button.module.css';
 
 interface IconProps {
   size?: string | number;
   color?: string;
-}
-
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(' ');
 }
 
 export function Button(
@@ -22,21 +19,12 @@ export function Button(
 
   const iconSize = size === 'micro' ? '14px' : size === 'large' ? '21px' : '14px';
 
-  const buttonClassName = cn(
-    'inline-flex',
-    'items-center',
-    'cursor-pointer',
-    'rounded',
-    'disabled:opacity-50',
-    'disabled:cursor-not-allowed',
-    size === 'micro' && 'text-xs h-6 px-2 gap-[7px]',
-    size === 'default' && 'text-sm h-8 px-3 gap-2',
-    size === 'large' && 'text-base h-10 px-4 gap-2',
-    variant === 'primary' && 'bg-(--lv7) text-(--lv1) hover:bg-(--lv5) disabled:hover:bg-(--lv7)',
-    variant === 'secondary' && 'border border-(--lv3) text-(--lv6) hover:bg-(--lv2) disabled:hover:bg-transparent',
-    variant === 'ghost' && 'text-(--lv5) hover:bg-(--lv2) disabled:hover:bg-transparent',
-    className,
-  );
+  const buttonClassName = [
+    styles.button,
+    styles[size],
+    styles[variant],
+    className
+  ].filter(Boolean).join(' ');
 
   return (
     <button className={buttonClassName} {...rest}>

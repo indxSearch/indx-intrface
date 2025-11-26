@@ -1,65 +1,40 @@
 .wrapper {
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .label {
-	font: var(--text-micro);
-	font-weight: 500;
-	color: var(--text-color);
+  font-size: 11px;
+  color: var(--lv6);
 }
 
 .input {
-	font: var(--text-micro);
-	padding-left: 10px;
-	padding-right: 10px;
-	border: 1px solid var(--CGray);
-	height: 30px;
-	border-radius: 5px;
-	color: var(--CB6);
-	transition: border 0.2s;
-	background: transparent;
-	box-sizing: border-box;
-	transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-/* Hide number input spinners */
-.input[type="number"]::-webkit-inner-spin-button,
-.input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-.input[type="number"] {
-    -moz-appearance: textfield;
-}
-
-:global(.dark) .input {
-    color: var(--CMediumGray);
-    border: 1px solid var(--CDarkGray);
+  font-size: 11px;
+  padding: 0;
+  height: 30px;
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid var(--lv3);
+  background: transparent;
+  color: var(--lv7);
 }
 
 .input:hover {
-    border: 1px solid var(--CB6);
+  border-bottom-color: var(--lv5);
 }
-:global(.dark) .input:hover {
-    border: 1px solid var(--CMediumGray);
+
+.input:active {
+  border-bottom-color: var(--lv5);
 }
 
 .input:focus {
-    outline: none;
-    border-color: var(--CPureBlue);
-	box-shadow: 0 0 0 1px var(--CPureBlue);
-}
-:global(.dark) .input:focus {
-	color: var(--CLightGray);
-	border-color: var(--CB3);
-	box-shadow: 0 0 0 1px var(--CB3);
+  outline: none;
+  border-bottom-color: var(--lv5);
 }
 
 .input::placeholder {
-  color: var(--text-color);
-  opacity: 0.4;
+  color: var(--lv5);
 }
 
 .input:disabled {
@@ -67,38 +42,30 @@
   cursor: not-allowed;
 }
 
+.input::selection {
+  background: var(--lv3);
+}
+
+/* Hide number input spinners */
+.input[type="number"]::-webkit-inner-spin-button,
+.input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 .error {
-  border: 1px solid var(--CSignal);
+  border-bottom-color: var(--CSignal);
 }
 
-.invalid {
-  border-color: var(--CSignal);
-}
-:global(.dark) .invalid {
-  border-color: var(--CSignal);
-}
-
-.invalid:focus {
-    outline: none;
-    border-color: var(--CSignal);
-	box-shadow: 0 0 0 1px var(--CSignal);
-}
-
-:global(.dark) .invalid:focus {
-    outline: none;
-    border-color: var(--CSignal);
-	box-shadow: 0 0 0 1px var(--CSignal);
+.error:focus {
+  border-bottom-color: var(--CSignal);
 }
 
 .errorText {
-  font: var(--text-micro);
+  font-size: 11px;
   color: var(--CSignal);
-}
-
-.input::selection {
-	background: var(--CB2);
-}
-
-:global(.dark) .input::selection {
-	background: var(--CB3);
 }

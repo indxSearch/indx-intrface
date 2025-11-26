@@ -1,0 +1,63 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  border-radius: var(--radius);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Sizes */
+.micro {
+  font-size: 11px;
+  height: 30px;
+  padding: 0 10px;
+  gap: 7px;
+}
+
+.default {
+  font-size: 13px;
+  height: 40px;
+  padding: 0 15px;
+  gap: 10px;
+}
+
+.large {
+  font-size: 15px;
+  height: 50px;
+  padding: 0 20px;
+  gap: 10px;
+}
+
+/* Variants */
+.primary {
+  background: var(--lv7);
+  color: var(--lv1);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--lv5);
+}
+
+.secondary {
+  border: 1px solid var(--lv3);
+  color: var(--lv6);
+  background: transparent;
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--lv2);
+}
+
+.ghost {
+  color: var(--lv5);
+  background: transparent;
+  border: none;
+}
+
+.ghost:hover:not(:disabled) {
+  background: var(--lv2);
+}

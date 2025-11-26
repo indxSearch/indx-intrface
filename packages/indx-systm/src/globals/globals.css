@@ -44,6 +44,19 @@
   --text-extra-large: 400 20px 'PxGrotesk', sans-serif;
   --text-extra-large-light: 300 20px 'PxGrotesk', sans-serif;
 
+  --text-2xs: 10px;
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-lg: 17px;
+  --text-xl: 19px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 36px;
+
+  --spacing: 5px;
+  --radius: 1px;
+
   /* DEFINITIONS */
   --text-color: var(--CB6);
 	--icon-color: var(--CBlueGray);
