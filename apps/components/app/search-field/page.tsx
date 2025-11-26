@@ -14,32 +14,29 @@ export default function SearchFieldPage() {
       <div className={styles.section}>
         <h2 className={styles.heading}>Sizes</h2>
         <div className={styles.column}>
-          <SearchField inputSize="micro" placeholder="Micro search..." />
-          <SearchField inputSize="default" placeholder="Default search..." />
-          <SearchField inputSize="large" placeholder="Large search..." />
+          <SearchField id="search-micro" name="search-micro" inputSize="micro" placeholder="Micro search..." />
+          <SearchField id="search-default" name="search-default" inputSize="default" placeholder="Default search..." />
         </div>
       </div>
 
       <div className={styles.section}>
         <h2 className={styles.heading}>With Label</h2>
         <div className={styles.column}>
-          <SearchField label="Search" placeholder="Enter search term..." />
+          <SearchField id="search-labeled" name="search-labeled" label="Search" placeholder="Enter search term..." />
         </div>
       </div>
 
       <div className={styles.section}>
-        <h2 className={styles.heading}>States</h2>
+        <h2 className={styles.heading}>With Focus Border</h2>
         <div className={styles.column}>
-          <SearchField inputState="default" placeholder="Default state" />
-          <SearchField inputState="focus" placeholder="Focus state" showFocusBorder />
-          <SearchField inputState="filtered" placeholder="Filtered state" defaultValue="query" />
+          <SearchField id="search-focus-border" name="search-focus-border" placeholder="Focus to see border" showFocusBorder />
         </div>
       </div>
 
       <div className={styles.section}>
         <h2 className={styles.heading}>Disabled State</h2>
         <div className={styles.column}>
-          <SearchField disabled placeholder="Disabled..." />
+          <SearchField id="search-disabled" name="search-disabled" disabled placeholder="Disabled..." />
         </div>
       </div>
     </main>
