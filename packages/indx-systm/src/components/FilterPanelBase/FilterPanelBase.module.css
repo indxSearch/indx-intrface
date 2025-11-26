@@ -1,34 +1,26 @@
 .container {
-    background: var(--filter-base-color);
-    border-radius: 8px;
+    background: var(--lv0);
+    border-radius: var(--radius);
     padding: 15px;
     margin-bottom: 5px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-}
-.activeFilter {
-    background: var(--CB0);
-}
-:global(.dark) .activeFilter {
-    background: var(--CB4);
+    gap: 15px;
 }
 
 .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-      /* define your internal icon‐color var, defaulting to the text color */
-    --icon-color: var(--CB4);
+    --icon-color: var(--lv4);
     cursor: pointer;
-}
-:global(.dark) .header {
-    --icon-color: var(--CB0);
 }
 
 .title {
-    font-size: 14px;
-    font-weight: 400;
+    font: var(--text-sm);
+    display: flex;
+    align-items: center;
+    transform: translateY(1.5px);
 }
 
 .toggleButton {
@@ -43,5 +35,5 @@
 }
 
 .body {
-
+    gap: 10px;
 }

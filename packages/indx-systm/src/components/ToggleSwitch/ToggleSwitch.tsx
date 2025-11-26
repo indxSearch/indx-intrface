@@ -16,10 +16,14 @@ export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
   disabled = false,
   label,
 }) => {
-  const switchId = id || `toggle-${Math.random().toString(36).substr(2, 9)}`;
+  const generatedId = React.useId();
+  const switchId = id || generatedId;
 
   return (
-    <label htmlFor={switchId} className={styles.switch}>
+    <label
+      htmlFor={switchId}
+      className={`${styles.switch} ${disabled ? styles.disabled : ''}`}
+    >
       <input
         id={switchId}
         type="checkbox"

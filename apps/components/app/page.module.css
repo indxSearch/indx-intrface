@@ -9,12 +9,12 @@
 }
 
 .title {
-  font: var(--text-extra-large);
+  font: var(--text-2xl);
   margin-bottom: 0.5rem;
 }
 
 .subtitle {
-  font: var(--text-medium-light);
+  font: var(--text-base);
   color: var(--CMediumGray);
 }
 
@@ -35,11 +35,11 @@
 }
 
 .cardTitle {
-  font: var(--text-medium);
+  font: var(--text-lg);
   margin-bottom: 0.25rem;
 }
 
 .cardDesc {
-  font: var(--text-micro-light);
+  font: var(--text-xs);
   color: var(--CMediumGray);
 }

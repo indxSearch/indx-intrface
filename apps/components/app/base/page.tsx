@@ -8,25 +8,15 @@ export default function BasePage() {
     <main className={styles.main}>
       <div className={styles.section}>
         <h1 className={styles.title}>Base</h1>
-        <p className={styles.desc}>Base container component with default and outlined variants</p>
+        <p className={styles.desc}>Base container component for consistent styling</p>
       </div>
 
       <div className={styles.section}>
-        <h2 className={styles.heading}>Default Type</h2>
+        <h2 className={styles.heading}>Basic Usage</h2>
         <Base>
           <p className={styles.content}>
-            This is a Base container with the default type.
+            This is a Base container component.
             It provides a consistent background and styling for content.
-          </p>
-        </Base>
-      </div>
-
-      <div className={styles.section}>
-        <h2 className={styles.heading}>Outlined Type</h2>
-        <Base type="outlined">
-          <p className={styles.content}>
-            This is a Base container with the outlined type.
-            It uses a border instead of a solid background.
           </p>
         </Base>
       </div>
@@ -40,7 +30,7 @@ export default function BasePage() {
             <ul>
               <li>Flexible content support</li>
               <li>Clean, consistent styling</li>
-              <li>Two visual variants</li>
+              <li>Responsive design</li>
             </ul>
           </div>
         </Base>
@@ -52,19 +42,19 @@ export default function BasePage() {
           <Base>
             <div className={styles.card}>
               <h4>Card 1</h4>
-              <p>Default container</p>
+              <p>Container example</p>
             </div>
           </Base>
-          <Base type="outlined">
+          <Base>
             <div className={styles.card}>
               <h4>Card 2</h4>
-              <p>Outlined container</p>
+              <p>Container example</p>
             </div>
           </Base>
           <Base>
             <div className={styles.card}>
               <h4>Card 3</h4>
-              <p>Default container</p>
+              <p>Container example</p>
             </div>
           </Base>
         </div>

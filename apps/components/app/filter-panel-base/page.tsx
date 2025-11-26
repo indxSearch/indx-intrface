@@ -38,17 +38,6 @@ export default function FilterPanelBasePage() {
       </div>
 
       <div className={styles.section}>
-        <h2 className={styles.heading}>Active Filter State</h2>
-        <div className={styles.panelWrapper}>
-          <FilterPanelBase title="Price Range" activeFilter>
-            <div className={styles.panelContent}>
-              <p>This panel has an active filter applied.</p>
-            </div>
-          </FilterPanelBase>
-        </div>
-      </div>
-
-      <div className={styles.section}>
         <h2 className={styles.heading}>Initially Collapsed</h2>
         <div className={styles.panelWrapper}>
           <FilterPanelBase title="Advanced Filters" collapsed>
@@ -84,7 +73,7 @@ export default function FilterPanelBasePage() {
       <div className={styles.section}>
         <h2 className={styles.heading}>Multiple Panels</h2>
         <div className={styles.panelStack}>
-          <FilterPanelBase title="Brand" activeFilter>
+          <FilterPanelBase title="Brand">
             <div className={styles.checkboxList}>
               <Checkbox label="Apple" score="89" defaultChecked />
               <Checkbox label="Samsung" score="67" />

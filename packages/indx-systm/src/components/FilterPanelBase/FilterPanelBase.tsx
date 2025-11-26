@@ -6,7 +6,6 @@ type Props = {
   title?: string;
   children: ReactNode;
   className?: string;
-  activeFilter?: boolean;
   collapsible?: boolean;
   collapsed?: boolean;
 };
@@ -14,7 +13,6 @@ type Props = {
 export function FilterPanelBase({
   title,
   children,
-  activeFilter = false,
   className = '',
   collapsible = true,
   collapsed = false,
@@ -33,13 +31,7 @@ export function FilterPanelBase({
 
   return (
     <div
-      className={[
-        styles.container,
-        activeFilter ? styles.activeFilter : '',
-        className,
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      className={`${styles.container} ${className}`}
     >
       {title && (
         <div

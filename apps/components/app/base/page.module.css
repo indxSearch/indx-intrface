@@ -9,30 +9,30 @@
 }
 
 .title {
-  font: var(--text-extra-large);
+  font: var(--text-2xl);
   margin-bottom: 0.5rem;
 }
 
 .desc {
-  font: var(--text-medium-light);
+  font: var(--text-base);
   color: var(--CMediumGray);
 }
 
 .heading {
-  font: var(--text-large);
+  font: var(--text-lg);
   margin-bottom: 1rem;
 }
 
 .content {
-  font: var(--text-small);
+  font: var(--text-sm);
 }
 
 .richContent {
-  font: var(--text-small);
+  font: var(--text-sm);
 }
 
 .richContent h3 {
-  font: var(--text-medium);
+  font: var(--text-base);
   margin-bottom: 0.5rem;
 }
 
@@ -56,10 +56,10 @@
 }
 
 .card h4 {
-  font: var(--text-medium);
+  font: var(--text-base);
   margin-bottom: 0.5rem;
 }
 
 .card p {
-  font: var(--text-small);
+  font: var(--text-sm);
 }

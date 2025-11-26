@@ -11,7 +11,7 @@ export function Header() {
     <header style={{ padding: '1rem 2rem', borderBottom: '1px solid var(--CGray)' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <h2>INDX Systm</h2>
+          <h2 style={{ font: 'var(--text-xl)' }}>INDX Systm</h2>
         </Link>
 
         <Button

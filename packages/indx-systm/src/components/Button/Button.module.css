@@ -4,6 +4,7 @@
   cursor: pointer;
   border-radius: var(--radius);
   border: none;
+  box-sizing: border-box;
 }
 
 .button:disabled {
@@ -41,7 +42,7 @@
 }
 
 .primary:hover:not(:disabled) {
-  background: var(--lv5);
+  opacity: 0.8;
 }
 
 .secondary {
@@ -51,7 +52,7 @@
 }
 
 .secondary:hover:not(:disabled) {
-  background: var(--lv2);
+  border-color: var(--lv4);
 }
 
 .ghost {

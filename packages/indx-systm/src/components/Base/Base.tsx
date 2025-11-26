@@ -4,12 +4,11 @@ import { ReactNode } from 'react'
 type props = {
     children: ReactNode;
     className?: string;
-    type?: 'default' | 'outlined';
 }
-  
-export function Base({ children, className, type = 'default' }: props) {
+
+export function Base({ children, className }: props) {
   return (
-    <div className={`${styles.container} ${styles[type]} ${className || ''}`}>
+    <div className={`${styles.container} ${styles.default} ${className || ''}`}>
         {children}
     </div>
   )
