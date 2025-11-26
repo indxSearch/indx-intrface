@@ -27,6 +27,14 @@ export default defineConfig({
           react: 'React',
           'react-dom': 'ReactDOM',
         },
+        assetFileNames: (assetInfo) => {
+          // Keep images in assets folder with their original names
+          if (assetInfo.name?.endsWith('.png')) {
+            return 'assets/[name][extname]';
+          }
+          // Keep CSS with original name
+          return '[name][extname]';
+        },
       },
     },
   },

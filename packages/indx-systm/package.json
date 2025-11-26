@@ -6,7 +6,8 @@
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "dist/assets"
   ],
   "sideEffects": true,
   "scripts": {
@@ -39,7 +40,7 @@
     "./styles.css": "./dist/systm.css"
   },
   "dependencies": {
-    "@indxsearch/pixl": "*",
+    "@indxsearch/pixl": "^1.0.7",
     "react-range": "^1.10.0"
   }
 }

@@ -34,6 +34,7 @@
     "./styles.css": "./dist/intrface.css"
   },
   "dependencies": {
+    "@indxsearch/systm": "^1.0.0",
     "@indxsearch/pixl": "^1.0.7",
     "react-range": "^1.10.0"
   }
