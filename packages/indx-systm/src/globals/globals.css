@@ -44,15 +44,15 @@
   --text-extra-large: 400 20px 'PxGrotesk', sans-serif;
   --text-extra-large-light: 300 20px 'PxGrotesk', sans-serif;
 
-  --text-2xs: 10px;
-  --text-xs: 11px;
-  --text-sm: 13px;
-  --text-base: 15px;
-  --text-lg: 17px;
-  --text-xl: 19px;
-  --text-2xl: 24px;
-  --text-3xl: 30px;
-  --text-4xl: 36px;
+  --text-2xs: 400 10px 'fg', sans-serif;
+  --text-xs: 400 11px 'fg', sans-serif;
+  --text-sm: 400 13px 'fg', sans-serif;
+  --text-base: 400 15px 'fg', sans-serif;
+  --text-lg: 400 17px 'fg', sans-serif;
+  --text-xl: 400 19px 'fg', sans-serif;
+  --text-2xl: 400 24px 'fg', sans-serif;
+  --text-3xl: 400 30px 'fg', sans-serif;
+  --text-4xl: 400 36px 'fg', sans-serif;
 
   --spacing: 5px;
   --radius: 1px;

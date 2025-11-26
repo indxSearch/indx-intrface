@@ -3,6 +3,7 @@
   align-items: center;
   cursor: pointer;
   border-radius: var(--radius);
+  border: none;
 }
 
 .button:disabled {
@@ -36,6 +37,7 @@
 .primary {
   background: var(--lv7);
   color: var(--lv1);
+  border: none;
 }
 
 .primary:hover:not(:disabled) {
