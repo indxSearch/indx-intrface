@@ -113,6 +113,7 @@ export const SearchProvider: React.FC<{
 }) => {
   const latestRequestId = useRef(0); // Track the latest search request to prevent race conditions
   const performSearchRef = useRef<((options: { enableFacets: boolean }) => Promise<void>) | undefined>(undefined); // Stable ref to latest performSearch
+  const hasInitialized = useRef(false); // Track if initial search has completed
   const [state, setState] = useState<SearchState>({
     query: '',
     results: null,
@@ -606,9 +607,11 @@ export const SearchProvider: React.FC<{
 
   // Effect for initial blank search after authentication completes
   useEffect(() => {
-    if (!isFetchingInitial && token && allowEmptySearch && state.query === '' && lastQueryText === '') {
+    if (!isFetchingInitial && token && allowEmptySearch && state.query === '' && !hasInitialized.current) {
       console.log('[Search] Initial blank search after auth complete');
-      performSearch({ enableFacets: facetsEnabled });
+      performSearch({ enableFacets: facetsEnabled }).then(() => {
+        hasInitialized.current = true;
+      });
     }
   }, [isFetchingInitial, token]); // Trigger after auth completes
 
@@ -632,6 +635,11 @@ export const SearchProvider: React.FC<{
       return;
     }
 
+    // Mark as initialized when user starts typing
+    if (!hasInitialized.current) {
+      hasInitialized.current = true;
+    }
+
     if (isFirstLoad || isEmptySearch) {
       searchWithFacets.cancel?.();
       performSearchRef.current?.({ enableFacets: facetsEnabled });
@@ -651,20 +659,18 @@ export const SearchProvider: React.FC<{
 
   // Effect for filter changes - immediate search with facets
   useEffect(() => {
-    // Trigger only on filter changes (not on query/lastQuery updates)
+    // Skip if this is before initialization completes
+    if (!hasInitialized.current) return;
+
     // Don't search if query is empty and allowEmptySearch is false
     const trimmedQuery = state.query.trim();
     const shouldSkipSearch = !allowEmptySearch && trimmedQuery === '';
 
-    if (
-      facetsEnabled &&
-      !shouldSkipSearch &&
-      (Object.keys(state.filters).length > 0 || Object.keys(state.rangeFilters).length > 0)
-    ) {
+    if (facetsEnabled && !shouldSkipSearch) {
       console.log('[Search] Performing immediate faceted search due to filter change');
       performSearchRef.current?.({ enableFacets: true });
     }
-  }, [state.filters, state.rangeFilters, facetsEnabled, state.query, allowEmptySearch]);
+  }, [state.filters, state.rangeFilters]);
 
   useEffect(() => {
     const authenticate = async () => {
