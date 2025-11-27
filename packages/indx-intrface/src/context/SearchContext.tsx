@@ -600,7 +600,7 @@ export const SearchProvider: React.FC<{
   }, []);
 
   // Function to perform a search with facets - stable debounced function
-  const searchWithFacetsDebounced = useRef<ReturnType<typeof debounce>>();
+  const searchWithFacetsDebounced = useRef<ReturnType<typeof debounce> | null>(null);
 
 // Create/update debounced function when delay changes
 useEffect(() => {
