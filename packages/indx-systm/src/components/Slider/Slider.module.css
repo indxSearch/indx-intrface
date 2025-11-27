@@ -38,11 +38,12 @@
     border-radius: 1px;
 }
 .livetrackFaceted {
-  background-color: var(--CB3);
+  /* background-color: var(--CB3); */
+  background-color: var(--lv7);
 }
-:global(.dark) .livetrackFaceted {
+/* :global(.dark) .livetrackFaceted {
   background-color: var(--CTeal);
-}
+} */
 .livetrackDefault {
   background-color: var(--lv7);
 }
@@ -52,7 +53,6 @@
   border-radius: 1px;
   background-color: var(--lv7);
   cursor: grab;
-  transition: background-color 0.3s ease;
   outline: none;
 }
 

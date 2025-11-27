@@ -86,15 +86,17 @@ export const Slider: React.FC<SliderProps> = (props) => {
                   ...restTrackProps.style,
                 }}
               >
-                {/* ─── Selected-range track ─── */}
-                <div
-                  className={styles.selectedtrack}
-                  style={{
-                    left: `${selectedLeftPct}%`,
-                    width: `${selectedWidthPct}%`,
-                    zIndex: '1'
-                  }}
-                />
+                {/* ─── Selected-range track (hidden when active range shown) ─── */}
+                {!hasLiveOverlay && (
+                  <div
+                    className={styles.selectedtrack}
+                    style={{
+                      left: `${selectedLeftPct}%`,
+                      width: `${selectedWidthPct}%`,
+                      zIndex: '1'
+                    }}
+                  />
+                )}
 
                 {/* ─── Live-overlay track ─── */}
                 {hasLiveOverlay && (
@@ -175,15 +177,17 @@ export const Slider: React.FC<SliderProps> = (props) => {
                   ...restTrackProps.style,
                 }}
               >
-                {/* ─── Selected track (from start to thumb) ─── */}
-                <div
-                  className={styles.selectedtrack}
-                  style={{
-                    left: '0%',
-                    width: `${selectedWidthPct}%`,
-                    zIndex: '1'
-                  }}
-                />
+                {/* ─── Selected track (from start to thumb, hidden when active range shown) ─── */}
+                {!hasLiveOverlay && (
+                  <div
+                    className={styles.selectedtrack}
+                    style={{
+                      left: '0%',
+                      width: `${selectedWidthPct}%`,
+                      zIndex: '1'
+                    }}
+                  />
+                )}
 
                 {/* ─── Live-overlay track ─── */}
                 {hasLiveOverlay && (

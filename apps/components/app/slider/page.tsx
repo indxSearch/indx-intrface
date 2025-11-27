@@ -1,13 +1,29 @@
 'use client';
 
 import { Slider } from '@indxsearch/systm';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 
 export default function SliderPage() {
+  const [mounted, setMounted] = useState(false);
   const [singleValue, setSingleValue] = useState(50);
   const [rangeValue, setRangeValue] = useState<[number, number]>([25, 75]);
   const [liveRangeValue, setLiveRangeValue] = useState<[number, number]>([30, 80]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <main className={styles.main}>
+        <div className={styles.section}>
+          <h1 className={styles.title}>Slider</h1>
+          <p className={styles.desc}>Range slider component with single and dual thumb modes</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className={styles.main}>
