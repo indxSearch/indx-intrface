@@ -114,56 +114,67 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
 
   // ─────────────────────────────────────────────────────────────────────────────
   // 7) Drag handlers (only update local thumb position until let‐go)
+  // Clamp min to [queryMin, liveDataMax] and max to [liveDataMin, queryMax]
   const handleSliderChange = React.useCallback((values: number[]) => {
     if (isDisabled) return;
-    setSliderValue([values[0], values[1]]);
-  }, [isDisabled]);
+    const clampedMin = Math.max(queryMin, Math.min(liveDataMax, values[0]));
+    const clampedMax = Math.max(liveDataMin, Math.min(queryMax, values[1]));
+    setSliderValue([clampedMin, clampedMax]);
+  }, [isDisabled, queryMin, queryMax, liveDataMin, liveDataMax]);
 
   const handleSliderCommit = React.useCallback((values: number[]) => {
     if (isDisabled) return;
-    setSliderValue([values[0], values[1]]);
-  }, [isDisabled]);
+    const clampedMin = Math.max(queryMin, Math.min(liveDataMax, values[0]));
+    const clampedMax = Math.max(liveDataMin, Math.min(queryMax, values[1]));
+    setSliderValue([clampedMin, clampedMax]);
+  }, [isDisabled, queryMin, queryMax, liveDataMin, liveDataMax]);
 
-  // 8) Manual number‐input handlers (all within [globalMin, globalMax])
+  // 8) Manual number‐input handlers
+  // Min can't exceed liveDataMax (can't filter above what exists)
+  // Max can't be below liveDataMin (can't filter below what exists)
   const handleMinChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (isDisabled) return;
     const value = Number(e.target.value);
     if (!isNaN(value)) {
-      setSliderValue([value, sliderValue[1]]);
+      // Clamp to [queryMin, liveDataMax]
+      const clampedValue = Math.max(queryMin, Math.min(liveDataMax, value));
+      setSliderValue([clampedValue, sliderValue[1]]);
     }
-  }, [isDisabled, sliderValue[1]]);
+  }, [isDisabled, sliderValue, queryMin, liveDataMax]);
 
   const handleMaxChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (isDisabled) return;
     const value = Number(e.target.value);
     if (!isNaN(value)) {
-      setSliderValue([sliderValue[0], value]);
+      // Clamp to [liveDataMin, queryMax]
+      const clampedValue = Math.max(liveDataMin, Math.min(queryMax, value));
+      setSliderValue([sliderValue[0], clampedValue]);
     }
-  }, [isDisabled, sliderValue[0]]);
+  }, [isDisabled, sliderValue, liveDataMin, queryMax]);
 
   const handleMinBlur = React.useCallback(() => {
     const value = sliderValue[0];
-    const clampedValue = Math.max(queryMin, Math.min(queryMax, value));
-    // Only update if the value is within valid range
-    if (clampedValue >= queryMin && clampedValue < sliderValue[1]) {
+    // Clamp to [queryMin, liveDataMax] and ensure it's less than max
+    const clampedValue = Math.max(queryMin, Math.min(liveDataMax, value));
+    if (clampedValue < sliderValue[1]) {
       setSliderValue([clampedValue, sliderValue[1]]);
     } else {
-      // Reset to last valid value
+      // Reset to queryMin if invalid
       setSliderValue([queryMin, sliderValue[1]]);
     }
-  }, [sliderValue, queryMin, queryMax]);
+  }, [sliderValue, queryMin, liveDataMax]);
 
   const handleMaxBlur = React.useCallback(() => {
     const value = sliderValue[1];
-    const clampedValue = Math.max(queryMin, Math.min(queryMax, value));
-    // Only update if the value is within valid range
-    if (clampedValue <= queryMax && clampedValue > sliderValue[0]) {
+    // Clamp to [liveDataMin, queryMax] and ensure it's greater than min
+    const clampedValue = Math.max(liveDataMin, Math.min(queryMax, value));
+    if (clampedValue > sliderValue[0]) {
       setSliderValue([sliderValue[0], clampedValue]);
     } else {
-      // Reset to last valid value
+      // Reset to queryMax if invalid
       setSliderValue([sliderValue[0], queryMax]);
     }
-  }, [sliderValue, queryMin, queryMax]);
+  }, [sliderValue, liveDataMin, queryMax]);
 
   // Don't show if query is empty and allowEmptySearch is false
   // (Must come after all hooks to follow Rules of Hooks)
@@ -209,7 +220,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
             type="number"
             value={sliderValue[0]}
             min={queryMin}
-            max={sliderValue[1] - 1}
+            max={Math.min(liveDataMax, sliderValue[1] - 1)}
             onChange={handleMinChange}
             onBlur={handleMinBlur}
             disabled={isDisabled}
@@ -218,7 +229,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
           <InputField
             type="number"
             value={sliderValue[1]}
-            min={sliderValue[0] + 1}
+            min={Math.max(liveDataMin, sliderValue[0] + 1)}
             max={queryMax}
             onChange={handleMaxChange}
             onBlur={handleMaxBlur}
@@ -240,7 +251,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
           type="number"
           value={sliderValue[0]}
           min={queryMin}
-          max={sliderValue[1] - 1}
+          max={Math.min(liveDataMax, sliderValue[1] - 1)}
           onChange={handleMinChange}
           onBlur={handleMinBlur}
           disabled={isDisabled}
@@ -250,7 +261,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
           label="Max:"
           type="number"
           value={sliderValue[1]}
-          min={sliderValue[0] + 1}
+          min={Math.max(liveDataMin, sliderValue[0] + 1)}
           max={queryMax}
           onChange={handleMaxChange}
           onBlur={handleMaxBlur}
