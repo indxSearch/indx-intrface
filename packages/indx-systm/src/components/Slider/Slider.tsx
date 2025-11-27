@@ -99,7 +99,7 @@ export const Slider: React.FC<SliderProps> = (props) => {
                 {/* ─── Live-overlay track ─── */}
                 {hasLiveOverlay && (
                   <div
-                    className={`${styles.livetrack} ${isFaceted && highlightFaceted ? styles.livetrackFaceted : styles.livetrackDefault}`}
+                    className={`${styles.livetrack} ${isFaceted ? styles.livetrackFaceted : styles.livetrackDefault}`}
                     style={{
                       left: `${liveLeftPct}%`,
                       width: `${liveWidthPct}%`,

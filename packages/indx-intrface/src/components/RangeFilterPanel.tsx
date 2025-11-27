@@ -29,48 +29,53 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
     allowEmptySearch
   } = useSearchContext();
 
-  // 1) Global bounds (only on new query)
-  const globalMin = rangeBounds?.[field]?.min ?? expectedMin;
-  const globalMax = rangeBounds?.[field]?.max ?? expectedMax;
+  // 1) Query-specific bounds (updates only when query text changes)
+  const queryBounds = rangeBounds?.[field] ?? { min: expectedMin, max: expectedMax };
+  const queryMin = queryBounds.min;
+  const queryMax = queryBounds.max;
 
-  // 2) Live (filtered) bounds under all active filters (incl. value‐filter on this field)
-  const liveMin = facetStats?.[field]?.min ?? globalMin;
-  const liveMax = facetStats?.[field]?.max ?? globalMax;
+  // 2) Live data bounds (reflects all active filters, used for active region visualization)
+  const liveDataBounds = facetStats?.[field] ?? queryBounds;
+  const liveDataMin = liveDataBounds.min;
+  const liveDataMax = liveDataBounds.max;
 
-  // 3) If liveMin === liveMax, disable/hide slider
-  const isDisabled = liveMin === liveMax;
+  // 3) If query bounds are equal, disable slider (no range to filter)
+  const isDisabled = queryMin === queryMax;
 
-  // 4) The "official" thumbs from context, or fallback to global
-  const ctxMin = rangeFilters?.[field]?.min ?? globalMin;
-  const ctxMax = rangeFilters?.[field]?.max ?? globalMax;
+  // 4) Get intended values from rangeFilters (user's choice, or undefined if unset)
+  const intended = rangeFilters?.[field];
 
-  // Check if the range is faceted (live bounds differ from global bounds)
-  const isFaceted = liveMin !== globalMin || liveMax !== globalMax;
-  const isSelfActive = ctxMin !== globalMin || ctxMax !== globalMax;
+  // 5) Display values: use intended if set, otherwise default to query bounds (full range)
+  const displayMin = intended ? intended.min : queryMin;
+  const displayMax = intended ? intended.max : queryMax;
 
-  // 5) Local sliderValue (thumb positions). Initialize once to [ctxMin, ctxMax].
-  //    After that, we never overwrite it unless the user drags.
+  // Check if user has set a filter on this field
+  const isSelfActive = intended !== undefined;
+  // Show as faceted if live data bounds differ from query bounds (other filters affecting this field)
+  const isFaceted = liveDataMin !== queryMin || liveDataMax !== queryMax;
+
+  // 6) Local sliderValue (thumb positions). Initialize to display values.
   const [sliderValue, setSliderValue] = React.useState<[number, number]>([
-    ctxMin,
-    ctxMax,
+    displayMin,
+    displayMax,
   ]);
 
   // Track if values are invalid with a delay
   const [isMinInvalid, setIsMinInvalid] = React.useState(false);
   const [isMaxInvalid, setIsMaxInvalid] = React.useState(false);
 
-  // Memoize clamped values calculation
+  // Memoize clamped values calculation (clamp to query bounds, not live data bounds)
   const { finalMin, finalMax, isValidMin, isValidMax } = React.useMemo(() => {
     const [min, max] = sliderValue;
-    const clampedMin = Math.max(globalMin, Math.min(globalMax, min));
-    const clampedMax = Math.max(globalMin, Math.min(globalMax, max));
+    const clampedMin = Math.max(queryMin, Math.min(queryMax, min));
+    const clampedMax = Math.max(queryMin, Math.min(queryMax, max));
     const finalMin = Math.min(clampedMin, clampedMax);
     const finalMax = Math.max(clampedMin, clampedMax);
-    const isValidMin = finalMin >= globalMin && finalMin < finalMax;
-    const isValidMax = finalMax <= globalMax && finalMax > finalMin;
+    const isValidMin = finalMin >= queryMin && finalMin < finalMax;
+    const isValidMax = finalMax <= queryMax && finalMax > finalMin;
 
     return { finalMin, finalMax, isValidMin, isValidMax };
-  }, [sliderValue, globalMin, globalMax]);
+  }, [sliderValue, queryMin, queryMax]);
 
   // Combined debounced effect for invalid state and filter updates
   React.useEffect(() => {
@@ -83,9 +88,11 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
     // Second timeout for filter update (500ms)
     const filterTimer = setTimeout(() => {
       if (isValidMin && isValidMax) {
-        if (finalMin === globalMin && finalMax === globalMax) {
+        if (finalMin === queryMin && finalMax === queryMax) {
+          // Slider at full query bounds, no filtering needed
           resetSingleFilter(field);
         } else {
+          // Store as intended values (these will be sent to API)
           setRangeFilter(field, finalMin, finalMax);
         }
       }
@@ -96,16 +103,14 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
       clearTimeout(invalidTimer);
       clearTimeout(filterTimer);
     };
-  }, [finalMin, finalMax, isValidMin, isValidMax, globalMin, globalMax, field]);
+  }, [finalMin, finalMax, isValidMin, isValidMax, queryMin, queryMax, field, resetSingleFilter, setRangeFilter]);
 
   // ─────────────────────────────────────────────────────────────────────────────
-  // 6) If context had a saved rangeFilter (ctxMin/ctxMax), sync ONCE on mount or when
-  //    'field' changes. BUT do not respond to bound‐changes.
+  // 7) Sync sliderValue with display values when they change
+  //    This happens when: intended values change, query bounds change, or field changes
   React.useEffect(() => {
-    setSliderValue([ctxMin, ctxMax]);
-    // Intentionally _not_ depending on globalMin/globalMax or liveMin/liveMax,
-    // so changing bounds won't shift the thumbs.
-  }, [ctxMin, ctxMax, field]);
+    setSliderValue([displayMin, displayMax]);
+  }, [displayMin, displayMax, field]);
 
   // ─────────────────────────────────────────────────────────────────────────────
   // 7) Drag handlers (only update local thumb position until let‐go)
@@ -138,27 +143,27 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
 
   const handleMinBlur = React.useCallback(() => {
     const value = sliderValue[0];
-    const clampedValue = Math.max(globalMin, Math.min(globalMax, value));
+    const clampedValue = Math.max(queryMin, Math.min(queryMax, value));
     // Only update if the value is within valid range
-    if (clampedValue >= globalMin && clampedValue < sliderValue[1]) {
+    if (clampedValue >= queryMin && clampedValue < sliderValue[1]) {
       setSliderValue([clampedValue, sliderValue[1]]);
     } else {
       // Reset to last valid value
-      setSliderValue([globalMin, sliderValue[1]]);
+      setSliderValue([queryMin, sliderValue[1]]);
     }
-  }, [sliderValue, globalMin, globalMax]);
+  }, [sliderValue, queryMin, queryMax]);
 
   const handleMaxBlur = React.useCallback(() => {
     const value = sliderValue[1];
-    const clampedValue = Math.max(globalMin, Math.min(globalMax, value));
+    const clampedValue = Math.max(queryMin, Math.min(queryMax, value));
     // Only update if the value is within valid range
-    if (clampedValue <= globalMax && clampedValue > sliderValue[0]) {
+    if (clampedValue <= queryMax && clampedValue > sliderValue[0]) {
       setSliderValue([sliderValue[0], clampedValue]);
     } else {
       // Reset to last valid value
-      setSliderValue([sliderValue[0], globalMax]);
+      setSliderValue([sliderValue[0], queryMax]);
     }
-  }, [sliderValue, globalMin, globalMax]);
+  }, [sliderValue, queryMin, queryMax]);
 
   // Don't show if query is empty and allowEmptySearch is false
   // (Must come after all hooks to follow Rules of Hooks)
@@ -167,26 +172,26 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
-  // 9) Render slider (thumbs at `sliderValue`, rail always covers [globalMin→globalMax])
+  // 9) Render slider (rail at query bounds, active region shows live data bounds)
   if (displayType === 'slider') {
     return (
       <FilterPanelBase title={label} collapsed={startCollapsed} collapsible={collapsible}>
         {isDisabled && (
           <div className={styles.disabledMessage}>
-            No adjustable range (all results have the same value: {liveMin}).
+            No adjustable range (all results have the same value: {queryMin}).
           </div>
         )}
         <div style={{ padding: '10px 10px 20px 10px' }}>
           <Slider
-            min={globalMin}
-            max={globalMax}
+            min={queryMin}
+            max={queryMax}
             value={[finalMin, finalMax]}
             isRange
             onChange={(vals: number | number[]) => handleSliderChange(vals as [number, number])}
             onFinalChange={(vals: number | number[]) => handleSliderCommit(vals as [number, number])}
             disabled={isDisabled}
-            activeMin={liveMin}
-            activeMax={liveMax}
+            activeMin={liveDataMin}
+            activeMax={liveDataMax}
             isFaceted={isFaceted}
             highlightFaceted={isSelfActive}
           />
@@ -203,7 +208,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
           <InputField
             type="number"
             value={sliderValue[0]}
-            min={globalMin}
+            min={queryMin}
             max={sliderValue[1] - 1}
             onChange={handleMinChange}
             onBlur={handleMinBlur}
@@ -214,7 +219,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
             type="number"
             value={sliderValue[1]}
             min={sliderValue[0] + 1}
-            max={globalMax}
+            max={queryMax}
             onChange={handleMaxChange}
             onBlur={handleMaxBlur}
             disabled={isDisabled}
@@ -234,7 +239,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
           label="Min:"
           type="number"
           value={sliderValue[0]}
-          min={globalMin}
+          min={queryMin}
           max={sliderValue[1] - 1}
           onChange={handleMinChange}
           onBlur={handleMinBlur}
@@ -246,7 +251,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
           type="number"
           value={sliderValue[1]}
           min={sliderValue[0] + 1}
-          max={globalMax}
+          max={queryMax}
           onChange={handleMaxChange}
           onBlur={handleMaxBlur}
           disabled={isDisabled}
@@ -255,7 +260,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
       </div>
       {isDisabled && (
         <div className={styles.disabledMessage}>
-          No adjustable range (all results have the same value: {liveMin}).
+          No adjustable range (all results have the same value: {queryMin}).
         </div>
       )}
     </FilterPanelBase>

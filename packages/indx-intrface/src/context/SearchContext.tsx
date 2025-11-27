@@ -183,6 +183,7 @@ export const SearchProvider: React.FC<{
   const [initialFacetKeys, setInitialFacetKeys] = useState<Record<string, string[]>>({}); // Initial facet keys for non-coverage fields
   const [fixedFacetStats, setFixedFacetStats] = useState<Record<string, { min: number; max: number }>>({}); // Fixed facet statistics (min/max values) for numeric fields
   const [lastQueryText, setLastQueryText] = useState<string>(''); // The last query text entered by the user
+  const [lastRangeBoundsQuery, setLastRangeBoundsQuery] = useState<string>(''); // The last query text that updated rangeBounds
   const [rangeBounds, setRangeBounds] = useState<Record<string, { min: number; max: number }>>({}); // Initial range bounds for numeric fields, only updated when query changes
 
   // Cache for initial blank search data
@@ -444,6 +445,7 @@ export const SearchProvider: React.FC<{
 
         // 8) Determine if query changed
         const queryChanged = state.query !== lastQueryText;
+        const rangeBoundsNeedsUpdate = state.query !== lastRangeBoundsQuery;
 
         // 9) Merge facetStats (old vs new) for display purposes
         let mergedFacetStats = state.facetStats ?? {};
@@ -455,13 +457,14 @@ export const SearchProvider: React.FC<{
           mergedFacetStats = { ...fixedFacetStats, ...newFacetStats };
         }
 
-        // 10) Update rangeBounds only if the query text changed
-        if (queryChanged) {
+        // 10) Update rangeBounds only if query changed AND we have facets AND rangeBounds hasn't been updated yet
+        if (rangeBoundsNeedsUpdate && enableFacets) {
           const updatedBounds = { ...rangeBounds };
           for (const [field, stats] of Object.entries(newFacetStats)) {
             updatedBounds[field] = stats;
           }
           setRangeBounds(updatedBounds);
+          setLastRangeBoundsQuery(state.query);
         }
 
         // 11) Prepare displayFacets (for non‐coverage fields if needed)
