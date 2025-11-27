@@ -297,16 +297,11 @@ export const SearchProvider: React.FC<{
 
   // Function to set the sort field and direction
   const setSort = useCallback((field: string | null, ascending: boolean) => {
-    console.log('[SearchContext] setSort called - field:', field, 'ascending:', ascending);
-    setState(prev => {
-      const newState = {
-        ...prev,
-        sortBy: field || undefined,
-        sortAscending: field ? ascending : undefined,
-      };
-      console.log('[SearchContext] New sort state - sortBy:', newState.sortBy, 'sortAscending:', newState.sortAscending);
-      return newState;
-    });
+    setState(prev => ({
+      ...prev,
+      sortBy: field || undefined,
+      sortAscending: field ? ascending : undefined,
+    }));
   }, []);
 
   // Function to combine multiple filters into a single filter proxy
@@ -605,27 +600,40 @@ export const SearchProvider: React.FC<{
   }, []);
 
   // Function to perform a search with facets - stable debounced function
-  const searchWithFacets = useMemo(
-  () =>
-    debounce(() => {
-      console.log('Debounced searchWithFacets fired');
-      performSearchRef.current?.({ enableFacets: true });
-    }, state.facetDebounceDelayMillis ?? 500),
-  [state.facetDebounceDelayMillis]
-);
+  const searchWithFacetsDebounced = useRef<ReturnType<typeof debounce>>();
+
+// Create/update debounced function when delay changes
+useEffect(() => {
+  searchWithFacetsDebounced.current = debounce(() => {
+    console.log('Debounced searchWithFacets fired');
+    performSearchRef.current?.({ enableFacets: true });
+  }, state.facetDebounceDelayMillis ?? 500);
+
+  return () => {
+    searchWithFacetsDebounced.current?.cancel();
+  };
+}, [state.facetDebounceDelayMillis]);
+
+const searchWithFacets = useCallback(() => {
+  searchWithFacetsDebounced.current?.();
+}, []);
 
   // Effect for initial blank search after authentication completes
   useEffect(() => {
-    if (!isFetchingInitial && token && allowEmptySearch && state.query === '' && !hasInitialized.current) {
-      console.log('[Search] Initial blank search after auth complete');
-      performSearch({ enableFacets: facetsEnabled }).then(() => {
-        hasInitialized.current = true;
-      });
+    if (!isFetchingInitial && token && !hasInitialized.current) {
+      // Only perform initial search if allowEmptySearch is true
+      if (allowEmptySearch) {
+        performSearchRef.current?.({ enableFacets: facetsEnabled });
+      }
+      hasInitialized.current = true;
     }
-  }, [isFetchingInitial, token]); // Trigger after auth completes
+  }, [isFetchingInitial, token, allowEmptySearch, facetsEnabled]); // Trigger after auth completes
 
   // Effect for query changes - immediate results, debounced facets
   useEffect(() => {
+    // Skip if no token yet (wait for initial search effect to handle first search)
+    if (!token) return;
+
     const trimmedQuery = state.query.trim();
     const isFirstLoad = lastQueryText === '' && trimmedQuery === '';
     const isEmptySearch = trimmedQuery === '' && allowEmptySearch;
@@ -650,7 +658,7 @@ export const SearchProvider: React.FC<{
     }
 
     if (isFirstLoad || isEmptySearch) {
-      searchWithFacets.cancel?.();
+      searchWithFacetsDebounced.current?.cancel();
       performSearchRef.current?.({ enableFacets: facetsEnabled });
     } else {
       if (facetsEnabled) {
@@ -662,36 +670,41 @@ export const SearchProvider: React.FC<{
     }
 
     return () => {
-      searchWithFacets.cancel?.();
+      searchWithFacetsDebounced.current?.cancel();
     };
   }, [state.query, allowEmptySearch, searchBasic, searchWithFacets, facetsEnabled]);
 
   // Effect for filter changes - immediate search with facets
   useEffect(() => {
-    // Skip if this is before initialization completes
-    if (!hasInitialized.current) return;
+    // Skip if this is before initialization completes or no token yet
+    if (!hasInitialized.current || !token) return;
+
+    // Check if there are actually any filters applied
+    const hasValueFilters = Object.keys(state.filters).length > 0;
+    const hasRangeFilters = Object.keys(state.rangeFilters).length > 0;
+
+    // Skip if no filters are actually set (avoids redundant search on mount)
+    if (!hasValueFilters && !hasRangeFilters) return;
 
     // Don't search if query is empty and allowEmptySearch is false
     const trimmedQuery = state.query.trim();
     const shouldSkipSearch = !allowEmptySearch && trimmedQuery === '';
 
     if (facetsEnabled && !shouldSkipSearch) {
-      console.log('[Search] Performing immediate faceted search due to filter change');
       performSearchRef.current?.({ enableFacets: true });
     }
   }, [state.filters, state.rangeFilters]);
 
   // Effect for sort changes - immediate search with facets
   useEffect(() => {
-    // Skip if this is before initialization completes
-    if (!hasInitialized.current) return;
+    // Skip if this is before initialization completes or no token yet
+    if (!hasInitialized.current || !token) return;
 
     // Don't search if query is empty and allowEmptySearch is false
     const trimmedQuery = state.query.trim();
     const shouldSkipSearch = !allowEmptySearch && trimmedQuery === '';
 
     if (facetsEnabled && !shouldSkipSearch) {
-      console.log('[Search] Performing immediate faceted search due to sort change');
       performSearchRef.current?.({ enableFacets: true });
     }
   }, [sortBy, sortAscending]);
@@ -785,19 +798,20 @@ export const SearchProvider: React.FC<{
         const statusData = await statusRes.json();
         console.log('[Auth] 📊 Dataset status:', statusData);
 
-        // Check if dataset is ready
-        if (statusData.state !== 'Ready') {
+        // Check if dataset is ready (if state field exists)
+        if (statusData.state && statusData.state !== 'Ready') {
           console.warn('[Auth] ⚠️ Dataset is not ready yet. Current state:', statusData.state);
           console.warn('[Auth] 💡 Wait for indexing to complete before searching');
         }
 
-        // Check if dataset is empty
-        if (statusData.numberOfRecords === 0) {
+        // Check if dataset is empty (use documentCount field from API)
+        const recordCount = statusData.documentCount ?? statusData.numberOfRecords ?? 0;
+        if (recordCount === 0) {
           console.warn('[Auth] ⚠️ Dataset "' + dataset + '" is empty (0 records)');
           console.warn('[Auth] 💡 Add documents to your dataset before searching');
           console.warn('[Auth] 💡 Search will work but return no results');
         } else {
-          console.log('[Auth] ✅ Dataset has', statusData.numberOfRecords, 'records');
+          console.log('[Auth] ✅ Dataset has', recordCount, 'records');
         }
 
         const [filterableRes, facetableRes, sortableRes] = await Promise.all([

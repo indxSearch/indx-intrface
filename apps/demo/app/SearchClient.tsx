@@ -135,15 +135,6 @@ function SearchLayout({
     };
   }, [filtersVisible]);
 
-  // DEBUG LOGGING
-  useEffect(() => {
-    console.log('[SearchLayout] Faceted search results updated', {
-      timestamp: new Date().toISOString(),
-      query,
-      facets
-    });
-  }, [facets]);
-
   return (
     <div className={theme}>
       <div className={styles.wrapper} ref={containerRef}>
