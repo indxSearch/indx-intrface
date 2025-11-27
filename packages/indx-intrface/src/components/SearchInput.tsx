@@ -27,7 +27,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     <SearchField
       type="text"
       value={query}
-      onChange={e => setQuery(e.target.value)}
+      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
       placeholder={searchSettings.placeholderText}
       autoFocus={autoFocus}
       className={className}

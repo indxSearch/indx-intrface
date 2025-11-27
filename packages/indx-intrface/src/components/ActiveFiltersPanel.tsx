@@ -10,7 +10,7 @@ const ValueFilterButton = memo(({ field, value, onReset }: { field: string, valu
     <Button 
       onClick={onReset}
       iconRight={<X_or_error/>}
-      variant='active'
+      variant='primary'
       size='micro'
     >
       {field}: {value}
@@ -58,7 +58,7 @@ export function ActiveFiltersPanel() {
   if (!hasFilters) return null;
 
   return (
-    <FilterPanelBase activeFilter={true} collapsible={false} title="Active filters">
+    <FilterPanelBase collapsible={false} title="Active filters">
       <ul className={styles.grid}>
         {filterEntries.map(({ field, value }) => (
           <ValueFilterButton
@@ -81,7 +81,7 @@ export function ActiveFiltersPanel() {
           <Button 
             onClick={resetFilters}
             size='micro'
-            variant='tertiary'
+            variant='ghost'
           >
             Reset
           </Button>

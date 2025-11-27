@@ -4,7 +4,7 @@ export { Checkbox } from './components/Checkbox/Checkbox';
 export { Base } from './components/Base/Base';
 export { FilterPanelBase } from './components/FilterPanelBase/FilterPanelBase';
 export { SearchField } from './components/SearchField/SearchField';
-export type InputSize = 'micro' | 'default' | 'large';
+export type InputSize = 'micro' | 'default';
 export { InputField } from './components/InputField/InputField';
 export { RadioButton } from './components/RadioButton/RadioButton';
 export { ToggleSwitch } from './components/ToggleSwitch/ToggleSwitch';

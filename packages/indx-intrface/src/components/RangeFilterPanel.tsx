@@ -182,8 +182,8 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
             max={globalMax}
             value={[finalMin, finalMax]}
             isRange
-            onChange={(vals) => handleSliderChange(vals as [number, number])}
-            onFinalChange={(vals) => handleSliderCommit(vals as [number, number])}
+            onChange={(vals: number | number[]) => handleSliderChange(vals as [number, number])}
+            onFinalChange={(vals: number | number[]) => handleSliderCommit(vals as [number, number])}
             disabled={isDisabled}
             activeMin={liveMin}
             activeMax={liveMax}
