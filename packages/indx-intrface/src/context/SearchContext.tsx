@@ -297,11 +297,16 @@ export const SearchProvider: React.FC<{
 
   // Function to set the sort field and direction
   const setSort = useCallback((field: string | null, ascending: boolean) => {
-    setState(prev => ({
-      ...prev,
-      sortBy: field || undefined,
-      sortAscending: field ? ascending : undefined,
-    }));
+    console.log('[SearchContext] setSort called - field:', field, 'ascending:', ascending);
+    setState(prev => {
+      const newState = {
+        ...prev,
+        sortBy: field || undefined,
+        sortAscending: field ? ascending : undefined,
+      };
+      console.log('[SearchContext] New sort state - sortBy:', newState.sortBy, 'sortAscending:', newState.sortAscending);
+      return newState;
+    });
   }, []);
 
   // Function to combine multiple filters into a single filter proxy
@@ -334,6 +339,10 @@ export const SearchProvider: React.FC<{
   const settingsRemoveDuplicates = state.searchSettings.removeDuplicates;
   const settingsCoverageDepth = state.searchSettings.coverageDepth;
   const settingsMinimumScore = state.searchSettings.minimumScore;
+
+  // Extract sort values to avoid object reference issues
+  const sortBy = state.sortBy;
+  const sortAscending = state.sortAscending;
 
   // Memoize coverageSetup to prevent unnecessary re-renders
   const settingsCoverageSetup = useMemo(() => state.searchSettings.coverageSetup, [
@@ -405,8 +414,8 @@ export const SearchProvider: React.FC<{
           maxNumberOfRecordsToReturn: shouldFetchResults ? settingsMaxResults : 0,
           enableFacets,
           ...(filterProxy ? { filter: filterProxy } : {}),
-          ...(state.sortBy ? { sortBy: state.sortBy } : {}),
-          ...(state.sortAscending !== undefined ? { sortAscending: state.sortAscending } : {}),
+          ...(sortBy ? { sortBy: sortBy } : {}),
+          ...(sortAscending !== undefined ? { sortAscending: sortAscending } : {}),
           enableCoverage: settingsEnableCoverage,
           removeDuplicates: settingsRemoveDuplicates,
           coverageDepth: settingsCoverageDepth,
@@ -567,8 +576,8 @@ export const SearchProvider: React.FC<{
       state.query,
       state.filters,
       state.rangeFilters,
-      state.sortBy,
-      state.sortAscending,
+      sortBy,
+      sortAscending,
       settingsMaxResults,
       settingsEnableCoverage,
       settingsRemoveDuplicates,
@@ -671,6 +680,21 @@ export const SearchProvider: React.FC<{
       performSearchRef.current?.({ enableFacets: true });
     }
   }, [state.filters, state.rangeFilters]);
+
+  // Effect for sort changes - immediate search with facets
+  useEffect(() => {
+    // Skip if this is before initialization completes
+    if (!hasInitialized.current) return;
+
+    // Don't search if query is empty and allowEmptySearch is false
+    const trimmedQuery = state.query.trim();
+    const shouldSkipSearch = !allowEmptySearch && trimmedQuery === '';
+
+    if (facetsEnabled && !shouldSkipSearch) {
+      console.log('[Search] Performing immediate faceted search due to sort change');
+      performSearchRef.current?.({ enableFacets: true });
+    }
+  }, [sortBy, sortAscending]);
 
   useEffect(() => {
     const authenticate = async () => {

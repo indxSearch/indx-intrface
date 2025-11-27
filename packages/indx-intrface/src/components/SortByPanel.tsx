@@ -20,16 +20,20 @@ export const SortByPanel: React.FC<SortByPanelProps> = ({ displayType = 'dropdow
 
   const currentValue = sortBy ? `${sortBy}:${sortAscending ? 'asc' : 'desc'}` : '';
 
+  console.log('[SortByPanel] sortBy:', sortBy, 'sortAscending:', sortAscending, 'currentValue:', currentValue);
+
   const options = sortableFields.flatMap((field) => [
     { label: `${field} (asc)`, value: `${field}:asc` },
     { label: `${field} (desc)`, value: `${field}:desc` },
   ]);
 
   const handleChange = (value: string) => {
+    console.log('[SortByPanel] handleChange called with value:', value);
     if (value === '') {
       setSort(null, true);
     } else {
       const [field, direction] = value.split(':');
+      console.log('[SortByPanel] Setting sort - field:', field, 'ascending:', direction === 'asc');
       setSort(field, direction === 'asc');
     }
   };
