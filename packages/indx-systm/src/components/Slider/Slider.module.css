@@ -1,6 +1,6 @@
 .basetrack {
     position: relative;
-    height: 4px;
+    height: 5px;
     width: 100%;
     border-radius: 1px;
 }
@@ -27,7 +27,7 @@
 .selectedtrack {
     position: absolute;
     height: 100%;
-    background-color: var(--lv7);
+    background-color: var(--lv5);
     pointer-events: none;
     border-radius: 1px;
 }
@@ -39,13 +39,13 @@
 }
 .livetrackFaceted {
   /* background-color: var(--CB3); */
-  background-color: var(--lv7);
+  background-color: var(--lv5);
 }
 /* :global(.dark) .livetrackFaceted {
   background-color: var(--CTeal);
 } */
 .livetrackDefault {
-  background-color: var(--lv7);
+  background-color: var(--lv5);
 }
 .thumbs {
   height: 18px;
