@@ -118,8 +118,10 @@ searchBasic(): void
 // Debounced search (with facets)
 searchWithFacets(): void
   - Debounced by facetDebounceDelayMillis (default 500ms)
+  - Uses ref-based debounce (searchWithFacetsDebounced.current)
   - Calls performSearchRef.current({ enableFacets: true })
-  - Stable function (only depends on debounce delay)
+  - Stable function with proper cleanup on unmount
+  - Cancels pending searches when query changes
 ```
 
 ### Filter Functions
@@ -220,8 +222,9 @@ const settingsCoverageSetup = useMemo(
 **Runs**: When auth completes
 **Triggers**: `isFetchingInitial` → false, `token` exists
 **Does**:
-- Perform blank search with facets
-- Set `hasInitialized = true`
+- Only runs if `allowEmptySearch` is true
+- Performs initial search with facets
+- Sets `hasInitialized = true`
 
 ### Query Change Effect
 
@@ -229,10 +232,11 @@ const settingsCoverageSetup = useMemo(
 **Triggers**: `state.query` changes
 **Dependencies**: `[state.query, allowEmptySearch, searchBasic, searchWithFacets, facetsEnabled]`
 **Does**:
+- Skip if no token yet (wait for initial search effect)
 - Skip if empty and not allowed
-- Set `hasInitialized = true`
-- Call searchBasic() (immediate)
-- Call searchWithFacets() (debounced)
+- Set `hasInitialized = true` when user types
+- Call searchBasic() (immediate, no facets)
+- Call searchWithFacets() (debounced 500ms, with facets)
 
 ### Filter Change Effect
 
@@ -240,7 +244,18 @@ const settingsCoverageSetup = useMemo(
 **Triggers**: `state.filters` or `state.rangeFilters` changes
 **Dependencies**: `[state.filters, state.rangeFilters]`
 **Does**:
-- Skip if `!hasInitialized`
+- Skip if `!hasInitialized` or `!token`
+- Skip if no filters are actually set (optimization)
+- Perform immediate faceted search
+
+### Sort Change Effect
+
+**Runs**: When sort parameters change
+**Triggers**: `sortBy` or `sortAscending` changes
+**Dependencies**: `[sortBy, sortAscending]`
+**Does**:
+- Skip if `!hasInitialized` or `!token`
+- Skip if query is empty and `!allowEmptySearch`
 - Perform immediate faceted search
 
 ## Bounds Management
@@ -420,5 +435,5 @@ SearchContext includes extensive console logging:
 
 ---
 
-**Last Updated**: 2025-11-27
+**Last Updated**: 2025-11-28
 **Contributors**: Anders, Claude

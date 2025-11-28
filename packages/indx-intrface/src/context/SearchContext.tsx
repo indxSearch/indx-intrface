@@ -118,6 +118,7 @@ export const SearchProvider: React.FC<{
     query: '',
     results: null,
     isLoading: false,
+    resultsSuppressed: !allowEmptySearch, // Show placeholder if empty search not allowed
     facetDebounceDelayMillis,
     filters: {},
     rangeFilters: {},
@@ -678,13 +679,6 @@ const searchWithFacets = useCallback(() => {
   useEffect(() => {
     // Skip if this is before initialization completes or no token yet
     if (!hasInitialized.current || !token) return;
-
-    // Check if there are actually any filters applied
-    const hasValueFilters = Object.keys(state.filters).length > 0;
-    const hasRangeFilters = Object.keys(state.rangeFilters).length > 0;
-
-    // Skip if no filters are actually set (avoids redundant search on mount)
-    if (!hasValueFilters && !hasRangeFilters) return;
 
     // Don't search if query is empty and allowEmptySearch is false
     const trimmedQuery = state.query.trim();

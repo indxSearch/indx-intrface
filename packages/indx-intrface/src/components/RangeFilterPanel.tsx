@@ -26,10 +26,12 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
     state: { rangeFilters, rangeBounds, facetStats, query },
     setRangeFilter,
     resetSingleFilter,
-    allowEmptySearch
+    allowEmptySearch,
+    isFetchingInitial
   } = useSearchContext();
 
   // 1) Query-specific bounds (updates only when query text changes)
+  const hasRealBounds = rangeBounds?.[field] !== undefined;
   const queryBounds = rangeBounds?.[field] ?? { min: expectedMin, max: expectedMax };
   const queryMin = queryBounds.min;
   const queryMax = queryBounds.max;
@@ -40,9 +42,16 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   const liveDataMax = liveDataBounds.max;
 
   // 3) If query bounds are equal, disable slider (no range to filter)
-  const isDisabled = queryMin === queryMax;
+  // Only disable if we have real bounds data (not just defaults)
+  const isDisabled = hasRealBounds && queryMin === queryMax;
 
-  // 4) Get intended values from rangeFilters (user's choice, or undefined if unset)
+  // 4) Create artificial range for display when disabled (react-range can't handle min === max)
+  // Use expectedMin/expectedMax to create a valid range for visual display only
+  const displayQueryMin = isDisabled ? expectedMin : queryMin;
+  const displayQueryMax = isDisabled ? expectedMax : queryMax;
+  const displayValue = isDisabled ? queryMin : undefined; // The actual single value
+
+  // 5) Get intended values from rangeFilters (user's choice, or undefined if unset)
   const intended = rangeFilters?.[field];
 
   // 5) Display values: use intended if set, otherwise default to query bounds (full range)
@@ -176,8 +185,13 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
     }
   }, [sliderValue, liveDataMin, queryMax]);
 
-  // Don't show if query is empty and allowEmptySearch is false
+  // Don't show until data is loaded
   // (Must come after all hooks to follow Rules of Hooks)
+  if (isFetchingInitial) {
+    return null;
+  }
+
+  // Don't show if query is empty and allowEmptySearch is false
   if (!allowEmptySearch && !query) {
     return null;
   }
@@ -194,9 +208,9 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
         )}
         <div style={{ padding: '10px 10px 20px 10px' }}>
           <Slider
-            min={queryMin}
-            max={queryMax}
-            value={[finalMin, finalMax]}
+            min={displayQueryMin}
+            max={displayQueryMax}
+            value={isDisabled ? [displayValue!, displayValue!] : [finalMin, finalMax]}
             isRange
             onChange={(vals: number | number[]) => handleSliderChange(vals as [number, number])}
             onFinalChange={(vals: number | number[]) => handleSliderCommit(vals as [number, number])}
@@ -218,7 +232,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
         >
           <InputField
             type="number"
-            value={sliderValue[0]}
+            value={isDisabled ? queryMin : sliderValue[0]}
             min={queryMin}
             max={Math.min(liveDataMax, sliderValue[1] - 1)}
             onChange={handleMinChange}
@@ -228,7 +242,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
           />
           <InputField
             type="number"
-            value={sliderValue[1]}
+            value={isDisabled ? queryMax : sliderValue[1]}
             min={Math.max(liveDataMin, sliderValue[0] + 1)}
             max={queryMax}
             onChange={handleMaxChange}
@@ -245,11 +259,16 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   // 11) Fallback: two number inputs
   return (
     <FilterPanelBase title={label}>
+      {isDisabled && (
+        <div className={styles.disabledMessage}>
+          No adjustable range (all results have the same value: {queryMin}).
+        </div>
+      )}
       <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
         <InputField
           label="Min:"
           type="number"
-          value={sliderValue[0]}
+          value={isDisabled ? queryMin : sliderValue[0]}
           min={queryMin}
           max={Math.min(liveDataMax, sliderValue[1] - 1)}
           onChange={handleMinChange}
@@ -260,7 +279,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
         <InputField
           label="Max:"
           type="number"
-          value={sliderValue[1]}
+          value={isDisabled ? queryMax : sliderValue[1]}
           min={Math.max(liveDataMin, sliderValue[0] + 1)}
           max={queryMax}
           onChange={handleMaxChange}
@@ -269,11 +288,6 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
           isValid={!isMaxInvalid}
         />
       </div>
-      {isDisabled && (
-        <div className={styles.disabledMessage}>
-          No adjustable range (all results have the same value: {queryMin}).
-        </div>
-      )}
     </FilterPanelBase>
   );
 };
