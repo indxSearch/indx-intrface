@@ -7,7 +7,18 @@
 }
 
 .switch input {
-  display: none;
+  /* Visually hide but keep in tab order for keyboard accessibility */
+  position: absolute;
+  opacity: 0;
+  width: 28px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* Focus indicator for keyboard navigation */
+.switch input:focus-visible + .slider {
+  outline: 2px solid var(--lv5);
+  outline-offset: 2px;
 }
 
 .label {

@@ -7,7 +7,18 @@
 }
 
 .radioInput {
-  display: none;
+  /* Visually hide but keep in tab order for keyboard accessibility */
+  position: absolute;
+  opacity: 0;
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+}
+
+/* Focus indicator for keyboard navigation */
+.radioInput:focus-visible + .customRadio {
+  outline: 2px solid var(--lv5);
+  outline-offset: 2px;
 }
 
 .customRadio {

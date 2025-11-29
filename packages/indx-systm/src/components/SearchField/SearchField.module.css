@@ -31,17 +31,17 @@
 	appearance: none;
 }
 
-.input:focus {
+/* Remove outline on focus (only when NOT using showFocusBorder) */
+.input:not(.focus):focus {
 	outline: none;
 }
 
-
-/* FOCUS BORDER VISIBLE PROP */
+/* FOCUS BORDER VISIBLE PROP - when showFocusBorder is true, always show outline on focus */
 .input.focus:focus {
 	outline: 0.5px solid var(--lv7);
 	outline-offset: 0;
-	box-shadow: none; /* remove this */
-	border-radius: 1px; /* ensure this is set */
+	box-shadow: none;
+	border-radius: 1px;
 }
 
 .input::placeholder {

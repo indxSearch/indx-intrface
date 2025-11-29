@@ -41,6 +41,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
           variant="ghost"
           size="micro"
           onClick={() => setQuery('')}
+          aria-label="Clear search"
         >
           Clear
         </Button>

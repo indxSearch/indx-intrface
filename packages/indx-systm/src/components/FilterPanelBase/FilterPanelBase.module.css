@@ -14,6 +14,18 @@
     justify-content: space-between;
     --icon-color: var(--lv4);
     cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    width: 100%;
+    text-align: left;
+}
+
+/* Focus indicator for keyboard navigation */
+.header:focus-visible {
+    outline: 2px solid var(--lv5);
+    outline-offset: 2px;
+    border-radius: var(--radius);
 }
 
 .title {

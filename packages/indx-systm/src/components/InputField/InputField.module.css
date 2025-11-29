@@ -27,6 +27,7 @@
   border-color: var(--lv5);
 }
 
+/* Remove outline on focus, keep border change */
 .input:focus {
   outline: none;
   border-color: var(--lv5);
@@ -86,8 +87,10 @@
   border-bottom-color: var(--lv5);
 }
 
+/* Remove outline on focus, keep border change */
 .borderBottom:focus {
   border-bottom-color: var(--lv5);
+  outline: none;
 }
 
 .borderBottom.error {

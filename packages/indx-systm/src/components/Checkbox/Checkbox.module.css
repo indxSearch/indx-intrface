@@ -35,6 +35,12 @@
   background-color: var(--lv8);
 }
 
+/* Focus indicator for keyboard navigation */
+.checkbox:focus-visible {
+  outline: 2px solid var(--lv5);
+  outline-offset: 2px;
+}
+
 .label {
   font: var(--text-sm);
   color: var(--lv7);

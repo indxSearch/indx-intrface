@@ -23,7 +23,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   startCollapsed = false
 }) => {
   const {
-    state: { rangeFilters, rangeBounds, facetStats, query },
+    state: { rangeFilters, rangeBounds, facetStats, query, facetDebounceDelayMillis },
     setRangeFilter,
     resetSingleFilter,
     allowEmptySearch,
@@ -88,13 +88,16 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
 
   // Combined debounced effect for invalid state and filter updates
   React.useEffect(() => {
+    // Use facetDebounceDelayMillis from SearchContext, default to 500ms
+    const debounceDelay = facetDebounceDelayMillis ?? 500;
+
     // First timeout for invalid state (300ms)
     const invalidTimer = setTimeout(() => {
       setIsMinInvalid(!isValidMin);
       setIsMaxInvalid(!isValidMax);
     }, 300);
 
-    // Second timeout for filter update (500ms)
+    // Second timeout for filter update (uses configurable delay)
     const filterTimer = setTimeout(() => {
       if (isValidMin && isValidMax) {
         if (finalMin === queryMin && finalMax === queryMax) {
@@ -105,14 +108,14 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
           setRangeFilter(field, finalMin, finalMax);
         }
       }
-    }, 500);
+    }, debounceDelay);
 
     // Cleanup both timeouts
     return () => {
       clearTimeout(invalidTimer);
       clearTimeout(filterTimer);
     };
-  }, [finalMin, finalMax, isValidMin, isValidMax, queryMin, queryMax, field, resetSingleFilter, setRangeFilter]);
+  }, [finalMin, finalMax, isValidMin, isValidMax, queryMin, queryMax, field, resetSingleFilter, setRangeFilter, facetDebounceDelayMillis]);
 
   // ─────────────────────────────────────────────────────────────────────────────
   // 7) Sync sliderValue with display values when they change

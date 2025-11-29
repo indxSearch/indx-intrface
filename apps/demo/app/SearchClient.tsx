@@ -47,7 +47,7 @@ export function SearchClient({
       allowEmptySearch={true}
       enableFacets={true}
       maxResults={30}
-      facetDebounceDelayMillis={200}
+      facetDebounceDelayMillis={100}
     >
       <SearchLayout
         dataset={dataset}
@@ -142,7 +142,7 @@ function SearchLayout({
           <div className={styles.mainContent}>
             <div className={styles.header}>
               <SearchInput
-                showFocus={false}
+                showFocus={true}
                 className={styles.searchInput}
               />
               <div id={styles.meta}>

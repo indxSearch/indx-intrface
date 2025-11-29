@@ -34,21 +34,29 @@ export function FilterPanelBase({
       className={`${styles.container} ${className}`}
     >
       {title && (
-        <div
-          className={styles.header}
-          onClick={handleToggle}
-          aria-label={expanded ? 'Collapse panel' : 'Expand panel'}
-          style={{ cursor: collapsible ? 'pointer' : 'default' }}
-        >
-          <h3 className={styles.title}>
-            {title}
-          </h3>
-          {collapsible && (
-            expanded
+        collapsible ? (
+          <button
+            type="button"
+            className={styles.header}
+            onClick={handleToggle}
+            aria-label={expanded ? 'Collapse panel' : 'Expand panel'}
+            aria-expanded={expanded}
+          >
+            <h3 className={styles.title}>
+              {title}
+            </h3>
+            {expanded
               ? <Minus color="var(--icon-color)" size={14} />
               : <Plus  color="var(--icon-color)" size={14} />
-          )}
-        </div>
+            }
+          </button>
+        ) : (
+          <div className={styles.header}>
+            <h3 className={styles.title}>
+              {title}
+            </h3>
+          </div>
+        )
       )}
 
       {(!collapsible || expanded) && (
