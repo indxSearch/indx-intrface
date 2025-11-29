@@ -680,6 +680,9 @@ const searchWithFacets = useCallback(() => {
     // Skip if this is before initialization completes or no token yet
     if (!hasInitialized.current || !token) return;
 
+    // Skip if query changed (query effect will handle the search)
+    if (state.query !== lastQueryText) return;
+
     // Don't search if query is empty and allowEmptySearch is false
     const trimmedQuery = state.query.trim();
     const shouldSkipSearch = !allowEmptySearch && trimmedQuery === '';
