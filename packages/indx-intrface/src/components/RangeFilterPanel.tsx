@@ -154,8 +154,15 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
     if (isDisabled) return;
     const clampedMin = Math.max(queryMin, Math.min(liveDataMax, values[0]));
     const clampedMax = Math.max(liveDataMin, Math.min(queryMax, values[1]));
-    setSliderValue([clampedMin, clampedMax]);
-  }, [isDisabled, queryMin, queryMax, liveDataMin, liveDataMax]);
+
+    // If dragged to full range, immediately clear the filter
+    if (clampedMin === queryMin && clampedMax === queryMax) {
+      setSliderValue([queryMin, queryMax]);
+      resetSingleFilter(field);
+    } else {
+      setSliderValue([clampedMin, clampedMax]);
+    }
+  }, [isDisabled, queryMin, queryMax, liveDataMin, liveDataMax, field, resetSingleFilter]);
 
   // 8) Manual number‐input handlers
   // Min can't exceed liveDataMax (can't filter above what exists)
