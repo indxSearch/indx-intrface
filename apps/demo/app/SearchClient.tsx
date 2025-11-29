@@ -48,6 +48,7 @@ export function SearchClient({
       enableFacets={true}
       maxResults={30}
       facetDebounceDelayMillis={100}
+      enableDebugLogs={true}
     >
       <SearchLayout
         dataset={dataset}

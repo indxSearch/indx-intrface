@@ -96,6 +96,7 @@ export const SearchProvider: React.FC<{
   removeDuplicates?: boolean;
   enableCoverage?: boolean;
   initialCoverageSetup?: Partial<CoverageSetup>;
+  enableDebugLogs?: boolean;
 }> = ({
   children,
   email,
@@ -110,6 +111,7 @@ export const SearchProvider: React.FC<{
   removeDuplicates = true,
   enableCoverage = true,
   initialCoverageSetup = {},
+  enableDebugLogs = false,
 }) => {
   const latestRequestId = useRef(0); // Track the latest search request to prevent race conditions
   const performSearchRef = useRef<((options: { enableFacets: boolean }) => Promise<void>) | undefined>(undefined); // Stable ref to latest performSearch
@@ -151,8 +153,10 @@ export const SearchProvider: React.FC<{
   });
 
   useEffect(() => {
-    console.log("SearchContext mounted on client");
-  }, []);
+    if (enableDebugLogs) {
+      console.log("SearchContext mounted on client");
+    }
+  }, [enableDebugLogs]);
 
   useEffect(() => {
     setState(prev => ({
@@ -418,7 +422,9 @@ export const SearchProvider: React.FC<{
           coverageSetup: settingsCoverageSetup
         };
 
-        console.log('[performSearch] request body:', JSON.stringify(searchBody, null, 2));
+        if (enableDebugLogs) {
+          console.log('[performSearch] request body:', JSON.stringify(searchBody, null, 2));
+        }
 
         // 5) Execute the search
         const searchResponse = await authenticatedFetch(`${url}/api/Search/${dataset}`, {
@@ -596,9 +602,11 @@ export const SearchProvider: React.FC<{
 
   // Function to perform a basic search (no facets) - stable, doesn't depend on performSearch
   const searchBasic = useCallback(() => {
-    console.log('Search fired');
+    if (enableDebugLogs) {
+      console.log('Search fired');
+    }
     performSearchRef.current?.({ enableFacets: false });
-  }, []);
+  }, [enableDebugLogs]);
 
   // Function to perform a search with facets - stable debounced function
   const searchWithFacetsDebounced = useRef<ReturnType<typeof debounce> | null>(null);
@@ -606,14 +614,16 @@ export const SearchProvider: React.FC<{
 // Create/update debounced function when delay changes
 useEffect(() => {
   searchWithFacetsDebounced.current = debounce(() => {
-    console.log('Debounced searchWithFacets fired');
+    if (enableDebugLogs) {
+      console.log('Debounced searchWithFacets fired');
+    }
     performSearchRef.current?.({ enableFacets: true });
   }, state.facetDebounceDelayMillis ?? 500);
 
   return () => {
     searchWithFacetsDebounced.current?.cancel();
   };
-}, [state.facetDebounceDelayMillis]);
+}, [state.facetDebounceDelayMillis, enableDebugLogs]);
 
 const searchWithFacets = useCallback(() => {
   searchWithFacetsDebounced.current?.();
@@ -735,7 +745,9 @@ const searchWithFacets = useCallback(() => {
         }
 
         // STEP 1: Call Login endpoint to get fresh session token
-        console.log('[Auth] 🔐 Logging in to get session token...');
+        if (enableDebugLogs) {
+          console.log('[Auth] 🔐 Logging in to get session token...');
+        }
         const loginUrl = `${url}/api/Login?userEmail=${encodeURIComponent(email)}&userPassWord=${encodeURIComponent(password)}`;
         const loginRes = await fetch(loginUrl, {
           method: 'POST',
@@ -757,7 +769,9 @@ const searchWithFacets = useCallback(() => {
           throw new Error('No token received from login.');
         }
 
-        console.log('[Auth] ✅ Login successful, token received (length:', sessionToken.length, ')');
+        if (enableDebugLogs) {
+          console.log('[Auth] ✅ Login successful, token received (length:', sessionToken.length, ')');
+        }
         setToken(sessionToken);
 
         // Fetch filterable, facetable, sortable fields
@@ -770,7 +784,9 @@ const searchWithFacets = useCallback(() => {
         });
 
         // VALIDATION 3: Check dataset status first
-        console.log('[Auth] 🔍 Checking dataset status...');
+        if (enableDebugLogs) {
+          console.log('[Auth] 🔍 Checking dataset status...');
+        }
         const statusRes = await authFetch(`${url}/api/GetStatus/${dataset}`);
 
         if (!statusRes.ok) {
@@ -793,7 +809,9 @@ const searchWithFacets = useCallback(() => {
         }
 
         const statusData = await statusRes.json();
-        console.log('[Auth] 📊 Dataset status:', statusData);
+        if (enableDebugLogs) {
+          console.log('[Auth] 📊 Dataset status:', statusData);
+        }
 
         // Check if dataset is ready (if state field exists)
         if (statusData.state && statusData.state !== 'Ready') {
@@ -807,7 +825,7 @@ const searchWithFacets = useCallback(() => {
           console.warn('[Auth] ⚠️ Dataset "' + dataset + '" is empty (0 records)');
           console.warn('[Auth] 💡 Add documents to your dataset before searching');
           console.warn('[Auth] 💡 Search will work but return no results');
-        } else {
+        } else if (enableDebugLogs) {
           console.log('[Auth] ✅ Dataset has', recordCount, 'records');
         }
 
@@ -915,7 +933,9 @@ const searchWithFacets = useCallback(() => {
           facetStats: newFacetStats,
         }));
 
-        console.log('[Auth] ✅ Initialization complete');
+        if (enableDebugLogs) {
+          console.log('[Auth] ✅ Initialization complete');
+        }
       } catch (err) {
         console.error('[Auth] ❌ Initialization failed:', err);
 
