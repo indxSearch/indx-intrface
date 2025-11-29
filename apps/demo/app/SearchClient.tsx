@@ -44,7 +44,7 @@ export function SearchClient({
       email={authEmail}
       password={authPassword}
       dataset={dataset}
-      allowEmptySearch={false}
+      allowEmptySearch={true}
       enableFacets={true}
       maxResults={30}
       facetDebounceDelayMillis={100}
@@ -142,7 +142,7 @@ function SearchLayout({
           <div className={styles.mainContent}>
             <div className={styles.header}>
               <SearchInput
-                showFocus={true}
+                showFocus={false}
                 className={styles.searchInput}
               />
               <div id={styles.meta}>

@@ -46,6 +46,7 @@
 
 .body {
     padding: 5px;
+    min-height: 600px;
 }
 
 .filtersColumn {
