@@ -15,6 +15,10 @@
   cursor: pointer;
 }
 
+.switch input:disabled {
+  cursor: not-allowed;
+}
+
 /* Focus indicator for keyboard navigation */
 .switch input:focus-visible + .slider {
   outline: 2px solid var(--lv5);

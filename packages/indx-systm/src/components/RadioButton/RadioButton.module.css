@@ -15,6 +15,10 @@
   cursor: pointer;
 }
 
+.radioInput:disabled {
+  cursor: not-allowed;
+}
+
 /* Focus indicator for keyboard navigation */
 .radioInput:focus-visible + .customRadio {
   outline: 2px solid var(--lv5);
