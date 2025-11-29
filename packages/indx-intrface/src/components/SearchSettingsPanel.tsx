@@ -61,7 +61,7 @@ export function SearchSettingsPanel() {
             label="Max Results"
             type="number"
             value={searchSettings.maxNumberOfRecordsToReturn.toString()}
-            onChange={e => handleNumberChange('maxNumberOfRecordsToReturn', e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNumberChange('maxNumberOfRecordsToReturn', e.target.value)}
           />
         </li>
         <li>
@@ -69,7 +69,7 @@ export function SearchSettingsPanel() {
             label="Coverage Depth"
             type="number"
             value={searchSettings.coverageDepth.toString()}
-            onChange={e => handleNumberChange('coverageDepth', e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNumberChange('coverageDepth', e.target.value)}
           />
         </li>
         <li>
@@ -77,7 +77,7 @@ export function SearchSettingsPanel() {
                 label="Minimum Score"
                 type="number"
                 value={searchSettings.minimumScore.toString()}
-                onChange={e => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 const parsed = parseFloat(e.target.value);
                 if (!isNaN(parsed)) {
                     setSearchSettings({ minimumScore: parsed });
@@ -90,7 +90,7 @@ export function SearchSettingsPanel() {
                     max={255}
                     step={1}
                     value={searchSettings.minimumScore}
-                    onChange={(val) => {
+                    onChange={(val: number | number[]) => {
                     // val is a SingleValue (number)
                     setSearchSettings({ minimumScore: val as number });
                     }}
@@ -102,7 +102,7 @@ export function SearchSettingsPanel() {
             label="Placeholder text"
             type="text"
             value={searchSettings.placeholderText}
-            onChange={e => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setSearchSettings({ placeholderText: e.target.value });
             }}
         />
@@ -111,26 +111,26 @@ export function SearchSettingsPanel() {
           <ToggleSwitch
             label="Show score"
             checked={searchSettings.showScore}
-            onChange={value => handleToggle('showScore', value)}
+            onChange={(value: boolean) => handleToggle('showScore', value)}
           />
         </li>
         <li>
           <ToggleSwitch
             label="Enable Coverage"
             checked={searchSettings.enableCoverage}
-            onChange={value => handleToggle('enableCoverage', value)}
+            onChange={(value: boolean) => handleToggle('enableCoverage', value)}
           />
         </li>
         <li>
           <ToggleSwitch
             label="Remove Duplicates"
             checked={searchSettings.removeDuplicates}
-            onChange={value => handleToggle('removeDuplicates', value)}
+            onChange={(value: boolean) => handleToggle('removeDuplicates', value)}
           />
         </li>
 
         <li>
-          <Button variant="tertiary" size="micro" iconRight={ showCoverageSetup ? <ArrowDown/> : <ArrowRight/>} onClick={() => setShowCoverageSetup(prev => !prev)}>
+          <Button variant="ghost" size="micro" iconRight={ showCoverageSetup ? <ArrowDown/> : <ArrowRight/>} onClick={() => setShowCoverageSetup(prev => !prev)}>
             {showCoverageSetup ? 'Hide Coverage Setup' : 'Show Coverage Setup'}
           </Button>
         </li>
@@ -141,42 +141,42 @@ export function SearchSettingsPanel() {
               <ToggleSwitch
                 label="Cover Whole Query"
                 checked={searchSettings.coverageSetup.coverWholeQuery}
-                onChange={value => handleCoverageSetupToggle('coverWholeQuery', value)}
+                onChange={(value: boolean) => handleCoverageSetupToggle('coverWholeQuery', value)}
               />
             </li>
             <li>
               <ToggleSwitch
                 label="Cover Whole Words"
                 checked={searchSettings.coverageSetup.coverWholeWords}
-                onChange={value => handleCoverageSetupToggle('coverWholeWords', value)}
+                onChange={(value: boolean) => handleCoverageSetupToggle('coverWholeWords', value)}
               />
             </li>
             <li>
               <ToggleSwitch
                 label="Cover Fuzzy Words"
                 checked={searchSettings.coverageSetup.coverFuzzyWords}
-                onChange={value => handleCoverageSetupToggle('coverFuzzyWords', value)}
+                onChange={(value: boolean) => handleCoverageSetupToggle('coverFuzzyWords', value)}
               />
             </li>
             <li>
               <ToggleSwitch
                 label="Cover Joined Words"
                 checked={searchSettings.coverageSetup.coverJoinedWords}
-                onChange={value => handleCoverageSetupToggle('coverJoinedWords', value)}
+                onChange={(value: boolean) => handleCoverageSetupToggle('coverJoinedWords', value)}
               />
             </li>
             <li>
               <ToggleSwitch
                 label="Cover Prefix Suffix"
                 checked={searchSettings.coverageSetup.coverPrefixSuffix}
-                onChange={value => handleCoverageSetupToggle('coverPrefixSuffix', value)}
+                onChange={(value: boolean) => handleCoverageSetupToggle('coverPrefixSuffix', value)}
               />
             </li>
             <li>
               <ToggleSwitch
                 label="Truncate list"
                 checked={searchSettings.coverageSetup.truncate}
-                onChange={value => handleCoverageSetupToggle('truncate', value)}
+                onChange={(value: boolean) => handleCoverageSetupToggle('truncate', value)}
               />
             </li>
             <li>
@@ -184,7 +184,7 @@ export function SearchSettingsPanel() {
                 label="Levenshtein Max Word Size"
                 type="number"
                 value={searchSettings.coverageSetup.levenshteinMaxWordSize.toString()}
-                onChange={e => handleCoverageSetupNumberChange('levenshteinMaxWordSize', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCoverageSetupNumberChange('levenshteinMaxWordSize', e.target.value)}
               />
             </li>
             <li>
@@ -192,7 +192,7 @@ export function SearchSettingsPanel() {
                 label="Min Word Size"
                 type="number"
                 value={searchSettings.coverageSetup.minWordSize.toString()}
-                onChange={e => handleCoverageSetupNumberChange('minWordSize', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCoverageSetupNumberChange('minWordSize', e.target.value)}
               />
             </li>
             <li>
@@ -200,7 +200,7 @@ export function SearchSettingsPanel() {
                 label="Coverage Min Word Hits Abs"
                 type="number"
                 value={searchSettings.coverageSetup.coverageMinWordHitsAbs.toString()}
-                onChange={e => handleCoverageSetupNumberChange('coverageMinWordHitsAbs', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCoverageSetupNumberChange('coverageMinWordHitsAbs', e.target.value)}
               />
             </li>
             <li>
@@ -208,7 +208,7 @@ export function SearchSettingsPanel() {
                 label="Coverage Min Word Hits Relative"
                 type="number"
                 value={searchSettings.coverageSetup.coverageMinWordHitsRelative.toString()}
-                onChange={e => handleCoverageSetupNumberChange('coverageMinWordHitsRelative', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCoverageSetupNumberChange('coverageMinWordHitsRelative', e.target.value)}
               />
             </li>
             <li>
@@ -216,7 +216,7 @@ export function SearchSettingsPanel() {
                 label="Coverage Q Limit For Error Tolerance"
                 type="number"
                 value={searchSettings.coverageSetup.coverageQLimitForErrorTolerance.toString()}
-                onChange={e => handleCoverageSetupNumberChange('coverageQLimitForErrorTolerance', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCoverageSetupNumberChange('coverageQLimitForErrorTolerance', e.target.value)}
               />
             </li>
             <li>
@@ -224,7 +224,7 @@ export function SearchSettingsPanel() {
                 label="Coverage LCS Error Tolerance Relative Q"
                 type="number"
                 value={searchSettings.coverageSetup.coverageLcsErrorToleranceRelativeq.toString()}
-                onChange={e => handleCoverageSetupNumberChange('coverageLcsErrorToleranceRelativeq', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCoverageSetupNumberChange('coverageLcsErrorToleranceRelativeq', e.target.value)}
               />
             </li>
           </>

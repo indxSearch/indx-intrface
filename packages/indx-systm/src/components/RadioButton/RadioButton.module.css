@@ -3,63 +3,73 @@
   align-items: center;
   cursor: pointer;
   user-select: none;
-  gap: 8px;
-}
-
-.radioWrapper:hover .customRadio {
-  border-color: var(--CMediumGray);
+  gap: 7px;
 }
 
 .radioInput {
-  display: none;
+  /* Visually hide but keep in tab order for keyboard accessibility */
+  position: absolute;
+  opacity: 0;
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+}
+
+.radioInput:disabled {
+  cursor: not-allowed;
+}
+
+/* Focus indicator for keyboard navigation */
+.radioInput:focus-visible + .customRadio {
+  outline: 2px solid var(--lv5);
+  outline-offset: 2px;
 }
 
 .customRadio {
-  width: 18px;
-  height: 18px;
-  border: 1px solid var(--CGray);
+  width: 17px;
+  height: 17px;
   border-radius: 50%;
+  background: var(--lv2);
+  appearance: none;
   position: relative;
-  box-sizing: border-box;
-  transition: border-color 0.2s, background-color 0.2s;
-  background-color: transparent;
+  cursor: pointer;
 }
-:global(.dark) .customRadio {
-    border: 1px solid var(--CBlueGray);
+
+.radioWrapper:hover .radioInput:not(:disabled):not(:checked) + .customRadio {
+  background-color: var(--lv3);
 }
 
 .radioInput:checked + .customRadio {
-  background-color: var(--CB6);
-  border: 5px solid var(--CB6);
-}
-:global(.dark) .radioInput:checked + .customRadio {
-  background-color: var(--CB3);
-  border: 5px solid var(--CB3);
+  background-color: var(--lv3);
 }
 
 .radioInput:checked + .customRadio::after {
   content: "";
   position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 8px;
-  height: 8px;
-  background-color: white;
+  top: 3px;
+  left: 3px;
+  width: 11px;
+  height: 11px;
   border-radius: 50%;
-}
-:global(.dark) .radioInput:checked + .customRadio::after {
-  background-color: var(--CB1);
+  background-color: var(--lv8);
 }
 
 .labelText {
-  font: var(--text-small);
-  color: var(--CB6);
-}
-:global(.dark) .labelText {
-  color: var(--CB1);
+  font: var(--text-sm);
+  color: var(--lv7);
+  transform: translateY(1.5px);
 }
 
+/* DISABLED */
 .disabled {
   cursor: not-allowed;
-  opacity: 0.6;
+}
+
+.radioInput:disabled + .customRadio {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.disabled .labelText {
+  opacity: 0.5;
 }

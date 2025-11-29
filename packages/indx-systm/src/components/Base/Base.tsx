@@ -1,15 +1,15 @@
 import styles from './Base.module.css'
 
 import { ReactNode } from 'react'
-type props = {
+
+export type BaseProps = {
     children: ReactNode;
     className?: string;
-    type?: 'default' | 'outlined';
 }
-  
-export function Base({ children, className, type = 'default' }: props) {
+
+export function Base({ children, className }: BaseProps) {
   return (
-    <div className={`${styles.container} ${styles[type]} ${className || ''}`}>
+    <div className={`${styles.container} ${styles.default} ${className || ''}`}>
         {children}
     </div>
   )

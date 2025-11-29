@@ -86,20 +86,22 @@ export const Slider: React.FC<SliderProps> = (props) => {
                   ...restTrackProps.style,
                 }}
               >
-                {/* ─── Selected-range track ─── */}
-                <div
-                  className={styles.selectedtrack}
-                  style={{
-                    left: `${selectedLeftPct}%`,
-                    width: `${selectedWidthPct}%`,
-                    zIndex: '1'
-                  }}
-                />
+                {/* ─── Selected-range track (hidden when active range shown) ─── */}
+                {!hasLiveOverlay && (
+                  <div
+                    className={styles.selectedtrack}
+                    style={{
+                      left: `${selectedLeftPct}%`,
+                      width: `${selectedWidthPct}%`,
+                      zIndex: '1'
+                    }}
+                  />
+                )}
 
                 {/* ─── Live-overlay track ─── */}
                 {hasLiveOverlay && (
                   <div
-                    className={`${styles.livetrack} ${isFaceted && highlightFaceted ? styles.livetrackFaceted : styles.livetrackDefault}`}
+                    className={`${styles.livetrack} ${isFaceted ? styles.livetrackFaceted : styles.livetrackDefault}`}
                     style={{
                       left: `${liveLeftPct}%`,
                       width: `${liveWidthPct}%`,
@@ -148,8 +150,11 @@ export const Slider: React.FC<SliderProps> = (props) => {
           renderTrack={({ props: trackProps, children }) => {
             const { key, ...restTrackProps } = (trackProps as any);
 
-            // Compute live overlay if given
+            // Compute selected track from min to current value
             const span = max - min;
+            const selectedWidthPct = ((singleValue - min) / span) * 100;
+
+            // Compute live overlay if given
             let liveLeftPct = 0;
             let liveWidthPct = 0;
             const hasLiveOverlay =
@@ -172,6 +177,18 @@ export const Slider: React.FC<SliderProps> = (props) => {
                   ...restTrackProps.style,
                 }}
               >
+                {/* ─── Selected track (from start to thumb, hidden when active range shown) ─── */}
+                {!hasLiveOverlay && (
+                  <div
+                    className={styles.selectedtrack}
+                    style={{
+                      left: '0%',
+                      width: `${selectedWidthPct}%`,
+                      zIndex: '1'
+                    }}
+                  />
+                )}
+
                 {/* ─── Live-overlay track ─── */}
                 {hasLiveOverlay && (
                   <div

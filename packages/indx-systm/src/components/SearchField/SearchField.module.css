@@ -12,81 +12,56 @@
 .inputContainer {
 	position: relative;
 	display: flex;
-	align-items: center; /* ✅ vertical alignment */
+	align-items: center;
 	gap: 8px;
 }
 
 .input {
-	font-family: var(--font-px);
 	width: 100%;
-	border-radius: 8px;
+	border-radius: 1px;
 	border: none;
-	color: #1e1e1e;
+	color: var(--lv8);
 	box-sizing: border-box;
-	transition: background-color 0.2s;
-	caret-color: blue;
-	background-color: rgba(0, 0, 0, 0.03);
+	caret-color: var(--lv7);
+	background: none;
 }
-
-:global(.dark) .input {
-	color: white;
-	background-color: rgba(255, 255, 255, 0.05);
-	caret-color: var(--CB2);
-}
-
 
 .input[type="search"] {
 	-webkit-appearance: none;
+	appearance: none;
 }
 
-.input:focus {
+/* Remove outline on focus (only when NOT using showFocusBorder) */
+.input:not(.focus):focus {
 	outline: none;
-	background: var(--CSuperLightGray);
-	color: var(--CB4);
 }
 
-:global(.dark) .input:focus {
-	color: #AAAAFF;
-	background-color: rgba(0,0,0, 0.2);
-}
-
-/* FOCUS BORDER VISIBLE PROP */
+/* FOCUS BORDER VISIBLE PROP - when showFocusBorder is true, always show outline on focus */
 .input.focus:focus {
-	/* box-shadow: 0 0 0 2px var(--CPureBlue); */
-	outline: 2px solid var(--CPureBlue);
+	outline: 0.5px solid var(--lv7);
 	outline-offset: 0;
-	box-shadow: none; /* remove this */
-	border-radius: 8px; /* ensure this is set */
+	box-shadow: none;
+	border-radius: 1px;
 }
-:global(.dark) .input.focus:focus {
-	/* box-shadow: 0 0 0 2px var(--CB3); */
-	outline: 2px solid var(--CB3);
-}
-
-
 
 .input::placeholder {
-	opacity: 0.3;
-	color: black;
+	color: var(--lv4);
 	transition: opacity 0.2s;
-	padding-left: 40px;
-}
-
-:global(.dark) .input::placeholder {
-	color: white;
 }
 
 .searchIcon {
-	--search-icon-color: rgba(0,0,0,0.3);
+	--search-icon-color: var(--lv4);
 	position: absolute;
 	display: flex;
 	align-items: center;
 	height: 100%;
 	color: var(--search-icon-color); /* use CSS variable */
 	pointer-events: none;
+	transition: color 0.2s;
 }
-:global(.dark) .searchIcon {
-	--search-icon-color: rgba(255,255,255,0.3);
+
+.inputContainer:focus-within .searchIcon {
+	--search-icon-color: var(--lv7);
 }
 
 .rightContent {
@@ -100,49 +75,22 @@
 }
 
 /* Sizes */
-.micro .input {
-  font: var(--text-micro);
-  height: 30px;
-  padding: 0 13px 0 13px !important;
+.sizeMicro .input {
+  font: var(--text-xs) !important;
+  height: 30px !important;
+  padding-left: 25px !important;
 }
-.micro .searchIcon {
-	left: 13px;
-}
-.micro .input::placeholder {
-	padding-left: 18px;
+.sizeMicro .searchIcon {
+	left: 5px;
 }
 
-.default .input {
-  font: var(--text-medium);
-  height: 50px;
-  padding: 0 22px 0 22px !important;
+.sizeDefault .input {
+  font: var(--text-base) !important;
+  height: 40px !important;
+  padding-left: 35px !important;
 }
-.default .searchIcon {
-	left: 22px;
-}
-.default .input::placeholder {
-	padding-left: 30px;
-}
-.large .input {
-  font-size: 24px;
-  font-weight: 300;
-  height: 80px;
-  padding: 0 26px 0 26px !important;
-}
-.large .searchIcon {
-	left: 26px;
-}
-.large .input::placeholder {
-	padding-left: 40px;
-}
-
-/* States */
-
-.filtered .input {
-	background-color: var(--CB0);
-}
-:global(.dark) .filtered .input {
-	background-color: var(--CB4);
+.sizeDefault .searchIcon {
+	left: 7px;
 }
 
 .input:focus::placeholder {
@@ -150,12 +98,9 @@
 }
 
 .input::selection {
-	background: var(--CB2);
+	background: var(--lv3);
 }
 
-:global(.dark) .input::selection {
-	background: var(--CB3);
-}
 
 .input:disabled {
 	opacity: 0.6;
@@ -167,6 +112,6 @@
 }
 
 .errorText {
-	font: var(--text-micro);
+	font: var(--text-2xs);
 	color: var(--CSignal);
 }

@@ -14,38 +14,22 @@
 .row {
     padding-bottom: 20px;
     padding-top: 20px;
-    padding-left: 25px;
+    padding-left: 30px;
     padding-right: 25px;
-    border-bottom: 1px solid var(--CLightGray);
-    font: var(--text-mini-light);
+    border-bottom: 1px solid var(--lv0);
+    font: var(--text-xs);
     position: relative;
-    color: var(--CB4);
+    color: var(--lv4);
 }
 :global(.dark) .row {
-    color: var(--CGray);
-    border-bottom: 1px solid var(--CDarkGray);
-}
-.row:hover {
-    background-color: var(--CB4);
-    border-radius: 8px;
-    color: var(--CB0);
-    border-bottom: 1px solid var(--CB4);
-}
-.row:first-child {
-    /* margin-top: -20px; */
+    border-color: var(--lv2);
 }
 .row:last-child {
     border-bottom: none;
 }
 .row h2 {
-    font: var(--text-extra-large-light);
-    color: var(--CB6);
-}
-:global(.dark) .row h2 {
-    color: var(--CB1);
-}
-.row:hover h2 {
-    color: var(--CB1);
+    font: var(--text-base);
+    color: var(--lv8);
 }
 .row > div {
     display: flex;
@@ -56,29 +40,21 @@
     position: absolute;
     top: 25px;
     left: 5px;
-    font: var(--text-mini-light);
-    color: var(--CBlueGray);
+    font: var(--text-2xs);
+    color: var(--lv4);
 }
 .scoreNumber {
     position: absolute;
     top: 25px;
     right: 5px;
-    font: var(--text-mini-light);
-    color: var(--CBlueGray);
+    font: var(--text-2xs);
+    color: var(--lv4);
 }
 .row span {
-    color: var(--CB4);
-    background-color: var(--CLightGray);
-    font: var(--text-micro);
+    color: var(--lv6);
+    background-color: var(--lv0);
+    font: var(--text-xs);
     margin-right: 5px;
     border-radius: 10px;
     padding: 2px 6px 2px 6px;
-}
-:global(.dark) .row span {
-    background-color: var(--CDarkGray);
-    color: var(--CLightGray);
-}
-.row:hover span {
-    color: var(--CB0);
-    background-color: var(--CBlueGray);
 }

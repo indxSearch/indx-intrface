@@ -27,14 +27,13 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     <SearchField
       type="text"
       value={query}
-      onChange={e => setQuery(e.target.value)}
+      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
       placeholder={searchSettings.placeholderText}
       autoFocus={autoFocus}
       className={className}
       showSearchIcon={true}
       inputSize={inputSize}
       showFocusBorder={showFocus}
-      inputState={hasFilters ? 'filtered' : 'default'}
       {...rest}
     >
       {showClear && hasValue && (
@@ -42,6 +41,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
           variant="ghost"
           size="micro"
           onClick={() => setQuery('')}
+          aria-label="Clear search"
         >
           Clear
         </Button>

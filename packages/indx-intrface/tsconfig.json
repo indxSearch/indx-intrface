@@ -7,9 +7,13 @@
     "declarationDir": "dist",
     "outDir": "dist",
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@indxsearch/*": ["../../node_modules/@indxsearch/*"]
+    }
   },
   "include": ["src"]
 }

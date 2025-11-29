@@ -47,7 +47,7 @@ export function SearchClient({
       allowEmptySearch={true}
       enableFacets={true}
       maxResults={30}
-      facetDebounceDelayMillis={200}
+      facetDebounceDelayMillis={100}
     >
       <SearchLayout
         dataset={dataset}
@@ -135,66 +135,55 @@ function SearchLayout({
     };
   }, [filtersVisible]);
 
-  // DEBUG LOGGING
-  useEffect(() => {
-    console.log('[SearchLayout] Faceted search results updated', {
-      timestamp: new Date().toISOString(),
-      query,
-      facets
-    });
-  }, [facets]);
-
   return (
     <div className={theme}>
       <div className={styles.wrapper} ref={containerRef}>
         <Base className={styles.component}>
-          <div className={styles.header}>
-            <SearchInput
-              showFocus={true}
-              className={styles.searchInput}
-            />
-            <div id={styles.meta}>
-              <div className={styles.metafields}>
-                <div className={styles.description}>INDX SEARCH SYSTEM</div>
-                <div className={styles.metainfo}>Dataset: {dataset}</div>
-              </div>
-              <div ref={buttonRef} className={styles.filterButtonWrapper} style={{ position: 'relative', marginRight: '20px' }}>
-                {showFilterButton && (
-                  <Button 
-                    variant={hasFilters ? 'active' : 'tertiary'}
-                    iconRight={<Sliders_horizontal />}
-                    size='micro'
-                    onClick={() => setFiltersVisible(prev => !prev)}
+          <div className={styles.mainContent}>
+            <div className={styles.header}>
+              <SearchInput
+                showFocus={false}
+                className={styles.searchInput}
+              />
+              <div id={styles.meta}>
+                <div ref={buttonRef} className={styles.filterButtonWrapper} style={{ position: 'relative', marginRight: '10px' }}>
+                  {showFilterButton && (
+                    <Button
+                      variant={hasFilters ? 'primary' : 'secondary'}
+                      iconRight={<Sliders_horizontal />}
+                      size='micro'
+                      onClick={() => setFiltersVisible(prev => !prev)}
+                    >
+                      Filters
+                    </Button>
+                  )}
+                  <div
+                    className={styles.floatingFilters}
+                    style={{ display: filtersVisible ? 'block' : 'none' }}
                   >
-                    Filters
-                  </Button>
-                )}
-                <div
-                  className={styles.floatingFilters}
-                  style={{ display: filtersVisible ? 'block' : 'none' }}
-                >
-                  <Base type='outlined'>
-                    <div className={styles.scrollFilters}>
-                      {filters}
-                    </div>
-                  </Base>
+                    <Base>
+                      <div className={styles.scrollFilters}>
+                        {filters}
+                      </div>
+                    </Base>
+                  </div>
                 </div>
+                <span className={styles.logo}>
+                  <Indx size={28} color="var(--lv4)" />
+                </span>
               </div>
-              <Indx size={35} color="var(--icon-color)" />
             </div>
-          </div>
-          <div className={styles.body}>
-            <div className={styles.results}>
+            <div className={styles.body}>
               <SearchResults fields={fields} resultsPerPage={10}>
                 {renderResult}
               </SearchResults>
             </div>
-            {showFilters && (
-              <div className={styles.filters}>
-                {filters}
-              </div>
-            )}
           </div>
+          {showFilters && (
+            <div className={styles.filtersColumn}>
+              {filters}
+            </div>
+          )}
         </Base>
       </div>
     </div>

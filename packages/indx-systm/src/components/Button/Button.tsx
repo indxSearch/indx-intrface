@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import styles from './Button.module.css';
 
 interface IconProps {
@@ -6,80 +6,31 @@ interface IconProps {
   color?: string;
 }
 
-const iconSizeMap: Record<string, string> = {
-  micro: '14px',
-  default: '14px',
-  large: '21px',
-};
+export function Button(
+  props: Omit<React.ComponentProps<'button'>, 'className'> & {
+    size?: 'micro' | 'default' | 'large';
+    variant?: 'primary' | 'secondary' | 'ghost';
+    iconLeft?: React.ReactElement<IconProps>;
+    iconRight?: React.ReactElement<IconProps>;
+    className?: string;
+  }
+) {
+  const { size = 'default', variant = 'primary', iconLeft, iconRight, className, children, ...rest } = props;
 
-export type ButtonSize = 'micro' | 'default' | 'large';
-export type ButtonType = 'primary' | 'secondary' | 'tertiary' | 'active' | 'ghost';
+  const iconSize = size === 'micro' ? '14px' : size === 'large' ? '21px' : '14px';
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  size?: ButtonSize;
-  variant?: ButtonType;
-  /** use the built-in `disabled` prop instead of a separate state */
-  iconLeft?: React.ReactElement<IconProps>;
-  iconRight?: React.ReactElement<IconProps>;
-  children: React.ReactNode;
-  backgroundColor?: string;
-  iconColor?: string;
-  textColor?: string;
-  className?: string;
-}
-
-export function Button({
-  size = 'default',
-  variant = 'primary',
-  iconLeft,
-  iconRight,
-  backgroundColor,
-  iconColor,
-  textColor,
-  className = '',
-  children,
-  disabled = false,
-  ...props
-}: ButtonProps) {
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const iconSize = iconSizeMap[size] || iconSizeMap.default;
-
-  const inlineStyles: React.CSSProperties & Record<string, string> = {};
-  if (backgroundColor) inlineStyles.backgroundColor = backgroundColor;
-  if (iconColor) inlineStyles['--button-icon-color'] = iconColor;
-  if (textColor) inlineStyles.color = textColor;
-
-  const fallbackIconColor = 'var(--button-icon-color)';
-
-  const buttonClass = [
+  const buttonClassName = [
     styles.button,
     styles[size],
     styles[variant],
-    disabled ? styles.disabled : '',
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
+    className
+  ].filter(Boolean).join(' ');
 
   return (
-    <button
-      ref={buttonRef}
-      className={buttonClass}
-      style={inlineStyles}
-      disabled={disabled}
-      {...props}
-    >
-      {iconLeft &&
-        React.cloneElement(iconLeft, {
-          size: iconSize,
-          color: iconColor ?? fallbackIconColor,
-        })}
-      <span>{children}</span>
-      {iconRight &&
-        React.cloneElement(iconRight, {
-          size: iconSize,
-          color: iconColor ?? fallbackIconColor,
-        })}
+    <button className={buttonClassName} {...rest}>
+      {iconLeft && React.cloneElement(iconLeft, { size: iconSize, color: 'currentColor' })}
+      {children}
+      {iconRight && React.cloneElement(iconRight, { size: iconSize, color: 'currentColor' })}
     </button>
   );
 }

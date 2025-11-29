@@ -1,167 +1,72 @@
 .button {
   display: inline-flex;
   align-items: center;
-  transition: background-color 0.2s ease, border 0.2s ease;
   cursor: pointer;
+  border-radius: var(--radius);
   border: none;
-  /* font: var(--font-px);
-  font-weight: 400; */
-  background: none;
-  --button-icon-color: currentColor; /* fallback */
-}
-  
-/* Sizes */
-.micro {
-  border-radius: 5px;
-  font: var(--text-micro);
-  gap: 7px;
-  height: 30px;
-  padding-left: 10px;
-  padding-right: 10px;
+  box-sizing: border-box;
 }
 
-.default {
-  height: 40px;
-  border-radius: 8px;
-  gap: 10px;
-  font: var(--text-small);
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-.large {
-  height: 50px;
-  gap: 10px;
-  border-radius: 8px;
-  font: var(--text-medium);
-  padding-left: 20px;
-  padding-right: 20px;
-}
-
-
-/* Types */
-
-/* PRIMARY */
-.primary {
-  background-color: var(--CB4);
-  color: var(--CB1);
-}
-.primary:hover {
-  background-color: color-mix(in srgb, white 10%, var(--CB4));
-}
-.button.primary {
-  --button-icon-color: var(--CB1);
-}
-
-:global(.dark) .primary {
-  background-color: var(--CB2);
-  color: var(--CB6);
-}
-:global(.dark) .primary:hover {
-  background-color: color-mix(in srgb, white 30%, var(--CB2));
-}
-:global(.dark) .button.primary {
-  --button-icon-color: var(--CB6);
-}
-
-
-/* SECONDARY */
-.secondary {
-  border: 1px solid var(--CGray);
-  color: var(--CB6);
-}
-.secondary:hover {
-  border: 1px solid color-mix(in srgb, black 30%, var(--CGray));
-}
-.button.secondary {
-  --button-icon-color: var(--CB6);
-}
-
-:global(.dark) .secondary {
-  border: 1px solid var(--CDarkGray);
-  color: var(--CB2);
-}
-:global(.dark) .secondary:hover {
-  border: 1px solid color-mix(in srgb, white 20%, var(--CDarkGray));
-}
-:global(.dark) .button.secondary {
-  --button-icon-color: var(--CB2);
-}
-
-
-/* TERTIARY */
-.tertiary {
-  border: 1px solid var(--CGray);
-  color: var(--CBlueGray);
-}
-.tertiary:hover {
-  border: 1px solid color-mix(in srgb, black 30%, var(--CGray));
-}
-.button.tertiary {
-  --button-icon-color: var(--CBlueGray);
-}
-
-:global(.dark) .tertiary {
-  border: 1px solid var(--CDarkGray);
-  color: var(--CGray);
-}
-:global(.dark) .tertiary:hover {
-  border: 1px solid color-mix(in srgb, white 20%, var(--CDarkGray));
-}
-:global(.dark) .button.tertiary {
-  --button-icon-color: var(--CGray);
-}
-
-
-/* ACTIVE */
-.active {
-  background-color: #0000ff;
-  color: white;
-}
-.active:hover {
-  /* Add hover styles if needed */
-}
-.button.active {
-  --button-icon-color: white;
-}
-
-:global(.dark) .active {
-  background-color: var(--CB3);
-  color: var(--CB1);
-}
-:global(.dark) .active:hover {
-  /* Add hover styles if needed */
-}
-:global(.dark) .button.active {
-  --button-icon-color: var(--CB1);
-}
-
-
-/* GHOST */
-.ghost {
-  color: var(--CBlueGray);
-}
-.ghost:hover {
-  background-color: var(--CLightGray);
-}
-.button.ghost {
-  --button-icon-color: var(--CBlueGray);
-}
-
-:global(.dark) .ghost {
-  color: var(--CGray);
-}
-:global(.dark) .ghost:hover {
-  background-color: var(--CB4);
-}
-:global(.dark) .button.ghost {
-  --button-icon-color: var(--CGray);
-}
-
-
-/* Disabled State */
-.disabled {
+.button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-  
+
+/* Focus indicator for keyboard navigation */
+.button:focus-visible {
+  outline: 2px solid var(--lv5);
+  outline-offset: 2px;
+}
+
+/* Sizes */
+.micro {
+  font-size: 11px;
+  height: 30px;
+  padding: 0 10px;
+  gap: 7px;
+}
+
+.default {
+  font-size: 13px;
+  height: 40px;
+  padding: 0 15px;
+  gap: 10px;
+}
+
+.large {
+  font-size: 15px;
+  height: 50px;
+  padding: 0 20px;
+  gap: 10px;
+}
+
+/* Variants */
+.primary {
+  background: var(--lv7);
+  color: var(--lv1);
+  border: none;
+}
+
+.primary:hover:not(:disabled) {
+  opacity: 0.8;
+}
+
+.secondary {
+  border: 1px solid var(--lv3);
+  color: var(--lv6);
+  background: transparent;
+}
+
+.secondary:hover:not(:disabled) {
+  border-color: var(--lv4);
+}
+
+.ghost {
+  color: var(--lv5);
+  background: transparent;
+  border: none;
+}
+
+.ghost:hover:not(:disabled) {
+  background: var(--lv2);
+}

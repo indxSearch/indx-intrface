@@ -1,5 +1,15 @@
 :root {
 
+  --lv0: #FFFFFF;
+  --lv1: #FBFBFB;
+  --lv2: #EFEFEF;
+  --lv3: #CFCFCF;
+  --lv4: #757575;
+  --lv5: #4A4A50;
+  --lv6: #1A1A21;
+  --lv7: #121215;
+  --lv8: #080809;
+
   /* COLORS */
   --CSuperLightGray: #FBFBFB;
   --CLightGray: #EFEFEF;
@@ -20,6 +30,7 @@
 
   /* TEXT */
   --font-px: 'PxGrotesk', sans-serif;
+  --font-fg: 'FunktionalGrotesk', sans-serif;
   --text-mini: 400 10px 'PxGrotesk', sans-serif;
   --text-mini-light: 300 10px 'PxGrotesk', sans-serif;
   --text-micro: 400 12px 'PxGrotesk', sans-serif;
@@ -33,6 +44,19 @@
   --text-extra-large: 400 20px 'PxGrotesk', sans-serif;
   --text-extra-large-light: 300 20px 'PxGrotesk', sans-serif;
 
+  --text-2xs: 400 10px/1 'FunktionalGrotesk', sans-serif;
+  --text-xs: 400 11px/1 'FunktionalGrotesk', sans-serif;
+  --text-sm: 400 13px/1 'FunktionalGrotesk', sans-serif;
+  --text-base: 400 15px/1 'FunktionalGrotesk', sans-serif;
+  --text-lg: 400 17px/1 'FunktionalGrotesk', sans-serif;
+  --text-xl: 400 19px/1 'FunktionalGrotesk', sans-serif;
+  --text-2xl: 400 24px/1 'FunktionalGrotesk', sans-serif;
+  --text-3xl: 400 30px/1 'FunktionalGrotesk', sans-serif;
+  --text-4xl: 400 36px/1 'FunktionalGrotesk', sans-serif;
+
+  --spacing: 5px;
+  --radius: 1px;
+
   /* DEFINITIONS */
   --text-color: var(--CB6);
 	--icon-color: var(--CBlueGray);
@@ -41,7 +65,17 @@
   --filter-base-color: var(--CSuperLightGray);
 }
 :where(.dark) {
-  --text-color: var(--CLight);
+  --lv0: #080809;
+  --lv1: #121215;
+  --lv2: #1A1A21;
+  --lv3: #393941;
+  --lv4: #565661;
+  --lv5: #8F8F97;
+  --lv6: #EFEFEF;
+  --lv7: #FBFBFB;
+  --lv8: #FFFFFF;
+
+  --text-color: var(--CLightGray);
   --icon-color: var(--CGray);
   --base-color: var(--CB5);
   --base-shadow: 0px 0px 50px rgba(0, 0, 0, 0.2);
@@ -64,6 +98,28 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'FunktionalGrotesk';
+  src: url('../assets/fonts/book.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'FunktionalGrotesk';
+  src: url('../assets/fonts/light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'FunktionalGrotesk';
+  src: url('../assets/fonts/medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 body {
-  font: var(--text-medium);
+  font: var(--font-fg);
 }

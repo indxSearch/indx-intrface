@@ -64,7 +64,7 @@ export const SortByPanel: React.FC<SortByPanelProps> = ({ displayType = 'dropdow
               value=""
               label="None"
               checked={currentValue === ''}
-              onChange={(e) => handleChange(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e.target.value)}
             />
             {options.map((opt) => (
               <RadioButton
@@ -74,7 +74,7 @@ export const SortByPanel: React.FC<SortByPanelProps> = ({ displayType = 'dropdow
                 value={opt.value}
                 label={opt.label}
                 checked={currentValue === opt.value}
-                onChange={(e) => handleChange(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e.target.value)}
               />
             ))}
           </div>

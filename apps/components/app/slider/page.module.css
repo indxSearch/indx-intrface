@@ -1,0 +1,34 @@
+.main {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section {
+  margin-bottom: 3rem;
+}
+
+.title {
+  font: var(--text-2xl);
+  margin-bottom: 0.5rem;
+}
+
+.desc {
+  font: var(--text-base);
+  color: var(--CMediumGray);
+}
+
+.heading {
+  font: var(--text-lg);
+  margin-bottom: 1rem;
+}
+
+.sliderContainer {
+  max-width: 400px;
+}
+
+.valueDisplay {
+  font: var(--text-sm);
+  color: var(--CMediumGray);
+  margin-top: 0.5rem;
+}

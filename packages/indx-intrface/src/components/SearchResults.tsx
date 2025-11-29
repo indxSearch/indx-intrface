@@ -28,8 +28,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ fields, resultsPer
     setVisibleCount(prev => prev + pageSize);
   };
 
-  if (isFetchingInitial) return null;
-  if (resultsSuppressed) {
+  if (isFetchingInitial || resultsSuppressed) {
     return <div className={styles.placeholder}><Indx size={350} color="var(--icon-color)"/></div>;
   }
   if (!results || results.length === 0) {

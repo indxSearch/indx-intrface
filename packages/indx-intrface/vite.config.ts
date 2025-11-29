@@ -19,7 +19,8 @@ export default defineConfig({
       external: [
         'react',
         'react-dom',
-        '@indxsearch/systm', // Externalize systm
+        '@indxsearch/systm',
+        '@indxsearch/systm/styles.css', // Externalize systm CSS
       ],
       output: {
         globals: {
@@ -29,6 +30,6 @@ export default defineConfig({
         },
       },
     },
-    
+
   },
 });

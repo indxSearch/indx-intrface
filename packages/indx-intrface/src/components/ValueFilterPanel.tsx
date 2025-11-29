@@ -139,7 +139,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
     // If toggle is requested but facet doesn't have exactly two boolean values,
     // render a disabled toggle instead of an error
     return (
-      <FilterPanelBase collapsible={false} activeFilter={false}>
+      <FilterPanelBase collapsible={false}>
         <div className={styles.count}>
           <ToggleSwitch
             label={label}
@@ -167,7 +167,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
 
     // For boolean facet, the panel should always be non-collapsible
     return (
-      <FilterPanelBase collapsible={false} activeFilter={showActivePanel && isOn}>
+      <FilterPanelBase collapsible={false}>
         <div className={styles.count}>
           <ToggleSwitch
             label={label}
@@ -258,7 +258,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
           return (
             <div className={styles.count}>
               <Button
-                variant={isSelected ? 'active' : 'secondary'}
+                variant={isSelected ? 'primary' : 'secondary'}
                 onClick={() => toggleFilter(field, key)}
                 disabled={disabled}
                 size="micro"
@@ -272,7 +272,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
         // grid
         return (
           <Button
-            variant={isSelected ? 'active' : 'secondary'}
+            variant={isSelected ? 'primary' : 'secondary'}
             onClick={() => toggleFilter(field, key)}
             disabled={disabled}
             size="micro"
@@ -328,7 +328,6 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
       title={label}
       collapsible={collapsible}
       collapsed={actualCollapsed}
-      activeFilter={showActivePanel && selectedValues.length > 0}
     >
       <ul
         className={layout === 'grid' ? styles.grid : styles.list}
@@ -340,7 +339,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
         {shouldCollapse && (
           <li className={styles.toggleItem}>
             <Button
-              variant="tertiary"
+              variant="ghost"
               size="micro"
               onClick={() => setExpanded((prev) => !prev)}
             >

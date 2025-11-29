@@ -1,19 +1,11 @@
 .container {
-    border-radius: 13px;
+    border-radius: var(--radius);
     height: 100%;
 }
 .default {
-    background: var(--base-color);
-    box-shadow: var(--base-shadow);
-    padding: 15px;
-}
-.outlined {
+    background: var(--lv2);
     padding: 5px;
-    background: rgba(255, 255, 255, 0.5);
-    border: 1px solid var(--CGray);
-    backdrop-filter: blur(10px);
 }
-:global(.dark) .outlined {
-    background: rgba(18, 18, 21, 0.5);
-    border: 1px solid var(--CDarkGray);
+:global(.dark) .default {
+    background: var(--lv1);
 }

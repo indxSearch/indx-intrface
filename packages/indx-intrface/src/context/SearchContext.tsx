@@ -112,10 +112,13 @@ export const SearchProvider: React.FC<{
   initialCoverageSetup = {},
 }) => {
   const latestRequestId = useRef(0); // Track the latest search request to prevent race conditions
+  const performSearchRef = useRef<((options: { enableFacets: boolean }) => Promise<void>) | undefined>(undefined); // Stable ref to latest performSearch
+  const hasInitialized = useRef(false); // Track if initial search has completed
   const [state, setState] = useState<SearchState>({
     query: '',
     results: null,
     isLoading: false,
+    resultsSuppressed: !allowEmptySearch, // Show placeholder if empty search not allowed
     facetDebounceDelayMillis,
     filters: {},
     rangeFilters: {},
@@ -183,6 +186,7 @@ export const SearchProvider: React.FC<{
   const [initialFacetKeys, setInitialFacetKeys] = useState<Record<string, string[]>>({}); // Initial facet keys for non-coverage fields
   const [fixedFacetStats, setFixedFacetStats] = useState<Record<string, { min: number; max: number }>>({}); // Fixed facet statistics (min/max values) for numeric fields
   const [lastQueryText, setLastQueryText] = useState<string>(''); // The last query text entered by the user
+  const [lastRangeBoundsQuery, setLastRangeBoundsQuery] = useState<string>(''); // The last query text that updated rangeBounds
   const [rangeBounds, setRangeBounds] = useState<Record<string, { min: number; max: number }>>({}); // Initial range bounds for numeric fields, only updated when query changes
 
   // Cache for initial blank search data
@@ -325,6 +329,33 @@ export const SearchProvider: React.FC<{
     return current; // Return the final combined filter
   }, [authenticatedFetch]);
 
+  // Extract searchSettings values to avoid object reference issues
+  const settingsMaxResults = state.searchSettings.maxNumberOfRecordsToReturn;
+  const settingsEnableCoverage = state.searchSettings.enableCoverage;
+  const settingsRemoveDuplicates = state.searchSettings.removeDuplicates;
+  const settingsCoverageDepth = state.searchSettings.coverageDepth;
+  const settingsMinimumScore = state.searchSettings.minimumScore;
+
+  // Extract sort values to avoid object reference issues
+  const sortBy = state.sortBy;
+  const sortAscending = state.sortAscending;
+
+  // Memoize coverageSetup to prevent unnecessary re-renders
+  const settingsCoverageSetup = useMemo(() => state.searchSettings.coverageSetup, [
+    state.searchSettings.coverageSetup.levenshteinMaxWordSize,
+    state.searchSettings.coverageSetup.minWordSize,
+    state.searchSettings.coverageSetup.coverageMinWordHitsAbs,
+    state.searchSettings.coverageSetup.coverageMinWordHitsRelative,
+    state.searchSettings.coverageSetup.coverageQLimitForErrorTolerance,
+    state.searchSettings.coverageSetup.coverageLcsErrorToleranceRelativeq,
+    state.searchSettings.coverageSetup.coverWholeQuery,
+    state.searchSettings.coverageSetup.coverWholeWords,
+    state.searchSettings.coverageSetup.coverFuzzyWords,
+    state.searchSettings.coverageSetup.coverJoinedWords,
+    state.searchSettings.coverageSetup.coverPrefixSuffix,
+    state.searchSettings.coverageSetup.truncate,
+  ]);
+
   // Function to perform the actual search
   const performSearch = useCallback(
     async ({ enableFacets }: { enableFacets: boolean }) => {
@@ -376,15 +407,15 @@ export const SearchProvider: React.FC<{
         const shouldFetchResults = allowEmptySearch || state.query.trim() !== '';
         const searchBody = {
           text: state.query,
-          maxNumberOfRecordsToReturn: shouldFetchResults ? state.searchSettings.maxNumberOfRecordsToReturn : 0,
+          maxNumberOfRecordsToReturn: shouldFetchResults ? settingsMaxResults : 0,
           enableFacets,
           ...(filterProxy ? { filter: filterProxy } : {}),
-          ...(state.sortBy ? { sortBy: state.sortBy } : {}),
-          ...(state.sortAscending !== undefined ? { sortAscending: state.sortAscending } : {}),
-          enableCoverage: state.searchSettings.enableCoverage,
-          removeDuplicates: state.searchSettings.removeDuplicates,
-          coverageDepth: state.searchSettings.coverageDepth,
-          coverageSetup: state.searchSettings.coverageSetup
+          ...(sortBy ? { sortBy: sortBy } : {}),
+          ...(sortAscending !== undefined ? { sortAscending: sortAscending } : {}),
+          enableCoverage: settingsEnableCoverage,
+          removeDuplicates: settingsRemoveDuplicates,
+          coverageDepth: settingsCoverageDepth,
+          coverageSetup: settingsCoverageSetup
         };
 
         console.log('[performSearch] request body:', JSON.stringify(searchBody, null, 2));
@@ -444,6 +475,7 @@ export const SearchProvider: React.FC<{
 
         // 8) Determine if query changed
         const queryChanged = state.query !== lastQueryText;
+        const rangeBoundsNeedsUpdate = state.query !== lastRangeBoundsQuery;
 
         // 9) Merge facetStats (old vs new) for display purposes
         let mergedFacetStats = state.facetStats ?? {};
@@ -455,13 +487,14 @@ export const SearchProvider: React.FC<{
           mergedFacetStats = { ...fixedFacetStats, ...newFacetStats };
         }
 
-        // 10) Update rangeBounds only if the query text changed
-        if (queryChanged) {
+        // 10) Update rangeBounds only if query changed AND we have facets AND rangeBounds hasn't been updated yet
+        if (rangeBoundsNeedsUpdate && enableFacets) {
           const updatedBounds = { ...rangeBounds };
           for (const [field, stats] of Object.entries(newFacetStats)) {
             updatedBounds[field] = stats;
           }
           setRangeBounds(updatedBounds);
+          setLastRangeBoundsQuery(state.query);
         }
 
         // 11) Prepare displayFacets (for non‐coverage fields if needed)
@@ -488,7 +521,7 @@ export const SearchProvider: React.FC<{
             return true;  // Accept short single-character queries
           }
 
-          return result.score >= state.searchSettings.minimumScore;  // Apply minimum score for longer queries
+          return result.score >= settingsMinimumScore;  // Apply minimum score for longer queries
         });
         setState(prev => ({
           ...prev,
@@ -539,40 +572,69 @@ export const SearchProvider: React.FC<{
       state.query,
       state.filters,
       state.rangeFilters,
-      state.sortBy,
-      state.sortAscending,
+      sortBy,
+      sortAscending,
+      settingsMaxResults,
+      settingsEnableCoverage,
+      settingsRemoveDuplicates,
+      settingsCoverageDepth,
+      settingsCoverageSetup,
+      settingsMinimumScore,
       authenticatedFetch,
       combineFilters,
       url,
       dataset,
-      maxResults,
-      initialFacetStats,
-      fixedFacetStats,
-      lastQueryText,
-      rangeBounds,
-      initialFacetKeys,
+      allowEmptySearch,
+      token,
     ]
   );
 
-
-  // Function to perform a basic search (no facets)
-  const searchBasic = useCallback(() => { 
-    console.log('Search fired');
-    performSearch({ enableFacets: false });
+  // Update the ref whenever performSearch changes
+  useEffect(() => {
+    performSearchRef.current = performSearch;
   }, [performSearch]);
 
-  // Function to perform a search with facets
-  const searchWithFacets = useMemo(
-  () =>
-    debounce(() => {
-      console.log('Debounced searchWithFacets fired');
-      performSearch({ enableFacets: true });
-    }, state.facetDebounceDelayMillis ?? 500),
-  [performSearch, state.facetDebounceDelayMillis]
-);
+  // Function to perform a basic search (no facets) - stable, doesn't depend on performSearch
+  const searchBasic = useCallback(() => {
+    console.log('Search fired');
+    performSearchRef.current?.({ enableFacets: false });
+  }, []);
+
+  // Function to perform a search with facets - stable debounced function
+  const searchWithFacetsDebounced = useRef<ReturnType<typeof debounce> | null>(null);
+
+// Create/update debounced function when delay changes
+useEffect(() => {
+  searchWithFacetsDebounced.current = debounce(() => {
+    console.log('Debounced searchWithFacets fired');
+    performSearchRef.current?.({ enableFacets: true });
+  }, state.facetDebounceDelayMillis ?? 500);
+
+  return () => {
+    searchWithFacetsDebounced.current?.cancel();
+  };
+}, [state.facetDebounceDelayMillis]);
+
+const searchWithFacets = useCallback(() => {
+  searchWithFacetsDebounced.current?.();
+}, []);
+
+  // Effect for initial blank search after authentication completes
+  useEffect(() => {
+    if (!isFetchingInitial && token && !hasInitialized.current) {
+      // Only perform initial search if allowEmptySearch is true
+      if (allowEmptySearch) {
+        performSearchRef.current?.({ enableFacets: facetsEnabled });
+      }
+      hasInitialized.current = true;
+    }
+  }, [isFetchingInitial, token, allowEmptySearch, facetsEnabled]); // Trigger after auth completes
 
   // Effect for query changes - immediate results, debounced facets
   useEffect(() => {
+    // Skip if no token yet (wait for initial search effect to handle first search)
+    if (!token) return;
+
     const trimmedQuery = state.query.trim();
     const isFirstLoad = lastQueryText === '' && trimmedQuery === '';
     const isEmptySearch = trimmedQuery === '' && allowEmptySearch;
@@ -591,39 +653,55 @@ export const SearchProvider: React.FC<{
       return;
     }
 
+    // Mark as initialized when user starts typing
+    if (!hasInitialized.current) {
+      hasInitialized.current = true;
+    }
+
     if (isFirstLoad || isEmptySearch) {
-      searchWithFacets.cancel?.();
-      performSearch({ enableFacets: facetsEnabled });
+      searchWithFacetsDebounced.current?.cancel();
+      performSearchRef.current?.({ enableFacets: facetsEnabled });
     } else {
       if (facetsEnabled) {
         searchBasic();  // Immediate results
         searchWithFacets();  // Debounced facets
       } else {
-        performSearch({ enableFacets: false });
+        performSearchRef.current?.({ enableFacets: false });
       }
     }
 
     return () => {
-      searchWithFacets.cancel?.();
+      searchWithFacetsDebounced.current?.cancel();
     };
-  }, [state.query, allowEmptySearch, lastQueryText, searchBasic, searchWithFacets, performSearch, facetsEnabled]);
+  }, [state.query, allowEmptySearch, searchBasic, searchWithFacets, facetsEnabled]);
 
   // Effect for filter changes - immediate search with facets
   useEffect(() => {
-    // Trigger only on filter changes (not on query/lastQuery updates)
+    // Skip if this is before initialization completes or no token yet
+    if (!hasInitialized.current || !token) return;
+
     // Don't search if query is empty and allowEmptySearch is false
     const trimmedQuery = state.query.trim();
     const shouldSkipSearch = !allowEmptySearch && trimmedQuery === '';
 
-    if (
-      facetsEnabled &&
-      !shouldSkipSearch &&
-      (Object.keys(state.filters).length > 0 || Object.keys(state.rangeFilters).length > 0)
-    ) {
-      console.log('[Search] Performing immediate faceted search due to filter change');
-      performSearch({ enableFacets: true });
+    if (facetsEnabled && !shouldSkipSearch) {
+      performSearchRef.current?.({ enableFacets: true });
     }
-  }, [state.filters, state.rangeFilters, facetsEnabled, performSearch, state.query, allowEmptySearch]);
+  }, [state.filters, state.rangeFilters]);
+
+  // Effect for sort changes - immediate search with facets
+  useEffect(() => {
+    // Skip if this is before initialization completes or no token yet
+    if (!hasInitialized.current || !token) return;
+
+    // Don't search if query is empty and allowEmptySearch is false
+    const trimmedQuery = state.query.trim();
+    const shouldSkipSearch = !allowEmptySearch && trimmedQuery === '';
+
+    if (facetsEnabled && !shouldSkipSearch) {
+      performSearchRef.current?.({ enableFacets: true });
+    }
+  }, [sortBy, sortAscending]);
 
   useEffect(() => {
     const authenticate = async () => {
@@ -714,19 +792,20 @@ export const SearchProvider: React.FC<{
         const statusData = await statusRes.json();
         console.log('[Auth] 📊 Dataset status:', statusData);
 
-        // Check if dataset is ready
-        if (statusData.state !== 'Ready') {
+        // Check if dataset is ready (if state field exists)
+        if (statusData.state && statusData.state !== 'Ready') {
           console.warn('[Auth] ⚠️ Dataset is not ready yet. Current state:', statusData.state);
           console.warn('[Auth] 💡 Wait for indexing to complete before searching');
         }
 
-        // Check if dataset is empty
-        if (statusData.numberOfRecords === 0) {
+        // Check if dataset is empty (use documentCount field from API)
+        const recordCount = statusData.documentCount ?? statusData.numberOfRecords ?? 0;
+        if (recordCount === 0) {
           console.warn('[Auth] ⚠️ Dataset "' + dataset + '" is empty (0 records)');
           console.warn('[Auth] 💡 Add documents to your dataset before searching');
           console.warn('[Auth] 💡 Search will work but return no results');
         } else {
-          console.log('[Auth] ✅ Dataset has', statusData.numberOfRecords, 'records');
+          console.log('[Auth] ✅ Dataset has', recordCount, 'records');
         }
 
         const [filterableRes, facetableRes, sortableRes] = await Promise.all([
