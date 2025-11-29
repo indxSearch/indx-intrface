@@ -52,12 +52,26 @@
   background-color: var(--lv5);
 }
 .thumbs {
-  height: 18px;
-  width: 24px;
+  height: 13px;
+  width: 18px;
   border-radius: 1px;
   background-color: var(--lv7);
   cursor: grab;
   outline: none;
+  position: relative;
+}
+
+/* Larger invisible hit area for easier dragging */
+.thumbs::before {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 19px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* Uncomment to visualize the hit area during development */
+  /* background-color: rgba(255, 0, 0, 0.2); */
 }
 
 .thumbs:focus {
