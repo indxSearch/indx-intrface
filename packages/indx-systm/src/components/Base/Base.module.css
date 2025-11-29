@@ -6,6 +6,9 @@
     background: var(--lv2);
     padding: var(--spacing);
 }
-:global(.dark) .default {
-    background: var(--lv1);
+
+@media (prefers-color-scheme: dark) {
+    .default {
+        background: var(--lv1);
+    }
 }

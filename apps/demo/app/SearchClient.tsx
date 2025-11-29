@@ -73,7 +73,6 @@ function SearchLayout({
   filters: React.ReactNode;
   showFilters: boolean;
 }) {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const containerRef = useRef<HTMLDivElement>(null);
   const [showFilterButton, setShowFilterButton] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -84,17 +83,6 @@ function SearchLayout({
   const hasFilters =
     Object.keys(activeFilters).length > 0 ||
     Object.keys(rangeFilters).length > 0;
-
-  // THEME
-  useEffect(() => {
-    const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
-    const updateTheme = () => {
-      setTheme(systemDark.matches ? 'dark' : 'light');
-    };
-    updateTheme();
-    systemDark.addEventListener('change', updateTheme);
-    return () => systemDark.removeEventListener('change', updateTheme);
-  }, []);
 
   // RESIZE HANDLER
   useEffect(() => {
@@ -117,7 +105,7 @@ function SearchLayout({
   }, [filtersOpen]);
 
   return (
-    <div className={theme}>
+    <div>
       <div className={styles.wrapper} ref={containerRef}>
         <Base className={styles.component}>
           <div className={styles.mainContent}>
@@ -143,7 +131,7 @@ function SearchLayout({
                       onOpenChange={setFiltersOpen}
                       align="end"
                       sideOffset={5}
-                      className={`${styles.popoverContent} ${theme}`}
+                      className={styles.popoverContent}
                     >
                       <div className={styles.scrollFilters}>
                         {filters}

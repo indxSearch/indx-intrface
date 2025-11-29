@@ -21,8 +21,11 @@
     position: relative;
     color: var(--lv4);
 }
-:global(.dark) .row {
-    border-color: var(--lv2);
+
+@media (prefers-color-scheme: dark) {
+    .row {
+        border-color: var(--lv2);
+    }
 }
 .row:last-child {
     border-bottom: none;
