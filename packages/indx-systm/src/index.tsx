@@ -9,3 +9,4 @@ export { InputField } from './components/InputField/InputField';
 export { RadioButton } from './components/RadioButton/RadioButton';
 export { ToggleSwitch } from './components/ToggleSwitch/ToggleSwitch';
 export { Slider } from './components/Slider/Slider';
+export { Select, type SelectOption, type SelectProps } from './components/Select/Select';
