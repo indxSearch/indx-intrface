@@ -54,14 +54,6 @@ export const SortByPanel: React.FC<SortByPanelProps> = ({ displayType = 'dropdow
           />
         ) : (
           <div className={styles.radioGroup}>
-            <RadioButton
-              id="sort-none"
-              name="sort-by"
-              value=""
-              label="None"
-              checked={currentValue === ''}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e.target.value)}
-            />
             {options.map((opt) => (
               <RadioButton
                 key={opt.value}

@@ -58,16 +58,18 @@
     margin-bottom: 0;
 }
 
-.floatingFilters {
-  position: absolute;
-  top: calc(100% + 5px);          
-  right: 0;
-  z-index: 1000;
-  width: 300px;
+.popoverContent {
+  width: 300px !important;
+  max-width: 300px !important;
+  min-width: 300px !important;
 }
+
 .scrollFilters {
-	max-height: 80vh;
-	overflow-y: scroll;
+  max-height: 80vh;
+  overflow-y: scroll;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .scrollFilters > *:last-child {
