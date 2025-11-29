@@ -12,7 +12,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    --icon-color: var(--lv4);
+    --lv5: var(--lv4);
     cursor: pointer;
     background: none;
     border: none;

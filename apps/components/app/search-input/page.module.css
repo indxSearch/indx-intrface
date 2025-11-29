@@ -33,9 +33,9 @@
 
 .demo {
   padding: 2rem;
-  border: 1px solid var(--CGray);
+  border: 1px solid var(--lv4);
   border-radius: 8px;
-  background: var(--base-color);
+  background: var(--lv0);
 }
 
 .info {

@@ -46,8 +46,8 @@ export function FilterPanelBase({
               {title}
             </h3>
             {expanded
-              ? <Minus color="var(--icon-color)" size={14} />
-              : <Plus  color="var(--icon-color)" size={14} />
+              ? <Minus color="var(--lv5)" size={14} />
+              : <Plus  color="var(--lv5)" size={14} />
             }
           </button>
         ) : (

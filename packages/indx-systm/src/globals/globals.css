@@ -1,5 +1,8 @@
 :root {
 
+  --spacing: 5px;
+  --radius: 1px;
+
   --lv0: #FFFFFF;
   --lv1: #FBFBFB;
   --lv2: #EFEFEF;
@@ -10,33 +13,11 @@
   --lv7: #121215;
   --lv8: #080809;
 
-  /* COLORS */
-  --CSuperLightGray: #FBFBFB;
-  --CLightGray: #EFEFEF;
-  --CGray: #CFCFCF;
-  --CMediumGray: var(--lv4);
-  --CDarkGray: #333333;
-  --CBlueGray: #565661;
   --CSignal: #FF4238;
   --CTeal: #72F5C6;
   --CPureBlue: #0000ff;
 
   /* TEXT */
-  --font-px: 'PxGrotesk', sans-serif;
-  --font-fg: 'FunktionalGrotesk', sans-serif;
-  --text-mini: 400 10px 'PxGrotesk', sans-serif;
-  --text-mini-light: 300 10px 'PxGrotesk', sans-serif;
-  --text-micro: 400 12px 'PxGrotesk', sans-serif;
-  --text-micro-light: 300 12px 'PxGrotesk', sans-serif;
-  --text-small: 400 14px 'PxGrotesk', sans-serif;
-  --text-small-light: 300 14px 'PxGrotesk', sans-serif;
-  --text-medium: 400 16px 'PxGrotesk', sans-serif;
-  --text-medium-light: 300 16px 'PxGrotesk', sans-serif;
-  --text-large: 400 18px 'PxGrotesk', sans-serif;
-  --text-large-light: 300 18px 'PxGrotesk', sans-serif;
-  --text-extra-large: 400 20px 'PxGrotesk', sans-serif;
-  --text-extra-large-light: 300 20px 'PxGrotesk', sans-serif;
-
   --text-2xs: 400 10px/1 'FunktionalGrotesk', sans-serif;
   --text-xs: 400 11px/1 'FunktionalGrotesk', sans-serif;
   --text-sm: 400 13px/1 'FunktionalGrotesk', sans-serif;
@@ -46,16 +27,6 @@
   --text-2xl: 400 24px/1 'FunktionalGrotesk', sans-serif;
   --text-3xl: 400 30px/1 'FunktionalGrotesk', sans-serif;
   --text-4xl: 400 36px/1 'FunktionalGrotesk', sans-serif;
-
-  --spacing: 5px;
-  --radius: 1px;
-
-  /* DEFINITIONS */
-  --text-color: var(--lv8);
-	--icon-color: var(--CBlueGray);
-	--base-color: white;
-	--base-shadow: 0px 0px 50px rgba(0, 0, 0, 0.1);
-  --filter-base-color: var(--CSuperLightGray);
 }
 :where(.dark) {
   --lv0: #080809;
@@ -67,28 +38,6 @@
   --lv6: #EFEFEF;
   --lv7: #FBFBFB;
   --lv8: #FFFFFF;
-
-  --text-color: var(--CLightGray);
-  --icon-color: var(--CGray);
-  --base-color: var(--lv1);
-  --base-shadow: 0px 0px 50px rgba(0, 0, 0, 0.2);
-  --filter-base-color: rgba(0,0,0,0.2);
-}
-
-@font-face {
-  font-family: 'PxGrotesk';
-  src: url('../assets/fonts/lig.woff2') format('woff2');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'PxGrotesk';
-  src: url('../assets/fonts/reg.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
 }
 
 @font-face {
@@ -111,8 +60,4 @@
   font-weight: 500;
   font-style: normal;
   font-display: swap;
-}
-
-body {
-  font: var(--font-fg);
 }

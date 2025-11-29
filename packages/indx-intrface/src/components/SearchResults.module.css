@@ -9,7 +9,7 @@
 }
 .invalid p {
     padding: 25px;
-    font: var(--text-medium-light);
+    font: var(--text-base);
 }
 .row {
     padding-bottom: 20px;

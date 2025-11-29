@@ -26,9 +26,9 @@
 
 .card {
   padding: 1.5rem;
-  border: 1px solid var(--CGray);
+  border: 1px solid var(--lv4);
   border-radius: 8px;
-  background: var(--base-color);
+  background: var(--lv0);
   text-decoration: none;
   color: inherit;
   cursor: pointer;
