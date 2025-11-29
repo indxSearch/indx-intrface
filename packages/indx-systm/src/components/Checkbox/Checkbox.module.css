@@ -49,6 +49,7 @@
 .score {
   font: var(--text-xs);
   color: var(--lv4);
+  padding-top: 4px;
 }
 
 /* DISABLED */

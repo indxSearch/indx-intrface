@@ -53,14 +53,13 @@ export default function ValueFilterPanelPage() {
           <FilterPanelBase title="Pokemon Type">
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {pokemonTypes.map(({ key, value }) => (
-                <li key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <li key={key} style={{ marginBottom: '0.5rem' }}>
                   <Checkbox
                     label={key}
-                    score=""
+                    score={value.toString()}
                     checked={selectedTypes.includes(key)}
                     onChange={() => toggleType(key)}
                   />
-                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--lv4)' }}>{value}</span>
                 </li>
               ))}
             </ul>
@@ -96,14 +95,13 @@ export default function ValueFilterPanelPage() {
           <FilterPanelBase title="Pokemon Type">
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {pokemonTypes.slice(0, 3).map(({ key, value }) => (
-                <li key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <li key={key} style={{ marginBottom: '0.5rem' }}>
                   <Checkbox
                     label={key}
-                    score=""
+                    score={value.toString()}
                     checked={selectedTypes.includes(key)}
                     onChange={() => toggleType(key)}
                   />
-                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--lv4)' }}>{value}</span>
                 </li>
               ))}
               <li style={{ marginTop: '0.5rem' }}>
@@ -138,14 +136,13 @@ export default function ValueFilterPanelPage() {
           <FilterPanelBase title="Rarity (Collapsed)" collapsible={true} collapsed={true}>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {rarities.map(({ key, value }) => (
-                <li key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <li key={key} style={{ marginBottom: '0.5rem' }}>
                   <Checkbox
                     label={key}
-                    score=""
+                    score={value.toString()}
                     checked={selectedRarities.includes(key)}
                     onChange={() => toggleRarity(key)}
                   />
-                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--lv4)' }}>{value}</span>
                 </li>
               ))}
             </ul>
