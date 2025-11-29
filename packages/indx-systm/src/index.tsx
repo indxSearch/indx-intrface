@@ -1,7 +1,7 @@
 import './globals/globals.css';
 export { Button } from './components/Button/Button';
 export { Checkbox } from './components/Checkbox/Checkbox';
-export { Base } from './components/Base/Base';
+export { Base, type BaseProps } from './components/Base/Base';
 export { FilterPanelBase } from './components/FilterPanelBase/FilterPanelBase';
 export { SearchField } from './components/SearchField/SearchField';
 export type InputSize = 'micro' | 'default';

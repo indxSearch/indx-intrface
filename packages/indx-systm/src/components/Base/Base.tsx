@@ -1,12 +1,13 @@
 import styles from './Base.module.css'
 
 import { ReactNode } from 'react'
-type props = {
+
+export type BaseProps = {
     children: ReactNode;
     className?: string;
 }
 
-export function Base({ children, className }: props) {
+export function Base({ children, className }: BaseProps) {
   return (
     <div className={`${styles.container} ${styles.default} ${className || ''}`}>
         {children}
