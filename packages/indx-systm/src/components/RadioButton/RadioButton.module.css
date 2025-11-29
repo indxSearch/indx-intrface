@@ -35,7 +35,7 @@
   cursor: pointer;
 }
 
-.radioInput:not(:disabled):not(:checked) + .customRadio:hover {
+.radioWrapper:hover .radioInput:not(:disabled):not(:checked) + .customRadio {
   background-color: var(--lv3);
 }
 

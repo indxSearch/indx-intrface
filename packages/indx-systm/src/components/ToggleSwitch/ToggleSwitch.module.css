@@ -41,7 +41,7 @@
   border-radius: var(--radius);
 }
 
-.switch:not(.disabled) input:not(:checked) + .slider:hover {
+.switch:not(.disabled):hover input:not(:checked) + .slider {
   background-color: var(--lv3);
 }
 

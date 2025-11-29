@@ -44,7 +44,7 @@ export function SearchClient({
       email={authEmail}
       password={authPassword}
       dataset={dataset}
-      allowEmptySearch={true}
+      allowEmptySearch={false}
       enableFacets={true}
       maxResults={30}
       facetDebounceDelayMillis={100}

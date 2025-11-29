@@ -16,7 +16,7 @@
   cursor: pointer;
 }
 
-.checkbox:not(:disabled):hover {
+.checkboxWrapper:hover .checkbox:not(:disabled) {
   background-color: var(--lv3);
 }
 
