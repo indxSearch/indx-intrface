@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSearchContext } from '../context/SearchContext';
-import { FilterPanelBase } from '@indxsearch/systm';
-import { RadioButton } from '@indxsearch/systm';
+import { FilterPanelBase, RadioButton, Select } from '@indxsearch/systm';
 import styles from './SortByPanel.module.css';
 
 type SortByPanelProps = {
@@ -18,15 +17,18 @@ export const SortByPanel: React.FC<SortByPanelProps> = ({ displayType = 'dropdow
 
   if (!sortableFields || sortableFields.length === 0) return null;
 
-  const currentValue = sortBy ? `${sortBy}:${sortAscending ? 'asc' : 'desc'}` : '';
+  const currentValue = sortBy ? `${sortBy}:${sortAscending ? 'asc' : 'desc'}` : 'none';
 
-  const options = sortableFields.flatMap((field) => [
-    { label: `${field} (asc)`, value: `${field}:asc` },
-    { label: `${field} (desc)`, value: `${field}:desc` },
-  ]);
+  const options = [
+    { label: 'None', value: 'none' },
+    ...sortableFields.flatMap((field) => [
+      { label: `${field} (asc)`, value: `${field}:asc` },
+      { label: `${field} (desc)`, value: `${field}:desc` },
+    ]),
+  ];
 
   const handleChange = (value: string) => {
-    if (value === '') {
+    if (value === 'none' || value === '') {
       setSort(null, true);
     } else {
       const [field, direction] = value.split(':');
@@ -44,28 +46,14 @@ export const SortByPanel: React.FC<SortByPanelProps> = ({ displayType = 'dropdow
         collapsed={actualCollapsed}
       >
         {displayType === 'dropdown' ? (
-          <select
-            className={styles.select}
+          <Select
             value={currentValue}
-            onChange={(e) => handleChange(e.target.value)}
-          >
-            <option value="">None</option>
-            {options.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+            onValueChange={handleChange}
+            options={options}
+            placeholder="Select sort..."
+          />
         ) : (
           <div className={styles.radioGroup}>
-            <RadioButton
-              id="sort-none"
-              name="sort-by"
-              value=""
-              label="None"
-              checked={currentValue === ''}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e.target.value)}
-            />
             {options.map((opt) => (
               <RadioButton
                 key={opt.value}

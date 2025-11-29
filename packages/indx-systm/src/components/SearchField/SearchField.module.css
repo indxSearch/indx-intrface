@@ -5,8 +5,8 @@
 }
 
 .label {
-	font: var(--text-small);
-	color: var(--text-color);
+	font: var(--text-sm);
+	color: var(--lv8);
 }
 
 .inputContainer {

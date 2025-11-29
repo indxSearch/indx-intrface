@@ -1,0 +1,72 @@
+.main {
+  padding: 40px;
+  max-width: var(--maxWidth);
+  margin: 0 auto;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.title {
+  font: var(--text-2xl);
+  color: var(--lv8);
+  margin-bottom: 10px;
+}
+
+.desc {
+  font: var(--text-md);
+  color: var(--lv6);
+  margin-bottom: 0;
+}
+
+.heading {
+  font: var(--text-lg);
+  color: var(--lv7);
+  margin-bottom: 20px;
+}
+
+.demo {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.demoRow {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.demoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+  max-width: 600px;
+}
+
+.content {
+  padding: 10px;
+  min-width: 200px;
+}
+
+.content h3 {
+  font: var(--text-md);
+  color: var(--lv8);
+  margin: 0 0 10px 0;
+}
+
+.content p {
+  font: var(--text-sm);
+  color: var(--lv6);
+  margin: 0 0 10px 0;
+}
+
+.content p:last-of-type {
+  margin-bottom: calc(var(--spacing) * 3);
+}
+
+.widePopover {
+  width: 400px;
+  max-width: 400px;
+}

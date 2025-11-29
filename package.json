@@ -16,9 +16,17 @@
     "dev:apps": "concurrently \"npm run dev:demo\" \"npm run dev:components\"",
     "build:systm": "npm run build --workspace=@indxsearch/systm",
     "build:intrface": "npm run build --workspace=@indxsearch/intrface",
-    "build:packages": "npm run build:systm && npm run build:intrface"
+    "build:packages": "npm run build:systm && npm run build:intrface",
+    "build:demo": "npm run build --workspace=demo",
+    "build:components": "npm run build --workspace=components-viewer",
+    "build": "npm run build:packages && npm run build:demo && npm run build:components",
+    "start:demo": "npm run start --workspace=demo",
+    "start:components": "npm run start --workspace=components-viewer"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
+  },
+  "dependencies": {
+    "@radix-ui/react-popover": "^1.1.15"
   }
 }

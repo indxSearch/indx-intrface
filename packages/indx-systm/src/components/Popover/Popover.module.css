@@ -1,0 +1,10 @@
+.content {
+  background: var(--lv3);
+  border-radius: var(--radius);
+  padding: var(--spacing);
+  z-index: 1000;
+  /* No animation - instant appearance */
+  animation-duration: 0s !important;
+  /* Ensure content respects sizing */
+  box-sizing: border-box;
+}

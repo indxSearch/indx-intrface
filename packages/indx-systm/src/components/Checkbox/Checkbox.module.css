@@ -47,8 +47,9 @@
   transform: translateY(1.5px);
 }
 .score {
-  font: var(--text-micro);
+  font: var(--text-xs);
   color: var(--lv4);
+  padding-top: 4px;
 }
 
 /* DISABLED */

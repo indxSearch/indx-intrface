@@ -9,7 +9,7 @@
 }
 .invalid p {
     padding: 25px;
-    font: var(--text-medium-light);
+    font: var(--text-base);
 }
 .row {
     padding-bottom: 20px;
@@ -21,8 +21,11 @@
     position: relative;
     color: var(--lv4);
 }
-:global(.dark) .row {
-    border-color: var(--lv2);
+
+@media (prefers-color-scheme: dark) {
+    .row {
+        border-color: var(--lv2);
+    }
 }
 .row:last-child {
     border-bottom: none;

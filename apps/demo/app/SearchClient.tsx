@@ -9,7 +9,7 @@ import {
   SearchInput,
   SearchResults
 } from '@indxsearch/intrface';
-import { Base, Button } from '@indxsearch/systm';
+import { Base, Button, Popover } from '@indxsearch/systm';
 
 type SearchClientProps = {
   dataset: string;
@@ -73,11 +73,9 @@ function SearchLayout({
   filters: React.ReactNode;
   showFilters: boolean;
 }) {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const containerRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLDivElement>(null);
   const [showFilterButton, setShowFilterButton] = useState(false);
-  const [filtersVisible, setFiltersVisible] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const { state } = useSearchContext();
   const { filters: activeFilters, rangeFilters, query, facets } = state;
@@ -85,17 +83,6 @@ function SearchLayout({
   const hasFilters =
     Object.keys(activeFilters).length > 0 ||
     Object.keys(rangeFilters).length > 0;
-
-  // THEME
-  useEffect(() => {
-    const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
-    const updateTheme = () => {
-      setTheme(systemDark.matches ? 'dark' : 'light');
-    };
-    updateTheme();
-    systemDark.addEventListener('change', updateTheme);
-    return () => systemDark.removeEventListener('change', updateTheme);
-  }, []);
 
   // RESIZE HANDLER
   useEffect(() => {
@@ -107,36 +94,18 @@ function SearchLayout({
         const isNarrow = width <= 800;
         setShowFilterButton(isNarrow);
 
-        if (!isNarrow && filtersVisible) {
-          setFiltersVisible(false);
+        if (!isNarrow && filtersOpen) {
+          setFiltersOpen(false);
         }
       }
     });
 
     observer.observe(containerRef.current);
     return () => observer.disconnect();
-  }, [filtersVisible]);
-
-  // CLICK OUTSIDE HANDLER
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        filtersVisible &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target as Node)
-      ) {
-        setFiltersVisible(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [filtersVisible]);
+  }, [filtersOpen]);
 
   return (
-    <div className={theme}>
+    <div>
       <div className={styles.wrapper} ref={containerRef}>
         <Base className={styles.component}>
           <div className={styles.mainContent}>
@@ -146,28 +115,30 @@ function SearchLayout({
                 className={styles.searchInput}
               />
               <div id={styles.meta}>
-                <div ref={buttonRef} className={styles.filterButtonWrapper} style={{ position: 'relative', marginRight: '10px' }}>
-                  {showFilterButton && (
-                    <Button
-                      variant={hasFilters ? 'primary' : 'secondary'}
-                      iconRight={<Sliders_horizontal />}
-                      size='micro'
-                      onClick={() => setFiltersVisible(prev => !prev)}
+                {showFilterButton && (
+                  <div style={{ marginRight: '10px' }}>
+                    <Popover
+                      trigger={
+                        <Button
+                          variant={hasFilters ? 'primary' : 'secondary'}
+                          iconRight={<Sliders_horizontal />}
+                          size='micro'
+                        >
+                          Filters
+                        </Button>
+                      }
+                      open={filtersOpen}
+                      onOpenChange={setFiltersOpen}
+                      align="end"
+                      sideOffset={5}
+                      className={styles.popoverContent}
                     >
-                      Filters
-                    </Button>
-                  )}
-                  <div
-                    className={styles.floatingFilters}
-                    style={{ display: filtersVisible ? 'block' : 'none' }}
-                  >
-                    <Base>
                       <div className={styles.scrollFilters}>
                         {filters}
                       </div>
-                    </Base>
+                    </Popover>
                   </div>
-                </div>
+                )}
                 <span className={styles.logo}>
                   <Indx size={28} color="var(--lv4)" />
                 </span>

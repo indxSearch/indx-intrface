@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { RadioButton, FilterPanelBase } from '@indxsearch/systm';
+import { RadioButton, FilterPanelBase, Select } from '@indxsearch/systm';
 import styles from './page.module.css';
 
 const sortOptions = [
@@ -32,18 +32,12 @@ export default function SortByPanelPage() {
         <div className={styles.demo}>
           <h2 className={styles.heading}>Dropdown</h2>
           <FilterPanelBase title="Sort by">
-            <select
-              className={styles.select}
+            <Select
               value={dropdownSort}
-              onChange={(e) => setDropdownSort(e.target.value)}
-            >
-              <option value="">None</option>
-              {sortOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+              onValueChange={setDropdownSort}
+              options={sortOptions}
+              placeholder="Select sorting..."
+            />
           </FilterPanelBase>
           <pre className={styles.state}>
             {dropdownSort || 'No sorting'}
@@ -83,18 +77,12 @@ export default function SortByPanelPage() {
         <div className={styles.demo}>
           <h2 className={styles.heading}>Collapsible</h2>
           <FilterPanelBase title="Sort by" collapsible={true} collapsed={true}>
-            <select
-              className={styles.select}
+            <Select
               value={dropdownSort}
-              onChange={(e) => setDropdownSort(e.target.value)}
-            >
-              <option value="">None</option>
-              {sortOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+              onValueChange={setDropdownSort}
+              options={sortOptions}
+              placeholder="Select sorting..."
+            />
           </FilterPanelBase>
         </div>
       </div>

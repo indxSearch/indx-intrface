@@ -1,6 +1,6 @@
 .main {
   padding: 2rem;
-  max-width: 1200px;
+  max-width: var(--maxWidth);
   margin: 0 auto;
 }
 
@@ -15,7 +15,7 @@
 
 .desc {
   font: var(--text-base);
-  color: var(--CMediumGray);
+  color: var(--lv4);
 }
 
 .heading {
@@ -29,6 +29,6 @@
 
 .valueDisplay {
   font: var(--text-sm);
-  color: var(--CMediumGray);
+  color: var(--lv4);
   margin-top: 0.5rem;
 }

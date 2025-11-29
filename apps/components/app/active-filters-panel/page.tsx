@@ -152,7 +152,7 @@ export default function ActiveFiltersPanelPage() {
                     checked={selectedTypes.includes(key)}
                     onChange={() => toggleType(key)}
                   />
-                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--CMediumGray)' }}>{value}</span>
+                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--lv4)' }}>{value}</span>
                 </li>
               ))}
             </ul>
@@ -183,7 +183,7 @@ export default function ActiveFiltersPanelPage() {
                 onChange={(val) => setHpRange(val as [number, number])}
               />
             </div>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--CMediumGray)', textAlign: 'center' }}>
+            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--lv4)', textAlign: 'center' }}>
               {hpRange ? `${hpRange[0]} - ${hpRange[1]}` : '0 - 300 (no filter)'}
             </p>
           </FilterPanelBase>

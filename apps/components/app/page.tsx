@@ -8,8 +8,10 @@ export default function Home() {
     { name: 'InputField', path: '/input-field', desc: 'Text input field' },
     { name: 'RadioButton', path: '/radio-button', desc: 'Radio button input' },
     { name: 'SearchField', path: '/search-field', desc: 'Search input with icon' },
+    { name: 'Select', path: '/select', desc: 'Radix UI select dropdown' },
     { name: 'Slider', path: '/slider', desc: 'Range slider component' },
     { name: 'ToggleSwitch', path: '/toggle-switch', desc: 'Toggle switch input' },
+    { name: 'Popover', path: '/popover', desc: 'Radix UI popover component' },
     { name: 'Base', path: '/base', desc: 'Base container component' },
     { name: 'FilterPanelBase', path: '/filter-panel-base', desc: 'Filter panel container' },
   ]

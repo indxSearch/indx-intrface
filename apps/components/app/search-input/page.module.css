@@ -1,6 +1,6 @@
 .main {
   padding: 2rem;
-  max-width: 1200px;
+  max-width: var(--maxWidth);
   margin: 0 auto;
 }
 
@@ -15,7 +15,7 @@
 
 .desc {
   font: var(--text-base);
-  color: var(--CMediumGray);
+  color: var(--lv4);
   margin-bottom: 0.5rem;
 }
 
@@ -33,13 +33,13 @@
 
 .demo {
   padding: 2rem;
-  border: 1px solid var(--CGray);
-  border-radius: 8px;
-  background: var(--base-color);
+  border: 1px solid var(--lv4);
+  border-radius: var(--radius);
+  background: var(--lv0);
 }
 
 .info {
   margin-top: 1rem;
   font: var(--text-sm);
-  color: var(--CMediumGray);
+  color: var(--lv4);
 }

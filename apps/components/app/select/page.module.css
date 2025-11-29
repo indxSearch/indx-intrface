@@ -1,0 +1,56 @@
+.main {
+  padding: 40px;
+  max-width: var(--maxWidth);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.title {
+  font: var(--text-2xl);
+  color: var(--lv8);
+  margin: 0;
+}
+
+.desc {
+  font: var(--text-base);
+  color: var(--lv5);
+  margin: 0;
+}
+
+.heading {
+  font: var(--text-lg);
+  color: var(--lv7);
+  margin: 0;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 300px;
+}
+
+.info {
+  font: var(--text-sm);
+  color: var(--lv5);
+  padding: 10px;
+  background: var(--lv1);
+  border-radius: var(--radius);
+  border: 1px solid var(--lv2);
+}
+
+.smallSelect {
+  max-width: 150px;
+}
+
+.largeSelect {
+  max-width: 400px;
+}

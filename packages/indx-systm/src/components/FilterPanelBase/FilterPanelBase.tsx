@@ -42,19 +42,19 @@ export function FilterPanelBase({
             aria-label={expanded ? 'Collapse panel' : 'Expand panel'}
             aria-expanded={expanded}
           >
-            <h3 className={styles.title}>
+            <div className={styles.title} role="heading" aria-level={3}>
               {title}
-            </h3>
+            </div>
             {expanded
-              ? <Minus color="var(--icon-color)" size={14} />
-              : <Plus  color="var(--icon-color)" size={14} />
+              ? <Minus color="var(--lv5)" size={14} />
+              : <Plus  color="var(--lv5)" size={14} />
             }
           </button>
         ) : (
           <div className={styles.header}>
-            <h3 className={styles.title}>
+            <div className={styles.title} role="heading" aria-level={3}>
               {title}
-            </h3>
+            </div>
           </div>
         )
       )}
