@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSearchContext } from '../context/SearchContext';
-import { FilterPanelBase } from '@indxsearch/systm';
-import { RadioButton } from '@indxsearch/systm';
+import { FilterPanelBase, RadioButton, Select } from '@indxsearch/systm';
 import styles from './SortByPanel.module.css';
 
 type SortByPanelProps = {
@@ -44,18 +43,12 @@ export const SortByPanel: React.FC<SortByPanelProps> = ({ displayType = 'dropdow
         collapsed={actualCollapsed}
       >
         {displayType === 'dropdown' ? (
-          <select
-            className={styles.select}
+          <Select
             value={currentValue}
-            onChange={(e) => handleChange(e.target.value)}
-          >
-            <option value="">None</option>
-            {options.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+            onValueChange={handleChange}
+            options={options}
+            placeholder="Select sort..."
+          />
         ) : (
           <div className={styles.radioGroup}>
             <RadioButton
