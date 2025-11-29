@@ -606,7 +606,7 @@ export const SearchProvider: React.FC<{
       console.log('Search fired');
     }
     performSearchRef.current?.({ enableFacets: false });
-  }, [enableDebugLogs]);
+  }, []); // Don't include enableDebugLogs - we just need to check it, not recreate the callback
 
   // Function to perform a search with facets - stable debounced function
   const searchWithFacetsDebounced = useRef<ReturnType<typeof debounce> | null>(null);
@@ -623,7 +623,7 @@ useEffect(() => {
   return () => {
     searchWithFacetsDebounced.current?.cancel();
   };
-}, [state.facetDebounceDelayMillis, enableDebugLogs]);
+}, [state.facetDebounceDelayMillis]); // Don't include enableDebugLogs - only recreate when delay changes
 
 const searchWithFacets = useCallback(() => {
   searchWithFacetsDebounced.current?.();
