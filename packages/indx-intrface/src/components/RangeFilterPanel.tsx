@@ -88,6 +88,19 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
 
   // Combined debounced effect for invalid state and filter updates
   React.useEffect(() => {
+    // Don't validate when disabled to prevent red flash during transitions
+    if (isDisabled) {
+      return;
+    }
+
+    // Don't validate when at full range (prevents flash when resetting to defaults)
+    const atFullRange = sliderValue[0] === queryMin && sliderValue[1] === queryMax;
+    if (atFullRange) {
+      setIsMinInvalid(false);
+      setIsMaxInvalid(false);
+      return;
+    }
+
     // Use facetDebounceDelayMillis from SearchContext, default to 500ms
     const debounceDelay = facetDebounceDelayMillis ?? 500;
 
@@ -115,13 +128,16 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
       clearTimeout(invalidTimer);
       clearTimeout(filterTimer);
     };
-  }, [finalMin, finalMax, isValidMin, isValidMax, queryMin, queryMax, field, resetSingleFilter, setRangeFilter, facetDebounceDelayMillis]);
+  }, [finalMin, finalMax, isValidMin, isValidMax, queryMin, queryMax, field, resetSingleFilter, setRangeFilter, facetDebounceDelayMillis, isDisabled]);
 
   // ─────────────────────────────────────────────────────────────────────────────
   // 7) Sync sliderValue with display values when they change
   //    This happens when: intended values change, query bounds change, or field changes
   React.useEffect(() => {
     setSliderValue([displayMin, displayMax]);
+    // Clear invalid state when bounds change to prevent red flash
+    setIsMinInvalid(false);
+    setIsMaxInvalid(false);
   }, [displayMin, displayMax, field]);
 
   // ─────────────────────────────────────────────────────────────────────────────
