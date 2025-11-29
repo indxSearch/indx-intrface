@@ -1,6 +1,6 @@
 .main {
   padding: 40px;
-  max-width: 1200px;
+  max-width: var(--maxWidth);
   margin: 0 auto;
   display: flex;
   flex-direction: column;

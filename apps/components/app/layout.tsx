@@ -18,7 +18,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <header style={{ padding: '1rem 2rem', borderBottom: '1px solid var(--lv3)' }}>
-          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ maxWidth: 'var(--maxWidth)', margin: '0 auto' }}>
             <Link href="/" style={{ textDecoration: 'none', color: 'inherit', font: 'var(--text-xl)' }}>
               indx-intrface
             </Link>

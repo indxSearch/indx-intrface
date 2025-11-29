@@ -1,6 +1,6 @@
 .main {
   padding: 2rem;
-  max-width: 1200px;
+  max-width: var(--maxWidth);
   margin: 0 auto;
 }
 
@@ -34,7 +34,7 @@
 .demo {
   padding: 2rem;
   border: 1px solid var(--lv4);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--lv0);
 }
 

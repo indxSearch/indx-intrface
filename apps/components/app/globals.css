@@ -1,3 +1,7 @@
+:root {
+  --maxWidth: 1200px;
+}
+
 * {
   box-sizing: border-box;
 }
