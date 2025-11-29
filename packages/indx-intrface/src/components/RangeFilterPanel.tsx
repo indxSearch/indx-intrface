@@ -241,7 +241,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
             onChange={handleMinChange}
             onBlur={handleMinBlur}
             disabled={isDisabled}
-            isValid={!isMinInvalid}
+            isValid={isDisabled || !isMinInvalid}
           />
           <InputField
             type="number"
@@ -251,7 +251,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
             onChange={handleMaxChange}
             onBlur={handleMaxBlur}
             disabled={isDisabled}
-            isValid={!isMaxInvalid}
+            isValid={isDisabled || !isMaxInvalid}
           />
         </div>
       </FilterPanelBase>
@@ -277,7 +277,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
           onChange={handleMinChange}
           onBlur={handleMinBlur}
           disabled={isDisabled}
-          isValid={!isMinInvalid}
+          isValid={isDisabled || !isMinInvalid}
         />
         <InputField
           label="Max:"
@@ -288,7 +288,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
           onChange={handleMaxChange}
           onBlur={handleMaxBlur}
           disabled={isDisabled}
-          isValid={!isMaxInvalid}
+          isValid={isDisabled || !isMaxInvalid}
         />
       </div>
     </FilterPanelBase>
