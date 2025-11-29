@@ -17,15 +17,18 @@ export const SortByPanel: React.FC<SortByPanelProps> = ({ displayType = 'dropdow
 
   if (!sortableFields || sortableFields.length === 0) return null;
 
-  const currentValue = sortBy ? `${sortBy}:${sortAscending ? 'asc' : 'desc'}` : '';
+  const currentValue = sortBy ? `${sortBy}:${sortAscending ? 'asc' : 'desc'}` : 'none';
 
-  const options = sortableFields.flatMap((field) => [
-    { label: `${field} (asc)`, value: `${field}:asc` },
-    { label: `${field} (desc)`, value: `${field}:desc` },
-  ]);
+  const options = [
+    { label: 'None', value: 'none' },
+    ...sortableFields.flatMap((field) => [
+      { label: `${field} (asc)`, value: `${field}:asc` },
+      { label: `${field} (desc)`, value: `${field}:desc` },
+    ]),
+  ];
 
   const handleChange = (value: string) => {
-    if (value === '') {
+    if (value === 'none' || value === '') {
       setSort(null, true);
     } else {
       const [field, direction] = value.split(':');
