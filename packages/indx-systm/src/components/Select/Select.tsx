@@ -1,6 +1,6 @@
 import React from 'react';
 import * as RadixSelect from '@radix-ui/react-select';
-import { ArrowDown } from '@indxsearch/pixl';
+import { Chevron_down } from '@indxsearch/pixl';
 import styles from './Select.module.css';
 
 export interface SelectOption {
@@ -30,7 +30,7 @@ export const Select: React.FC<SelectProps> = ({
       <RadixSelect.Trigger className={`${styles.trigger} ${className}`}>
         <RadixSelect.Value placeholder={placeholder} />
         <RadixSelect.Icon className={styles.icon}>
-          <ArrowDown size={12} color="currentColor" />
+          <Chevron_down size={14} color="currentColor" />
         </RadixSelect.Icon>
       </RadixSelect.Trigger>
 
