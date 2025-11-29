@@ -1,7 +1,7 @@
 .content {
   background: var(--lv3);
   border-radius: var(--radius);
-  padding: 5px;
+  padding: var(--spacing);
   z-index: 1000;
   /* No animation - instant appearance */
   animation-duration: 0s !important;

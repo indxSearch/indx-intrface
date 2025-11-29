@@ -10,7 +10,7 @@
 
 .component {
     display: flex;
-    padding: 5px;
+    padding: var(--spacing);
     gap: 5px;
     width: 100%;
     max-width: 1100px;
@@ -45,7 +45,7 @@
 }
 
 .body {
-    padding: 5px;
+    padding: var(--spacing);
     min-height: 600px;
 }
 

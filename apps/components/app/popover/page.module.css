@@ -63,7 +63,7 @@
 }
 
 .content p:last-of-type {
-  margin-bottom: 15px;
+  margin-bottom: calc(var(--spacing) * 3);
 }
 
 .widePopover {

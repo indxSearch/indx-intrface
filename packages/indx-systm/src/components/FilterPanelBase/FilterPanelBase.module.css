@@ -1,8 +1,8 @@
 .container {
     background: var(--lv0);
     border-radius: var(--radius);
-    padding: 15px;
-    margin-bottom: 5px;
+    padding: calc(var(--spacing) * 3);
+    margin-bottom: var(--spacing);
     display: flex;
     flex-direction: column;
     gap: 15px;
