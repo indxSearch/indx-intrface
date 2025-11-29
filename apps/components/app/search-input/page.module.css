@@ -1,0 +1,45 @@
+.main {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section {
+  margin-bottom: 3rem;
+}
+
+.title {
+  font: var(--text-2xl);
+  margin-bottom: 0.5rem;
+}
+
+.desc {
+  font: var(--text-base);
+  color: var(--CMediumGray);
+  margin-bottom: 0.5rem;
+}
+
+.note {
+  font: var(--text-sm);
+  color: var(--lv3);
+  font-style: italic;
+  margin-bottom: 2rem;
+}
+
+.heading {
+  font: var(--text-xl);
+  margin-bottom: 1rem;
+}
+
+.demo {
+  padding: 2rem;
+  border: 1px solid var(--CGray);
+  border-radius: 8px;
+  background: var(--base-color);
+}
+
+.info {
+  margin-top: 1rem;
+  font: var(--text-sm);
+  color: var(--CMediumGray);
+}

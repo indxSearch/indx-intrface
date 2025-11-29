@@ -43,3 +43,15 @@
   font: var(--text-xs);
   color: var(--CMediumGray);
 }
+
+.sectionTitle {
+  font: var(--text-2xl);
+  color: var(--lv4);
+  margin: 0;
+}
+
+.sectionDesc {
+  font: var(--text-base);
+  color: var(--CMediumGray);
+  margin: 0.5rem 0 0 0;
+}
