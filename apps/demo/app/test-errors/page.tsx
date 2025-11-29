@@ -8,7 +8,8 @@ type TestScenario = {
   description: string;
   config: {
     url: string;
-    token: string;
+    email: string;
+    password: string;
     dataset: string;
   };
   expectedError?: string;
@@ -18,7 +19,8 @@ export default function ErrorTestPage() {
   const [scenario, setScenario] = useState<string>('valid');
 
   const validUrl = process.env.NEXT_PUBLIC_INDX_URL || 'http://localhost:38171';
-  const validToken = process.env.NEXT_PUBLIC_INDX_TOKEN || '';
+  const validEmail = process.env.NEXT_PUBLIC_INDX_EMAIL || '';
+  const validPassword = process.env.NEXT_PUBLIC_INDX_PASSWORD || '';
 
   const scenarios: Record<string, TestScenario> = {
     valid: {
@@ -26,46 +28,51 @@ export default function ErrorTestPage() {
       description: 'All credentials correct - should load successfully',
       config: {
         url: validUrl,
-        token: validToken,
+        email: validEmail,
+        password: validPassword,
         dataset: 'pokedex'
       }
     },
-    missingToken: {
-      name: '❌ Missing Token',
-      description: 'Token not provided - should show token required error',
+    missingEmail: {
+      name: '❌ Missing Email',
+      description: 'Email not provided - should show email required error',
       config: {
         url: validUrl,
-        token: '',
+        email: '',
+        password: validPassword,
         dataset: 'pokedex'
       },
-      expectedError: 'Authentication token is required'
+      expectedError: 'Email is required'
     },
-    invalidToken: {
-      name: '❌ Invalid Token Format',
-      description: 'Token with only 2 parts - should show format validation error',
+    missingPassword: {
+      name: '❌ Missing Password',
+      description: 'Password not provided - should show password required error',
       config: {
         url: validUrl,
-        token: 'invalid.token',
+        email: validEmail,
+        password: '',
         dataset: 'pokedex'
       },
-      expectedError: 'Invalid token format'
+      expectedError: 'Password is required'
     },
-    expiredToken: {
-      name: '❌ Expired/Invalid Token',
-      description: 'Valid format but expired - should show 401 error',
+    invalidCredentials: {
+      name: '❌ Invalid Credentials',
+      description: 'Wrong email/password - should show login failed error',
       config: {
         url: validUrl,
-        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0In0.fakesignature',
+        email: 'invalid@email.com',
+        password: 'wrongpassword',
         dataset: 'pokedex'
       },
-      expectedError: 'Authentication failed (401)'
+      expectedError: 'Login failed'
     },
     wrongDataset: {
       name: '❌ Dataset Not Found',
       description: 'Non-existent dataset - should show 404 error',
       config: {
         url: validUrl,
-        token: validToken,
+        email: validEmail,
+        password: validPassword,
         dataset: 'nonexistent-dataset-name-12345'
       },
       expectedError: 'Dataset not found'
@@ -75,7 +82,8 @@ export default function ErrorTestPage() {
       description: 'Invalid port - should show network error',
       config: {
         url: 'http://localhost:99999',
-        token: validToken,
+        email: validEmail,
+        password: validPassword,
         dataset: 'pokedex'
       },
       expectedError: 'Network error / Failed to connect'
@@ -85,7 +93,8 @@ export default function ErrorTestPage() {
       description: 'URL not provided - should show URL required error',
       config: {
         url: '',
-        token: validToken,
+        email: validEmail,
+        password: validPassword,
         dataset: 'pokedex'
       },
       expectedError: 'INDX server URL is required'
@@ -95,7 +104,8 @@ export default function ErrorTestPage() {
       description: 'Dataset name not provided - should show dataset required error',
       config: {
         url: validUrl,
-        token: validToken,
+        email: validEmail,
+        password: validPassword,
         dataset: ''
       },
       expectedError: 'Dataset name is required'
@@ -185,7 +195,8 @@ export default function ErrorTestPage() {
         }}>
           <div><strong>Current Config:</strong></div>
           <div>URL: {currentScenario.config.url || '(empty)'}</div>
-          <div>Token: {currentScenario.config.token ? `${currentScenario.config.token.substring(0, 20)}...` : '(empty)'}</div>
+          <div>Email: {currentScenario.config.email || '(empty)'}</div>
+          <div>Password: {currentScenario.config.password ? '***' : '(empty)'}</div>
           <div>Dataset: {currentScenario.config.dataset || '(empty)'}</div>
         </div>
       </div>
@@ -217,7 +228,8 @@ export default function ErrorTestPage() {
         <SearchErrorBoundary key={scenario}>
           <SearchProvider
             url={currentScenario.config.url}
-            token={currentScenario.config.token}
+            email={currentScenario.config.email}
+            password={currentScenario.config.password}
             dataset={currentScenario.config.dataset}
             allowEmptySearch={true}
             enableFacets={false}
