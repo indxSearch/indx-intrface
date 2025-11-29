@@ -10,7 +10,6 @@
 
 .title {
   font: var(--text-2xl);
-  margin-bottom: 0.5rem;
 }
 
 .subtitle {
@@ -25,9 +24,9 @@
 }
 
 .card {
-  padding: 1.5rem;
+  padding: calc(var(--spacing)*3);
   border: 1px solid var(--lv4);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--lv0);
   text-decoration: none;
   color: inherit;

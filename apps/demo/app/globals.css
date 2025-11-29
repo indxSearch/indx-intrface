@@ -26,8 +26,6 @@ body {
 body {
   color: var(--lv8);
   background: var(--lv0);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
