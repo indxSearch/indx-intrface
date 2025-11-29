@@ -15,7 +15,7 @@
 
 .desc {
   font: var(--text-base);
-  color: var(--CMediumGray);
+  color: var(--lv4);
   margin-bottom: 0.5rem;
 }
 
@@ -41,5 +41,5 @@
 .info {
   margin-top: 1rem;
   font: var(--text-sm);
-  color: var(--CMediumGray);
+  color: var(--lv4);
 }

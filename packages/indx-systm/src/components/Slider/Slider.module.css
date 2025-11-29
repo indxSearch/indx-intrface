@@ -41,7 +41,6 @@
     border-radius: 1px;
 }
 .livetrackFaceted {
-  /* background-color: var(--CB3); */
   background-color: var(--lv5);
 }
 :global(.dark) .livetrackFaceted {

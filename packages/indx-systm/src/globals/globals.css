@@ -14,19 +14,12 @@
   --CSuperLightGray: #FBFBFB;
   --CLightGray: #EFEFEF;
   --CGray: #CFCFCF;
-  --CMediumGray: #757575;
+  --CMediumGray: var(--lv4);
   --CDarkGray: #333333;
   --CBlueGray: #565661;
   --CSignal: #FF4238;
   --CTeal: #72F5C6;
   --CPureBlue: #0000ff;
-  --CB0: #F6F6FF;
-  --CB1: #EAEAFF;
-  --CB2: #AAAAFF;
-  --CB3: #5B02EA;
-  --CB4: #1A1A21;
-  --CB5: #121215;
-  --CB6: #080809;
 
   /* TEXT */
   --font-px: 'PxGrotesk', sans-serif;
@@ -58,10 +51,10 @@
   --radius: 1px;
 
   /* DEFINITIONS */
-  --text-color: var(--CB6);
+  --text-color: var(--lv8);
 	--icon-color: var(--CBlueGray);
 	--base-color: white;
-	--base-shadow: 0px 0px 50px rgba(0, 0, 0, 0.1);  
+	--base-shadow: 0px 0px 50px rgba(0, 0, 0, 0.1);
   --filter-base-color: var(--CSuperLightGray);
 }
 :where(.dark) {
@@ -77,7 +70,7 @@
 
   --text-color: var(--CLightGray);
   --icon-color: var(--CGray);
-  --base-color: var(--CB5);
+  --base-color: var(--lv1);
   --base-shadow: 0px 0px 50px rgba(0, 0, 0, 0.2);
   --filter-base-color: rgba(0,0,0,0.2);
 }

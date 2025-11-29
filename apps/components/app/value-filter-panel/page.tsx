@@ -60,7 +60,7 @@ export default function ValueFilterPanelPage() {
                     checked={selectedTypes.includes(key)}
                     onChange={() => toggleType(key)}
                   />
-                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--CMediumGray)' }}>{value}</span>
+                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--lv4)' }}>{value}</span>
                 </li>
               ))}
             </ul>
@@ -103,7 +103,7 @@ export default function ValueFilterPanelPage() {
                     checked={selectedTypes.includes(key)}
                     onChange={() => toggleType(key)}
                   />
-                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--CMediumGray)' }}>{value}</span>
+                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--lv4)' }}>{value}</span>
                 </li>
               ))}
               <li style={{ marginTop: '0.5rem' }}>
@@ -145,7 +145,7 @@ export default function ValueFilterPanelPage() {
                     checked={selectedRarities.includes(key)}
                     onChange={() => toggleRarity(key)}
                   />
-                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--CMediumGray)' }}>{value}</span>
+                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--lv4)' }}>{value}</span>
                 </li>
               ))}
             </ul>

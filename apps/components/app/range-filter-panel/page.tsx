@@ -148,7 +148,7 @@ export default function RangeFilterPanelPage() {
                 onChange={() => {}}
               />
             </div>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--CMediumGray)', marginTop: '1rem' }}>
+            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--lv4)', marginTop: '1rem' }}>
               Shows active data range (50-150) within selected range (30-170)
             </p>
           </FilterPanelBase>

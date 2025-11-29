@@ -15,7 +15,7 @@
 
 .desc {
   font: var(--text-base);
-  color: var(--CMediumGray);
+  color: var(--lv4);
   margin-bottom: 0.5rem;
 }
 
@@ -51,6 +51,6 @@
   background: var(--lv1);
   border-radius: 4px;
   font: var(--text-xs);
-  color: var(--CMediumGray);
+  color: var(--lv4);
   overflow-x: auto;
 }
