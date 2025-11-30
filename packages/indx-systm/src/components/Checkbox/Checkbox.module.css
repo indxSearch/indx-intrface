@@ -44,12 +44,11 @@
 .label {
   font: var(--text-sm);
   color: var(--lv7);
-  transform: translateY(1.5px);
 }
 .score {
   font: var(--text-xs);
   color: var(--lv4);
-  padding-top: 4px;
+  padding-top: 1px;
 }
 
 /* DISABLED */

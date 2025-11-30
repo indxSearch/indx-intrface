@@ -116,6 +116,7 @@ export const SearchProvider: React.FC<{
   const latestRequestId = useRef(0); // Track the latest search request to prevent race conditions
   const performSearchRef = useRef<((options: { enableFacets: boolean }) => Promise<void>) | undefined>(undefined); // Stable ref to latest performSearch
   const hasInitialized = useRef(false); // Track if initial search has completed
+  const filterEffectHasRun = useRef(false); // Track if filter effect has run at least once
   const [state, setState] = useState<SearchState>({
     query: '',
     results: null,
@@ -606,13 +607,17 @@ export const SearchProvider: React.FC<{
       console.log('Search fired');
     }
     performSearchRef.current?.({ enableFacets: false });
-  }, [enableDebugLogs]);
+  }, []); // Don't include enableDebugLogs - we just need to check it, not recreate the callback
 
   // Function to perform a search with facets - stable debounced function
   const searchWithFacetsDebounced = useRef<ReturnType<typeof debounce> | null>(null);
 
 // Create/update debounced function when delay changes
 useEffect(() => {
+  // Cancel any pending calls from the old debounced function
+  searchWithFacetsDebounced.current?.cancel();
+
+  // Create new debounced function
   searchWithFacetsDebounced.current = debounce(() => {
     if (enableDebugLogs) {
       console.log('Debounced searchWithFacets fired');
@@ -623,7 +628,7 @@ useEffect(() => {
   return () => {
     searchWithFacetsDebounced.current?.cancel();
   };
-}, [state.facetDebounceDelayMillis, enableDebugLogs]);
+}, [state.facetDebounceDelayMillis]); // Don't include enableDebugLogs - only recreate when delay changes
 
 const searchWithFacets = useCallback(() => {
   searchWithFacetsDebounced.current?.();
@@ -645,8 +650,10 @@ const searchWithFacets = useCallback(() => {
     // Skip if no token yet (wait for initial search effect to handle first search)
     if (!token) return;
 
+    // Skip if not initialized yet (initial search effect will handle first search)
+    if (!hasInitialized.current) return;
+
     const trimmedQuery = state.query.trim();
-    const isFirstLoad = lastQueryText === '' && trimmedQuery === '';
     const isEmptySearch = trimmedQuery === '' && allowEmptySearch;
     const shouldSkipEmptySearch = trimmedQuery === '' && !allowEmptySearch;
 
@@ -663,18 +670,19 @@ const searchWithFacets = useCallback(() => {
       return;
     }
 
-    // Mark as initialized when user starts typing
-    if (!hasInitialized.current) {
-      hasInitialized.current = true;
-    }
-
-    if (isFirstLoad || isEmptySearch) {
+    if (isEmptySearch) {
       searchWithFacetsDebounced.current?.cancel();
       performSearchRef.current?.({ enableFacets: facetsEnabled });
     } else {
       if (facetsEnabled) {
-        searchBasic();  // Immediate results
-        searchWithFacets();  // Debounced facets
+        // Immediate search without facets
+        if (enableDebugLogs) {
+          console.log('Search fired');
+        }
+        performSearchRef.current?.({ enableFacets: false });
+
+        // Debounced search with facets
+        searchWithFacetsDebounced.current?.();
       } else {
         performSearchRef.current?.({ enableFacets: false });
       }
@@ -683,21 +691,38 @@ const searchWithFacets = useCallback(() => {
     return () => {
       searchWithFacetsDebounced.current?.cancel();
     };
-  }, [state.query, allowEmptySearch, searchBasic, searchWithFacets, facetsEnabled]);
+  }, [state.query, allowEmptySearch, facetsEnabled]); // Removed searchBasic and searchWithFacets
 
   // Effect for filter changes - immediate search with facets
   useEffect(() => {
     // Skip if this is before initialization completes or no token yet
     if (!hasInitialized.current || !token) return;
 
+    // Skip on first run (let initialization complete first)
+    if (!filterEffectHasRun.current) {
+      filterEffectHasRun.current = true;
+      if (enableDebugLogs) {
+        console.log('[Filter effect] First run, skipping');
+      }
+      return;
+    }
+
     // Skip if query changed (query effect will handle the search)
-    if (state.query !== lastQueryText) return;
+    if (state.query !== lastQueryText) {
+      if (enableDebugLogs) {
+        console.log('[Filter effect] Skipping because query changed');
+      }
+      return;
+    }
 
     // Don't search if query is empty and allowEmptySearch is false
     const trimmedQuery = state.query.trim();
     const shouldSkipSearch = !allowEmptySearch && trimmedQuery === '';
 
     if (facetsEnabled && !shouldSkipSearch) {
+      if (enableDebugLogs) {
+        console.log('[Filter effect] Firing search');
+      }
       performSearchRef.current?.({ enableFacets: true });
     }
   }, [state.filters, state.rangeFilters]);
