@@ -28,7 +28,6 @@
 .label {
   font: var(--text-sm);
   color: var(--lv7);
-  transform: translateY(1.5px);
 }
 
 /* Slider background */

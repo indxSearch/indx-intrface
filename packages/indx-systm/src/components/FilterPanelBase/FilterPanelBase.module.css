@@ -32,7 +32,6 @@
     font: var(--text-sm);
     display: flex;
     align-items: center;
-    transform: translateY(1.5px);
 }
 
 .toggleButton {

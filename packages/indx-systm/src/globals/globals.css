@@ -49,6 +49,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Text box trim for better vertical alignment */
+body, p, span, label, h1, h2, h3, h4, h5, h6, div, button, input, textarea {
+  text-box: trim-both cap alphabetic;
+}
+
 /* Light */
 @font-face {
   font-family: 'FunktionalGrotesk';
@@ -56,6 +61,7 @@ body {
   font-weight: 300;
   font-style: normal;
   font-display: swap;
+  descent-override: 10%;
 }
 @font-face {
   font-family: 'FunktionalGrotesk';
@@ -63,6 +69,7 @@ body {
   font-weight: 300;
   font-style: italic;
   font-display: swap;
+  descent-override: 10%;
 }
 
 /* Book */
@@ -72,6 +79,7 @@ body {
   font-weight: 350;
   font-style: normal;
   font-display: swap;
+  descent-override: 10%;
 }
 @font-face {
   font-family: 'FunktionalGrotesk';
@@ -79,6 +87,7 @@ body {
   font-weight: 350;
   font-style: italic;
   font-display: swap;
+  descent-override: 10%;
 }
 
 /* Regular */
@@ -88,6 +97,7 @@ body {
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  descent-override: 10%;
 }
 @font-face {
   font-family: 'FunktionalGrotesk';
@@ -95,6 +105,7 @@ body {
   font-weight: 400;
   font-style: italic;
   font-display: swap;
+  descent-override: 10%;
 }
 
 /* Medium */
@@ -104,6 +115,7 @@ body {
   font-weight: 500;
   font-style: normal;
   font-display: swap;
+  descent-override: 10%;
 }
 @font-face {
   font-family: 'FunktionalGrotesk';
@@ -111,6 +123,7 @@ body {
   font-weight: 500;
   font-style: italic;
   font-display: swap;
+  descent-override: 10%;
 }
 
 /* Semibold */
@@ -120,6 +133,7 @@ body {
   font-weight: 600;
   font-style: normal;
   font-display: swap;
+  descent-override: 10%;
 }
 @font-face {
   font-family: 'FunktionalGrotesk';
@@ -127,6 +141,7 @@ body {
   font-weight: 600;
   font-style: italic;
   font-display: swap;
+  descent-override: 10%;
 }
 
 /* Bold */
@@ -136,6 +151,7 @@ body {
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  descent-override: 10%;
 }
 @font-face {
   font-family: 'FunktionalGrotesk';
@@ -143,4 +159,5 @@ body {
   font-weight: 700;
   font-style: italic;
   font-display: swap;
+  descent-override: 10%;
 }
