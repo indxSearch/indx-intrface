@@ -34,6 +34,18 @@ export default function Home() {
       </div>
 
       <div style={{ marginBottom: '2rem' }}>
+        <h2 className={styles.sectionTitle}>Pixl Icons</h2>
+        <p className={styles.sectionDesc}>Icon library with 212 icons</p>
+      </div>
+
+      <div className={styles.grid}>
+        <Link href="/icons" className={styles.card}>
+          <h3 className={styles.cardTitle}>Icon Gallery</h3>
+          <p className={styles.cardDesc}>Browse all available icons with size preview</p>
+        </Link>
+      </div>
+
+      <div style={{ marginTop: '4rem', marginBottom: '2rem' }}>
         <h2 className={styles.sectionTitle}>Systm Components</h2>
         <p className={styles.sectionDesc}>Base UI components for building interfaces</p>
       </div>
