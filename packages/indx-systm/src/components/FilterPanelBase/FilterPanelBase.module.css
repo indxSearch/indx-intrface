@@ -30,6 +30,7 @@
 
 .title {
     font: var(--text-sm);
+    color: var(--lv7);
     display: flex;
     align-items: center;
 }

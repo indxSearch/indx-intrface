@@ -49,11 +49,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Text box trim for better vertical alignment */
-body, p, span, label, h1, h2, h3, h4, h5, h6, div, button, input, textarea {
-  text-box: trim-both cap alphabetic;
-}
-
 /* Light */
 @font-face {
   font-family: 'FunktionalGrotesk';
