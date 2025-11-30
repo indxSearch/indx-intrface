@@ -1,0 +1,78 @@
+.main {
+  padding: 2rem;
+  max-width: var(--maxWidth);
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.header {
+  margin-bottom: 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.title {
+  font: var(--text-2xl);
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font: var(--text-base);
+  color: var(--lv4);
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 200px;
+}
+
+.controlLabel {
+  font: var(--text-sm);
+  color: var(--lv6);
+}
+
+.slider {
+  width: 200px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.iconCard {
+  padding: calc(var(--spacing) * 3);
+  border: none;
+  border-radius: var(--radius);
+  background: var(--lv1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.iconCard:hover {
+  background: var(--lv2);
+}
+
+.iconPreview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 64px;
+  color: var(--lv7);
+}
+
+.iconName {
+  font: var(--text-2xs);
+  color: var(--lv5);
+  text-align: center;
+  word-break: break-word;
+}

@@ -49,7 +49,6 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   // Use expectedMin/expectedMax to create a valid range for visual display only
   const displayQueryMin = isDisabled ? expectedMin : queryMin;
   const displayQueryMax = isDisabled ? expectedMax : queryMax;
-  const displayValue = isDisabled ? queryMin : undefined; // The actual single value
 
   // 5) Get intended values from rangeFilters (user's choice, or undefined if unset)
   const intended = rangeFilters?.[field];
@@ -236,7 +235,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
           <Slider
             min={displayQueryMin}
             max={displayQueryMax}
-            value={isDisabled ? [displayValue!, displayValue!] : [finalMin, finalMax]}
+            value={isDisabled ? [displayQueryMin, displayQueryMax] : [finalMin, finalMax]}
             isRange
             onChange={(vals: number | number[]) => handleSliderChange(vals as [number, number])}
             onFinalChange={(vals: number | number[]) => handleSliderCommit(vals as [number, number])}

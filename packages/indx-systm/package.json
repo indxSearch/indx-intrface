@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "description": "Base UI component library for indxSearch",
   "keywords": ["react", "components", "ui", "design-system"],
+  "author": "Indx Search",
+  "license": "MIT",
   "type": "module",
   "main": "dist/index.umd.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
-    "dist/assets"
+    "README.md"
   ],
   "sideEffects": true,
   "scripts": {
@@ -42,8 +44,11 @@
     "./styles.css": "./dist/systm.css"
   },
   "dependencies": {
-    "@indxsearch/pixl": "^1.0.7",
+    "@indxsearch/pixl": "^1.1.0",
     "@radix-ui/react-select": "^2.2.6",
     "react-range": "^1.10.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

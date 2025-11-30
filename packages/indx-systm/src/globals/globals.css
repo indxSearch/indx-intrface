@@ -27,6 +27,13 @@
   --text-2xl: 350 24px/1 'FunktionalGrotesk', sans-serif;
   --text-3xl: 350 30px/1 'FunktionalGrotesk', sans-serif;
   --text-4xl: 350 36px/1 'FunktionalGrotesk', sans-serif;
+
+  --light: 300;
+  --book: 350;
+  --reg: 400;
+  --med: 500;
+  --semi: 600;
+  --bold: 700;
 }
 
 /* Dark mode via system preference (automatic) */
