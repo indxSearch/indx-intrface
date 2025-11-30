@@ -25,12 +25,17 @@
 
 .card {
   padding: calc(var(--spacing)*3);
-  border: 1px solid var(--lv4);
+  border: none;
   border-radius: var(--radius);
-  background: var(--lv0);
+  background: var(--lv1);
   text-decoration: none;
   color: inherit;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+.card:hover {
+  background: var(--lv2);
 }
 
 .cardTitle {
