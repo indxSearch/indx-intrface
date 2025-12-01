@@ -38,7 +38,11 @@ var token = Login(client);  // Configures HttpClient with default Bearer token
 #### TypeScript Pattern (Client)
 ```typescript
 // 1. Login once - get token
-const response = await fetch(`${url}/api/Login?userEmail=${email}&userPassWord=${password}`);
+const response = await fetch(`${url}/api/Login`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ userEmail: email, userPassWord: password })
+});
 const data = await response.json();
 const token = data.token;
 
@@ -61,7 +65,8 @@ const authenticatedFetch = (url, options) => fetch(url, {
 ### Authentication
 
 #### Login
-- **Endpoint:** `POST /api/Login?userEmail={email}&userPassWord={password}`
+- **Endpoint:** `POST /api/Login`
+- **Body:** `{ "userEmail": "string", "userPassWord": "string" }`
 - **Auth Required:** No
 - **Returns:** `{ token: string }`
 - **Purpose:** Obtain JWT Bearer token for subsequent requests
@@ -250,9 +255,10 @@ const authenticatedFetch = (url, options) => fetch(url, {
 
 ```typescript
 // 1. Login
-const loginRes = await fetch(`${url}/api/Login?userEmail=${email}&userPassWord=${password}`, {
+const loginRes = await fetch(`${url}/api/Login`, {
   method: 'POST',
-  body: ''
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ userEmail: email, userPassWord: password })
 });
 const { token } = await loginRes.json();
 

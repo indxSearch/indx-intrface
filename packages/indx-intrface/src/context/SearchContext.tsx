@@ -554,7 +554,7 @@ export const SearchProvider: React.FC<{
           if (error.message.includes('401')) {
             console.error('[Search] ❌ Authentication failed');
             console.error('[Search] 💡 Your token may have expired. Get a fresh token with:');
-            console.error('[Search] 💡 curl -X POST "' + url + '/api/Login?userEmail=your@email.com&userPassWord=yourpassword"');
+            console.error('[Search] 💡 curl -X POST "' + url + '/api/Login" -H "Content-Type: application/json" -d \'{"userEmail":"your@email.com","userPassWord":"yourpassword"}\'');
           } else if (error.message.includes('404')) {
             console.error('[Search] ❌ Dataset not found');
             console.error('[Search] 💡 Check that dataset "' + dataset + '" exists');
@@ -773,12 +773,16 @@ const searchWithFacets = useCallback(() => {
         if (enableDebugLogs) {
           console.log('[Auth] 🔐 Logging in to get session token...');
         }
-        const loginUrl = `${url}/api/Login?userEmail=${encodeURIComponent(email)}&userPassWord=${encodeURIComponent(password)}`;
-        const loginRes = await fetch(loginUrl, {
+        const loginRes = await fetch(`${url}/api/Login`, {
           method: 'POST',
           headers: {
+            'Content-Type': 'application/json',
             accept: '*/*'
           },
+          body: JSON.stringify({
+            userEmail: email,
+            userPassWord: password
+          })
         });
 
         if (!loginRes.ok) {
@@ -818,7 +822,7 @@ const searchWithFacets = useCallback(() => {
           if (statusRes.status === 401) {
             console.error('[Auth] ❌ Authentication failed (401 Unauthorized)');
             console.error('[Auth] 💡 Your token may be expired or invalid');
-            console.error('[Auth] 💡 Get a fresh token with: curl -X POST "' + url + '/api/Login?userEmail=your@email.com&userPassWord=yourpassword"');
+            console.error('[Auth] 💡 Get a fresh token with: curl -X POST "' + url + '/api/Login" -H "Content-Type: application/json" -d \'{"userEmail":"your@email.com","userPassWord":"yourpassword"}\'');
             throw new Error('Authentication failed (401). Token may be expired. Check console for instructions.');
           } else if (statusRes.status === 404) {
             console.error('[Auth] ❌ Dataset "' + dataset + '" not found (404)');

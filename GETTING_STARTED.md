@@ -21,16 +21,16 @@ This will also install the required peer dependencies (`@indxsearch/systm` and `
 You need a token to authenticate with your INDX server. Run this command:
 
 ```bash
-curl -X POST 'https://your-indx-server.com/api/Login?userEmail=your@email.com&userPassWord=yourpassword' \
-  -H 'accept: */*' \
-  -d ''
+curl -X POST 'https://your-indx-server.com/api/Login' \
+  -H 'Content-Type: application/json' \
+  -d '{"userEmail":"your@email.com","userPassWord":"yourpassword"}'
 ```
 
 **For local development:**
 ```bash
-curl -X POST 'http://localhost:38171/api/Login?userEmail=your@email.com&userPassWord=yourpassword' \
-  -H 'accept: */*' \
-  -d ''
+curl -X POST 'http://localhost:38171/api/Login' \
+  -H 'Content-Type: application/json' \
+  -d '{"userEmail":"your@email.com","userPassWord":"yourpassword"}'
 ```
 
 You'll get a response like:
@@ -251,9 +251,9 @@ Now that you have a basic search working:
 
 ### Get Token Command
 ```bash
-curl -X POST 'http://localhost:38171/api/Login?userEmail=YOUR_EMAIL&userPassWord=YOUR_PASSWORD' \
-  -H 'accept: */*' \
-  -d ''
+curl -X POST 'http://localhost:38171/api/Login' \
+  -H 'Content-Type: application/json' \
+  -d '{"userEmail":"YOUR_EMAIL","userPassWord":"YOUR_PASSWORD"}'
 ```
 
 ### Environment Variables Template
