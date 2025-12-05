@@ -1,0 +1,15 @@
+# Vite
+dist
+dist-ssr
+*.local
+
+# Vercel
+.vercel
+
+# Dependencies
+node_modules
+
+# Environment
+.env
+.env.local
+.env.production

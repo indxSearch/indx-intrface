@@ -11,72 +11,64 @@ This guide walks you through setting up the INDX search interface for the first 
 ## Step 1: Install the Package
 
 ```bash
-npm install @indxsearch/intrface
+npm install @indxsearch/intrface @indxsearch/systm @indxsearch/pixl
 ```
 
-This will also install the required peer dependencies (`@indxsearch/systm` and `@indxsearch/pixl`).
+This will install the search interface library and its required dependencies.
 
-## Step 2: Get Your Authentication Token
-
-You need a token to authenticate with your INDX server. Run this command:
-
-```bash
-curl -X POST 'https://your-indx-server.com/api/Login' \
-  -H 'Content-Type: application/json' \
-  -d '{"userEmail":"your@email.com","userPassWord":"yourpassword"}'
-```
-
-**For local development:**
-```bash
-curl -X POST 'http://localhost:38171/api/Login' \
-  -H 'Content-Type: application/json' \
-  -d '{"userEmail":"your@email.com","userPassWord":"yourpassword"}'
-```
-
-You'll get a response like:
-```json
-{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}
-```
-
-Copy the token value - you'll need it in the next step.
-
-## Step 3: Create Environment Variables
+## Step 2: Create Environment Variables
 
 Create a file named `.env.local` in your project root:
 
 ```bash
-# Your INDX server URL
-NEXT_PUBLIC_INDX_URL=http://localhost:38171
+# INDX Server Configuration
+VITE_INDX_URL=http://localhost:38171
 
-# Your authentication token (from Step 2)
-NEXT_PUBLIC_INDX_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+# Authentication Credentials
+VITE_INDX_EMAIL=your@email.com
+VITE_INDX_PASSWORD=yourpassword
 ```
 
-**Important:** Add `.env.local` to your `.gitignore` file to keep your token secure.
+**For production:**
+```bash
+VITE_INDX_URL=https://your-indx-server.com
+VITE_INDX_EMAIL=your@email.com
+VITE_INDX_PASSWORD=yourpassword
+```
 
-## Step 4: Import the Styles
+**Important:**
+- Add `.env.local` to your `.gitignore` file to keep your credentials secure
+- The library automatically logs in when your app initializes
+- A fresh session token is obtained on every app load
+- No need to manually manage tokens
 
-In your app's main file (e.g., `app/layout.tsx` or `src/index.tsx`):
+**Note:** If you're using a different bundler (Next.js, Create React App, etc.), adjust the environment variable prefix:
+- Vite: `VITE_*`
+- Next.js: `NEXT_PUBLIC_*`
+- Create React App: `REACT_APP_*`
+
+## Step 3: Import the Styles
+
+In your app's main file (e.g., `src/main.tsx` or `src/index.tsx`):
 
 ```typescript
 import '@indxsearch/intrface/styles.css';
 ```
 
-## Step 5: Create a Search Page
+## Step 4: Create a Search Page
 
 Create a new file for your search interface:
 
 ```typescript
-'use client'; // If using Next.js App Router
-
 import { SearchProvider, SearchInput, SearchResults } from '@indxsearch/intrface';
 
 export default function SearchPage() {
   return (
     <SearchProvider
-      url={process.env.NEXT_PUBLIC_INDX_URL!}
+      url={import.meta.env.VITE_INDX_URL}
+      email={import.meta.env.VITE_INDX_EMAIL}
+      password={import.meta.env.VITE_INDX_PASSWORD}
       dataset="your-dataset-name"
-      token={process.env.NEXT_PUBLIC_INDX_TOKEN!}
     >
       <SearchInput placeholder="Search..." />
 
@@ -98,7 +90,7 @@ export default function SearchPage() {
 
 **Note:** Replace `"your-dataset-name"` and the `fields` array with your actual dataset name and field names.
 
-## Step 6: Run Your App
+## Step 5: Run Your App
 
 ```bash
 npm run dev
@@ -109,7 +101,7 @@ Open your browser and navigate to your search page. You should see a working sea
 ## Verification Checklist
 
 ✅ **Check the browser console for:**
-- `[Auth] ✅ Token format validated` message
+- `[Auth] ✅ Login successful` message
 - `[Auth] 📊 Dataset status:` with your dataset info
 - `[Auth] ✅ Dataset has X records` message
 - `[Auth] ✅ Initialization complete` message
@@ -119,7 +111,7 @@ Open your browser and navigate to your search page. You should see a working sea
 - A search input field
 - Results appearing when you type (if `allowEmptySearch` is enabled, results show immediately)
 
-**💡 Pro Tip:** The console now provides detailed error messages with emoji indicators:
+**💡 Pro Tip:** The console provides detailed error messages with emoji indicators:
 - ✅ = Success
 - 🔍 = Checking something
 - ⚠️ = Warning (non-critical issue)
@@ -128,48 +120,40 @@ Open your browser and navigate to your search page. You should see a working sea
 
 ## Common Issues
 
-**💡 All errors now show helpful messages in the browser console with specific instructions.**
+**💡 All errors show helpful messages in the browser console with specific instructions.**
 
-### Missing token / "Authentication token is required"
+### "Login failed" / Authentication errors
 
-**Problem:** `NEXT_PUBLIC_INDX_TOKEN` not found
+**Problem:** Email or password is incorrect
 
 **Console shows:**
 ```
-[Auth] ❌ Missing authentication token
-[Auth] 💡 Add NEXT_PUBLIC_INDX_TOKEN to your .env.local file
-[Auth] 💡 Get a token with: curl -X POST "http://localhost:38171/api/Login?..."
+[Auth] ❌ Login failed - invalid credentials
+[Auth] 💡 Check your VITE_INDX_EMAIL and VITE_INDX_PASSWORD in .env.local
+[Auth] 💡 Verify your credentials match your INDX account
 ```
 
 **Fix:**
-1. Run the curl command from Step 2 to get a token
-2. Add it to `.env.local`
-3. Restart your dev server
+1. Verify your email and password are correct
+2. Check that the credentials match your INDX account
+3. Ensure the INDX server URL is correct
+4. Restart your dev server after updating `.env.local`
 
-### "Invalid token format"
+### "401 Unauthorized" errors
 
-**Problem:** Token in `.env.local` is malformed or incomplete
-
-**Console shows:**
-```
-[Auth] ❌ Invalid token format - JWT tokens should have 3 parts
-[Auth] 💡 Your token has X parts. Expected format: header.payload.signature
-```
-
-**Fix:** Copy the full token from the Login API response (including all three parts)
-
-### "401 Unauthorized" / "Authentication failed"
-
-**Problem:** Token is expired or invalid
+**Problem:** Authentication failed or session expired
 
 **Console shows:**
 ```
 [Auth] ❌ Authentication failed (401 Unauthorized)
-[Auth] 💡 Your token may be expired or invalid
-[Auth] 💡 Get a fresh token with: curl -X POST ...
+[Auth] 💡 Your credentials may be invalid
+[Auth] 💡 Check VITE_INDX_EMAIL and VITE_INDX_PASSWORD
 ```
 
-**Fix:** Get a fresh token using the curl command from Step 2, then update `.env.local`
+**Fix:**
+1. Verify your credentials in `.env.local`
+2. Refresh the page to get a new session token (automatic login)
+3. Check if the server is running and accessible
 
 ### "Dataset not found (404)"
 
@@ -178,17 +162,13 @@ Open your browser and navigate to your search page. You should see a working sea
 **Console shows:**
 ```
 [Auth] ❌ Dataset "your-dataset-name" not found (404)
-[Auth] 💡 Available datasets can be checked with: curl -X GET ...
 [Auth] 💡 Make sure you spelled the dataset name correctly
 ```
 
 **Fix:**
-1. Check available datasets with:
-```bash
-curl -X GET 'http://localhost:38171/api/GetUserDataSets' \
-  -H 'Authorization: Bearer YOUR_TOKEN'
-```
-2. Update the `dataset` prop in your SearchProvider to match an existing dataset
+1. Verify the dataset name matches exactly (case-sensitive)
+2. Check your INDX server to confirm the dataset exists
+3. Update the `dataset` prop in your SearchProvider to match an existing dataset
 
 ### Empty dataset warning
 
@@ -223,13 +203,28 @@ curl -X GET 'http://localhost:38171/api/GetUserDataSets' \
 ```
 [Auth] ❌ Network error - cannot connect to INDX server
 [Auth] 💡 Check if the server is running at: http://localhost:38171
-[Auth] 💡 Check your NEXT_PUBLIC_INDX_URL in .env.local
+[Auth] 💡 Check your VITE_INDX_URL in .env.local
 ```
 
 **Fix:**
 1. Verify your INDX server is running
 2. Check the URL in `.env.local` is correct
 3. For local development, it should be `http://localhost:38171`
+
+### Missing credentials
+
+**Problem:** Environment variables not found
+
+**Console shows:**
+```
+[Auth] ❌ Missing email or password
+[Auth] 💡 Add VITE_INDX_EMAIL and VITE_INDX_PASSWORD to your .env.local file
+```
+
+**Fix:**
+1. Create `.env.local` file in project root
+2. Add your INDX credentials
+3. Restart your dev server
 
 ## Next Steps
 
@@ -249,25 +244,47 @@ Now that you have a basic search working:
 
 ## Quick Reference
 
-### Get Token Command
-```bash
-curl -X POST 'http://localhost:38171/api/Login' \
-  -H 'Content-Type: application/json' \
-  -d '{"userEmail":"YOUR_EMAIL","userPassWord":"YOUR_PASSWORD"}'
-```
-
 ### Environment Variables Template
 ```bash
-NEXT_PUBLIC_INDX_URL=http://localhost:38171
-NEXT_PUBLIC_INDX_TOKEN=your-token-here
+VITE_INDX_URL=http://localhost:38171
+VITE_INDX_EMAIL=your@email.com
+VITE_INDX_PASSWORD=yourpassword
 ```
 
 ### Minimal Working Example
 ```typescript
-<SearchProvider url={url} dataset="products" token={token}>
+<SearchProvider
+  url={import.meta.env.VITE_INDX_URL}
+  email={import.meta.env.VITE_INDX_EMAIL}
+  password={import.meta.env.VITE_INDX_PASSWORD}
+  dataset="products"
+>
   <SearchInput />
   <SearchResults fields={['name']} resultsPerPage={10}>
     {(item) => <div>{item.name}</div>}
   </SearchResults>
 </SearchProvider>
+```
+
+### Using with Different Bundlers
+
+**Vite:**
+```typescript
+url={import.meta.env.VITE_INDX_URL}
+email={import.meta.env.VITE_INDX_EMAIL}
+password={import.meta.env.VITE_INDX_PASSWORD}
+```
+
+**Next.js:**
+```typescript
+url={process.env.NEXT_PUBLIC_INDX_URL}
+email={process.env.NEXT_PUBLIC_INDX_EMAIL}
+password={process.env.NEXT_PUBLIC_INDX_PASSWORD}
+```
+
+**Create React App:**
+```typescript
+url={process.env.REACT_APP_INDX_URL}
+email={process.env.REACT_APP_INDX_EMAIL}
+password={process.env.REACT_APP_INDX_PASSWORD}
 ```

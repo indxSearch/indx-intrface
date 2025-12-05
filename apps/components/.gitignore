@@ -6,9 +6,12 @@
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
+# vite
+/dist
+.vite
+
+# vercel
+.vercel
 
 # production
 /build
@@ -25,9 +28,5 @@ yarn-error.log*
 # local env files
 .env*.local
 
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
-next-env.d.ts

@@ -26,18 +26,18 @@ Create a `.env.local` file in your project root with your INDX credentials:
 
 ```bash
 # INDX Server Configuration
-NEXT_PUBLIC_INDX_URL=https://your-indx-server.com
+VITE_INDX_URL=https://your-indx-server.com
 
 # Authentication Credentials
-NEXT_PUBLIC_INDX_EMAIL=your@email.com
-NEXT_PUBLIC_INDX_PASSWORD=yourpassword
+VITE_INDX_EMAIL=your@email.com
+VITE_INDX_PASSWORD=yourpassword
 ```
 
 **For local development:**
 ```bash
-NEXT_PUBLIC_INDX_URL=http://localhost:38171
-NEXT_PUBLIC_INDX_EMAIL=your@email.com
-NEXT_PUBLIC_INDX_PASSWORD=yourpassword
+VITE_INDX_URL=http://localhost:38171
+VITE_INDX_EMAIL=your@email.com
+VITE_INDX_PASSWORD=yourpassword
 ```
 
 **Security Notes:**
@@ -57,15 +57,14 @@ import '@indxsearch/intrface/styles.css';
 ### 3. Basic Implementation
 
 ```typescript
-'use client';
 import { SearchProvider, SearchInput, SearchResults } from '@indxsearch/intrface';
 
 export default function SearchPage() {
   return (
     <SearchProvider
-      url={process.env.NEXT_PUBLIC_INDX_URL!}
-      email={process.env.NEXT_PUBLIC_INDX_EMAIL!}
-      password={process.env.NEXT_PUBLIC_INDX_PASSWORD!}
+      url={import.meta.env.VITE_INDX_URL}
+      email={import.meta.env.VITE_INDX_EMAIL}
+      password={import.meta.env.VITE_INDX_PASSWORD}
       dataset="products"
     >
       <SearchInput placeholder="Search products..." />
@@ -254,7 +253,6 @@ import { ActiveFiltersPanel } from '@indxsearch/intrface';
 ## Full Example with Filters
 
 ```typescript
-'use client';
 import {
   SearchProvider,
   SearchInput,
@@ -268,9 +266,9 @@ import {
 export default function AdvancedSearch() {
   return (
     <SearchProvider
-      url={process.env.NEXT_PUBLIC_INDX_URL!}
-      email={process.env.NEXT_PUBLIC_INDX_EMAIL!}
-      password={process.env.NEXT_PUBLIC_INDX_PASSWORD!}
+      url={import.meta.env.VITE_INDX_URL}
+      email={import.meta.env.VITE_INDX_EMAIL}
+      password={import.meta.env.VITE_INDX_PASSWORD}
       dataset="products"
       allowEmptySearch={true}
       enableFacets={true}
@@ -335,7 +333,7 @@ export default function AdvancedSearch() {
 | `placeholder` | `string` | `'Search...'` | Input placeholder text |
 | `showClear` | `boolean` | `true` | Show clear button |
 | `showFocus` | `boolean` | `false` | Show focus ring |
-| `inputSize` | `'small' \| 'default' \| 'large'` | `'default'` | Input size |
+| `inputSize` | `'micro' \| 'default'` | `'default'` | Input size |
 
 ### SearchResults Props
 

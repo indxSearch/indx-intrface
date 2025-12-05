@@ -7,21 +7,19 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev:systm\" \"npm run dev:intrface\" \"npm run dev:demo\" \"npm run dev:components\"",
-    "dev:systm": "npm run dev --workspace=@indxsearch/systm",
-    "dev:intrface": "npm run dev --workspace=@indxsearch/intrface",
+    "dev": "npm run build:packages && concurrently \"npm run dev:demo\" \"npm run dev:components\"",
     "dev:demo": "npm run dev --workspace=demo",
     "dev:components": "npm run dev --workspace=components-viewer",
     "dev:packages": "concurrently \"npm run dev:systm\" \"npm run dev:intrface\"",
-    "dev:apps": "concurrently \"npm run dev:demo\" \"npm run dev:components\"",
+    "dev:systm": "npm run dev --workspace=@indxsearch/systm",
+    "dev:intrface": "npm run dev --workspace=@indxsearch/intrface",
     "build:systm": "npm run build --workspace=@indxsearch/systm",
     "build:intrface": "npm run build --workspace=@indxsearch/intrface",
     "build:packages": "npm run build:systm && npm run build:intrface",
     "build:demo": "npm run build --workspace=demo",
     "build:components": "npm run build --workspace=components-viewer",
     "build": "npm run build:packages && npm run build:demo && npm run build:components",
-    "start:demo": "npm run start --workspace=demo",
-    "start:components": "npm run start --workspace=components-viewer"
+    "start:demo": "npm run start --workspace=demo"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

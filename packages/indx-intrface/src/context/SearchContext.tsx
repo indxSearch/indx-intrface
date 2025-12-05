@@ -97,6 +97,7 @@ export const SearchProvider: React.FC<{
   enableCoverage?: boolean;
   initialCoverageSetup?: Partial<CoverageSetup>;
   enableDebugLogs?: boolean;
+  preAuthenticatedToken?: string; // Optional: if provided, skips login and uses this token
 }> = ({
   children,
   email,
@@ -112,6 +113,7 @@ export const SearchProvider: React.FC<{
   enableCoverage = true,
   initialCoverageSetup = {},
   enableDebugLogs = false,
+  preAuthenticatedToken,
 }) => {
   const latestRequestId = useRef(0); // Track the latest search request to prevent race conditions
   const performSearchRef = useRef<((options: { enableFacets: boolean }) => Promise<void>) | undefined>(undefined); // Stable ref to latest performSearch
@@ -181,6 +183,7 @@ export const SearchProvider: React.FC<{
         ...options.headers,
         'Authorization': `Bearer ${token}`,
       },
+      credentials: 'include',
     });
   }, [token]);
   const [filterableFields, setFilterableFields] = useState<string[]>([]); // List of fields that can be used for filtering
@@ -744,64 +747,102 @@ const searchWithFacets = useCallback(() => {
   useEffect(() => {
     const authenticate = async () => {
       try {
-        // VALIDATION 1: Check if required props are provided
-        if (!email) {
-          console.error('[Auth] ❌ Missing email');
-          console.error('[Auth] 💡 Pass email="your@email.com" to SearchProvider');
-          throw new Error('Email is required. Check console for instructions.');
-        }
+        let sessionToken: string;
 
-        if (!password) {
-          console.error('[Auth] ❌ Missing password');
-          console.error('[Auth] 💡 Pass password="yourpassword" to SearchProvider');
-          throw new Error('Password is required. Check console for instructions.');
-        }
+        // If pre-authenticated token is provided, skip login/createOrOpen
+        if (preAuthenticatedToken) {
+          if (enableDebugLogs) {
+            console.log('[Auth] ✅ Using pre-authenticated token');
+          }
+          sessionToken = preAuthenticatedToken;
+          setToken(preAuthenticatedToken);
+          // Continue to field fetching below...
+        } else {
+          // Standard authentication flow - validate required credentials
+          if (!email || !password) {
+            console.error('[Auth] ❌ Missing credentials');
+            if (!email) {
+              console.error('[Auth] ❌ Missing email');
+              console.error('[Auth] 💡 Pass email="your@email.com" to SearchProvider');
+            }
+            if (!password) {
+              console.error('[Auth] ❌ Missing password');
+              console.error('[Auth] 💡 Pass password="yourpassword" to SearchProvider');
+            }
+            throw new Error('Email and password are required. Check console for instructions.');
+          }
 
-        if (!url) {
-          console.error('[Auth] ❌ Missing INDX server URL');
-          console.error('[Auth] 💡 Add NEXT_PUBLIC_INDX_URL to your .env.local file');
-          throw new Error('INDX server URL is required. Check console for instructions.');
-        }
+          if (!url) {
+            console.error('[Auth] ❌ Missing INDX server URL');
+            console.error('[Auth] 💡 Add NEXT_PUBLIC_INDX_URL to your .env.local file');
+            throw new Error('INDX server URL is required. Check console for instructions.');
+          }
 
-        if (!dataset) {
-          console.error('[Auth] ❌ Missing dataset name');
-          console.error('[Auth] 💡 Pass dataset="your-dataset-name" to SearchProvider');
-          throw new Error('Dataset name is required. Check console for instructions.');
-        }
+          if (!dataset) {
+            console.error('[Auth] ❌ Missing dataset name');
+            console.error('[Auth] 💡 Pass dataset="your-dataset-name" to SearchProvider');
+            throw new Error('Dataset name is required. Check console for instructions.');
+          }
 
-        // STEP 1: Call Login endpoint to get fresh session token
-        if (enableDebugLogs) {
-          console.log('[Auth] 🔐 Logging in to get session token...');
-        }
-        const loginRes = await fetch(`${url}/api/Login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            accept: '*/*'
-          },
-          body: JSON.stringify({
-            userEmail: email,
-            userPassWord: password
-          })
-        });
+          // STEP 1: Call Login endpoint to get fresh session token
+          if (enableDebugLogs) {
+            console.log('[Auth] 🔐 Logging in to get session token...');
+          }
+          const loginRes = await fetch(`${url}/api/Login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              accept: '*/*'
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+              userEmail: email,
+              userPassWord: password
+            })
+          });
 
-        if (!loginRes.ok) {
-          console.error('[Auth] ❌ Login failed:', loginRes.status, await loginRes.text());
-          throw new Error('Login failed. Check your email and password.');
-        }
+          if (!loginRes.ok) {
+            console.error('[Auth] ❌ Login failed:', loginRes.status, await loginRes.text());
+            throw new Error('Login failed. Check your email and password.');
+          }
 
-        const loginData = await loginRes.json();
-        const sessionToken = loginData.token;
+          const loginData = await loginRes.json();
+          sessionToken = loginData.token;
 
-        if (!sessionToken) {
-          console.error('[Auth] ❌ No token received from login response');
-          throw new Error('No token received from login.');
-        }
+          if (!sessionToken) {
+            console.error('[Auth] ❌ No token received from login response');
+            throw new Error('No token received from login.');
+          }
 
-        if (enableDebugLogs) {
-          console.log('[Auth] ✅ Login successful, token received (length:', sessionToken.length, ')');
+          if (enableDebugLogs) {
+            console.log('[Auth] ✅ Login successful, bearer token received (length:', sessionToken.length, ')');
+          }
+
+          // STEP 2: Call CreateOrOpen to establish dataset session
+          if (enableDebugLogs) {
+            console.log('[Auth] 🔓 Opening dataset session...');
+          }
+          const createOrOpenRes = await fetch(`${url}/api/CreateOrOpen/${dataset}/400`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${sessionToken}`
+            },
+            credentials: 'include',
+            body: '""'
+          });
+
+          if (!createOrOpenRes.ok) {
+            console.error('[Auth] ❌ CreateOrOpen failed:', createOrOpenRes.status, await createOrOpenRes.text());
+            throw new Error('Failed to open dataset session.');
+          }
+
+          setToken(sessionToken); // Store the JWT token for subsequent calls
+
+          if (enableDebugLogs) {
+            console.log('[Auth] ✅ Dataset session established');
+          }
         }
-        setToken(sessionToken);
 
         // Fetch filterable, facetable, sortable fields
         const authFetch = (fetchUrl: string) => fetch(fetchUrl, {
@@ -810,6 +851,7 @@ const searchWithFacets = useCallback(() => {
             accept: 'text/plain',
             'Authorization': `Bearer ${sessionToken}`
           },
+          credentials: 'include',
         });
 
         // VALIDATION 3: Check dataset status first
@@ -902,6 +944,7 @@ const searchWithFacets = useCallback(() => {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${sessionToken}`,
             },
+            credentials: 'include',
             body: JSON.stringify({ text: '', maxNumberOfRecordsToReturn: 0, enableFacets: true }),
           });
 

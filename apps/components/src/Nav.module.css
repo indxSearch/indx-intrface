@@ -1,0 +1,10 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 1400px;
+  width: 100%;
+  padding: 2rem 2rem 0 2rem;
+  z-index: 1000;
+}
