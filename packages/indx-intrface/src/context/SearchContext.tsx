@@ -179,11 +179,11 @@ export const SearchProvider: React.FC<{
     }
     return fetch(url, {
       ...options,
-      credentials: 'include',
       headers: {
         ...options.headers,
         'Authorization': `Bearer ${token}`,
       },
+      credentials: 'include',
     });
   }, [token]);
   const [filterableFields, setFilterableFields] = useState<string[]>([]); // List of fields that can be used for filtering
@@ -815,9 +815,8 @@ const searchWithFacets = useCallback(() => {
           }
 
           if (enableDebugLogs) {
-            console.log('[Auth] ✅ Login successful, token received (length:', sessionToken.length, ')');
+            console.log('[Auth] ✅ Login successful, bearer token received (length:', sessionToken.length, ')');
           }
-          setToken(sessionToken);
 
           // STEP 2: Call CreateOrOpen to establish dataset session
           if (enableDebugLogs) {
@@ -837,6 +836,8 @@ const searchWithFacets = useCallback(() => {
             console.error('[Auth] ❌ CreateOrOpen failed:', createOrOpenRes.status, await createOrOpenRes.text());
             throw new Error('Failed to open dataset session.');
           }
+
+          setToken(sessionToken); // Store the JWT token for subsequent calls
 
           if (enableDebugLogs) {
             console.log('[Auth] ✅ Dataset session established');
