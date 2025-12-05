@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import styles from './page.module.css'
+import { Link } from 'react-router-dom';
+import styles from './page.module.css';
 
 export default function Home() {
   const systmComponents = [
@@ -39,7 +39,7 @@ export default function Home() {
       </div>
 
       <div className={styles.grid}>
-        <Link href="/icons" className={styles.card}>
+        <Link to="/icons" className={styles.card}>
           <h3 className={styles.cardTitle}>Icon Gallery</h3>
           <p className={styles.cardDesc}>Browse all available icons with size preview</p>
         </Link>
@@ -54,7 +54,7 @@ export default function Home() {
         {systmComponents.map((component) => (
           <Link
             key={component.path}
-            href={component.path}
+            to={component.path}
             className={styles.card}
           >
             <h3 className={styles.cardTitle}>{component.name}</h3>
@@ -72,7 +72,7 @@ export default function Home() {
         {intrfaceComponents.map((component) => (
           <Link
             key={component.path}
-            href={component.path}
+            to={component.path}
             className={styles.card}
           >
             <h3 className={styles.cardTitle}>{component.name}</h3>

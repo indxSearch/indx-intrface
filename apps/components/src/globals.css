@@ -1,5 +1,5 @@
 :root {
-  --maxWidth: 1200px;
+  --maxWidth: 1400px;
 }
 
 * {
@@ -33,6 +33,7 @@ body {
     sans-serif;
   background: var(--lv0);
   color: var(--lv7);
+  padding-top: 60px;
 }
 
 a {
