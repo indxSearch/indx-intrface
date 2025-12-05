@@ -9,9 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@indxsearch/systm": "*",
-    "@indxsearch/intrface": "*",
-    "@indxsearch/pixl": "*",
+    "@indxsearch/systm": "^1.0.0",
+    "@indxsearch/intrface": "^1.0.5",
+    "@indxsearch/pixl": "^1.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.1"

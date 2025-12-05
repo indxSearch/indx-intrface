@@ -259,5 +259,5 @@ const isFaceted = liveDataMin !== queryMin || liveDataMax !== queryMax;
 
 ---
 
-**Last Updated**: 2025-11-27
+**Last Updated**: 2024-11-27
 **Contributors**: Anders, Claude
