@@ -1,4 +1,3 @@
-'use client';
 import React, { useEffect, useState, useRef } from 'react';
 import '@indxsearch/intrface/styles.css';
 import styles from './SearchClient.module.css';

@@ -1,4 +1,3 @@
-'use client';
 
 import { useState, useEffect } from 'react';
 import { Button, Checkbox, FilterPanelBase, Slider } from '@indxsearch/systm';

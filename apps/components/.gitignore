@@ -10,6 +10,9 @@
 /dist
 .vite
 
+# vercel
+.vercel
+
 # production
 /build
 

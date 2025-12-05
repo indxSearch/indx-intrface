@@ -1,10 +1,10 @@
-# Vercel
-.vercel
-
 # Vite
 dist
 dist-ssr
 *.local
+
+# Vercel
+.vercel
 
 # Dependencies
 node_modules

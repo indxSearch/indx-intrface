@@ -1,4 +1,3 @@
-'use client';
 
 import { RadioButton } from '@indxsearch/systm';
 import { useState } from 'react';

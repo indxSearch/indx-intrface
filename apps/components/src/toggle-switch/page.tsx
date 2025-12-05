@@ -1,4 +1,3 @@
-'use client';
 
 import { ToggleSwitch } from '@indxsearch/systm';
 import { useState } from 'react';

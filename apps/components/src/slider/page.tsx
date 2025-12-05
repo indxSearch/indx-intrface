@@ -1,4 +1,3 @@
-'use client';
 
 import { Slider } from '@indxsearch/systm';
 import { useState, useEffect } from 'react';

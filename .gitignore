@@ -11,12 +11,6 @@ node_modules/
 # Testing
 coverage/
 
-# Next.js (for apps/demo)
-apps/demo/.next/
-apps/demo/out/
-apps/demo/next-env.d.ts
-apps/demo/*.tsbuildinfo
-
 # Environment
 apps/demo/.env.local
 apps/demo/node_modules/
@@ -33,11 +27,11 @@ yarn-debug.log*
 pnpm-debug.log*
 
 # Vercel
-apps/demo/.vercel
+.vercel
+*/.vercel
 
 packages/**/dist
 dist/
 ERROR_HANDLING_IMPROVEMENTS.md
 ERROR_HANDLING_TEST_GUIDE.md
 DX_IMPROVEMENT_ROADMAP.md
-.vercel

@@ -1,4 +1,3 @@
-'use client';
 
 import { Checkbox } from '@indxsearch/systm';
 import styles from './page.module.css';

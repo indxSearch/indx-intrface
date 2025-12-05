@@ -1,4 +1,3 @@
-'use client';
 
 import { Button } from '@indxsearch/systm';
 import { Check, ArrowRight, ArrowLeft, Plus, Search } from '@indxsearch/pixl';

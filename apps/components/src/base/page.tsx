@@ -1,4 +1,3 @@
-'use client';
 
 import { Base } from '@indxsearch/systm';
 import styles from './page.module.css';

@@ -1,4 +1,3 @@
-'use client';
 
 import { SearchField } from '@indxsearch/systm';
 import styles from './page.module.css';
