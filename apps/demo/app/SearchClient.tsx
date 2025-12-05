@@ -4,10 +4,10 @@ import '@indxsearch/intrface/styles.css';
 import styles from './SearchClient.module.css';
 import { Indx, Sliders_horizontal } from '@indxsearch/pixl';
 import {
-  SearchProvider,
   useSearchContext,
   SearchInput,
-  SearchResults
+  SearchResults,
+  SearchProvider
 } from '@indxsearch/intrface';
 import { Base, Button, Popover } from '@indxsearch/systm';
 
@@ -17,8 +17,6 @@ type SearchClientProps = {
   renderResult: (item: any) => React.ReactNode;
   filters: React.ReactNode;
   showFilters?: boolean;
-  email?: string;
-  password?: string;
 };
 
 export function SearchClient({
@@ -26,24 +24,18 @@ export function SearchClient({
   fields,
   renderResult,
   filters,
-  showFilters = true,
-  email,
-  password
+  showFilters = true
 }: SearchClientProps) {
   const url = process.env.NEXT_PUBLIC_INDX_URL!;
-  const envEmail = process.env.NEXT_PUBLIC_INDX_EMAIL!;
-  const envPassword = process.env.NEXT_PUBLIC_INDX_PASSWORD!;
-
-  // Use credentials from props or environment variables
-  const authEmail = email || envEmail;
-  const authPassword = password || envPassword;
+  const email = process.env.NEXT_PUBLIC_INDX_EMAIL!;
+  const password = process.env.NEXT_PUBLIC_INDX_PASSWORD!;
 
   return (
     <SearchProvider
       url={url}
-      email={authEmail}
-      password={authPassword}
       dataset={dataset}
+      email={email}
+      password={password}
       allowEmptySearch={true}
       enableFacets={true}
       maxResults={30}
