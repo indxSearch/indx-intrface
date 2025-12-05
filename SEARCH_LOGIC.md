@@ -4,6 +4,8 @@
 
 The `SearchContext` manages search state and coordinates search requests to minimize API calls while providing responsive UX.
 
+> **Note:** Code snippets in this document are illustrative examples of the implementation patterns. Refer to the actual source code in `packages/indx-intrface/src/context/SearchContext.tsx` for current implementation details.
+
 ## Search Request Strategy
 
 ### 1. Query Changes (User Typing)
@@ -19,8 +21,6 @@ The `SearchContext` manages search state and coordinates search requests to mini
 - Users get instant feedback (fast results without facet overhead)
 - Facets update smoothly without excessive API calls during typing
 - Filters are automatically reset when query changes
-
-**Code location:** `SearchContext.tsx` lines 636-681
 
 ```typescript
 // Query effect handles typing
@@ -42,8 +42,6 @@ useEffect(() => {
 
 **Important:** Filter changes only fire when filters actually change, NOT when they're being reset by a query change
 
-**Code location:** `SearchContext.tsx` lines 679-693
-
 ```typescript
 // Filter effect handles filter toggles
 useEffect(() => {
@@ -64,8 +62,6 @@ useEffect(() => {
 - **Immediate search** (with facets): Re-sorts results with updated facet counts
 - **Total API calls:** 1 search per sort change
 
-**Code location:** `SearchContext.tsx` lines 696-708
-
 ## Key Implementation Details
 
 ### Preventing Duplicate Searches
@@ -73,7 +69,7 @@ useEffect(() => {
 The critical logic that prevents duplicate searches when typing:
 
 ```typescript
-// In filter effect (line 684)
+// In filter effect
 if (state.query !== lastQueryText) return;
 ```
 
@@ -203,8 +199,6 @@ For datasets with expensive facet computation:
 
 **Solution:** The filter effect now checks `if (state.query !== lastQueryText) return;` to prevent this
 
-**Fixed in:** `SearchContext.tsx` line 684
-
 ### Issue: "Can't remove filters"
 
 **Symptom:** Clicking a filter checkbox doesn't remove the filter
@@ -213,7 +207,7 @@ For datasets with expensive facet computation:
 
 **Solution:** Changed from checking `hasActiveFilters` to checking `state.query !== lastQueryText`
 
-**Fixed in:** Previous implementation had `if (!hasActiveFilters) return;` which was incorrect
+**Note:** Previous implementation had `if (!hasActiveFilters) return;` which was incorrect
 
 ## Testing the Logic
 

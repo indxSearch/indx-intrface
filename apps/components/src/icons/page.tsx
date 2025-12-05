@@ -32,7 +32,7 @@ const ICON_NAMES = [
 ];
 
 export default function IconsPage() {
-  const [iconSize, setIconSize] = useState(21);
+  const [iconSize, setIconSize] = useState(35);
 
   return (
     <main className={styles.main}>

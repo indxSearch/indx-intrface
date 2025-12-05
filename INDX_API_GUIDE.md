@@ -9,13 +9,15 @@ This is a React/TypeScript search interface library (`@indxsearch/intrface`) tha
 ```
 indx-intrface/
 ├── apps/
-│   └── demo/              # Next.js demo application
+│   ├── demo/              # Vite demo application (port 3000)
+│   └── components/        # Vite component showcase (port 3001)
 ├── packages/
 │   ├── indx-intrface/     # Main search components library
 │   │   └── src/
 │   │       └── context/
 │   │           └── SearchContext.tsx  # Core API integration
-│   └── [other packages]
+│   ├── indx-systm/        # UI component system
+│   └── indx-pixl/         # Icon library
 ```
 
 ## INDX Search API
@@ -365,7 +367,7 @@ const documents = await docsRes.json();
 
 ### CORS
 - API server must have CORS configured to allow requests from your frontend origin
-- Common localhost ports: 3000 (Next.js), 38171 (API server)
+- Common localhost ports: 3000 (demo app), 3001 (components app), 38171 (API server)
 
 ### Error Handling
 - Initial blank search may fail (500) if dataset not fully ready - handle gracefully
@@ -405,6 +407,12 @@ The `SearchContext.tsx` file in `packages/indx-intrface/src/context/` implements
 
 ### Required Environment Variables (.env.local)
 ```bash
+# For Vite apps (demo, components)
+VITE_INDX_URL=http://localhost:38171
+VITE_INDX_EMAIL=your-email@example.com
+VITE_INDX_PASSWORD=your-password
+
+# For Next.js apps
 NEXT_PUBLIC_INDX_URL=http://localhost:38171
 NEXT_PUBLIC_INDX_EMAIL=your-email@example.com
 NEXT_PUBLIC_INDX_PASSWORD=your-password
@@ -415,13 +423,15 @@ NEXT_PUBLIC_INDX_PASSWORD=your-password
 # Install dependencies
 npm install
 
-# Build the intrface package
-cd packages/indx-intrface
-npm run build
-
-# Run demo app
-cd ../../apps/demo
+# Run both demo and components apps (builds packages first, then starts apps)
 npm run dev
+
+# Or run apps individually:
+npm run dev:demo        # Demo app on http://localhost:3000
+npm run dev:components  # Components app on http://localhost:3001
+
+# Build packages only
+npm run build:packages
 ```
 
 ## Troubleshooting

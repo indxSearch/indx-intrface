@@ -32,6 +32,3 @@ pnpm-debug.log*
 
 packages/**/dist
 dist/
-ERROR_HANDLING_IMPROVEMENTS.md
-ERROR_HANDLING_TEST_GUIDE.md
-DX_IMPROVEMENT_ROADMAP.md
