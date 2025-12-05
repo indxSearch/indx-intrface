@@ -1,4 +1,5 @@
-'use client';
+import '@indxsearch/intrface/styles.css';
+import './globals.css';
 import { SearchClient } from './SearchClient';
 import {
   ActiveFiltersPanel,
@@ -17,17 +18,17 @@ const filters = (
     <SortByPanel displayType="radio" />
     <SortByPanel startCollapsed={true} />
     <ValueFilterPanel label="Primary type" layout="grid" field="type1" preserveBlankFacetState={true} preserveBlankFacetStateOrder={false} displayType="button" limit={30} />
-    <ValueFilterPanel 
-      label="Secondary type" 
+    <ValueFilterPanel
+      label="Secondary type"
       displayCondition={({ filters}) => {
         return (
           (filters.type1 || []).includes('water') ||
           (filters.type1 || []).includes('fire')
         );
       }}
-      field="type2" 
-      startCollapsed={true} 
-      displayType="button" 
+      field="type2"
+      startCollapsed={true}
+      displayType="button"
       layout="grid"
     />
     <ValueFilterPanel label="Legendary" field="is_legendary" preserveBlankFacetState={true} displayType="toggle" />
@@ -76,7 +77,7 @@ const renderResult = (item: any) => {
   );
 };
 
-export default function Page() {
+export default function App() {
   return (
     <SearchClient
       dataset="pokedex"

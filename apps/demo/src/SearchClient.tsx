@@ -26,9 +26,9 @@ export function SearchClient({
   filters,
   showFilters = true
 }: SearchClientProps) {
-  const url = process.env.NEXT_PUBLIC_INDX_URL!;
-  const email = process.env.NEXT_PUBLIC_INDX_EMAIL!;
-  const password = process.env.NEXT_PUBLIC_INDX_PASSWORD!;
+  const url = import.meta.env.VITE_INDX_URL;
+  const email = import.meta.env.VITE_INDX_EMAIL;
+  const password = import.meta.env.VITE_INDX_PASSWORD;
 
   return (
     <SearchProvider
