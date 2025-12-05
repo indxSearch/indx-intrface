@@ -43,7 +43,6 @@ export function SearchClient({
       enableDebugLogs={true}
     >
       <SearchLayout
-        dataset={dataset}
         fields={fields}
         renderResult={renderResult}
         filters={filters}
@@ -54,13 +53,11 @@ export function SearchClient({
 }
 
 function SearchLayout({
-  dataset,
   fields,
   renderResult,
   filters,
   showFilters
 }: {
-  dataset: string;
   fields: string[];
   renderResult: (item: any) => React.ReactNode;
   filters: React.ReactNode;
@@ -71,7 +68,7 @@ function SearchLayout({
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const { state } = useSearchContext();
-  const { filters: activeFilters, rangeFilters, query, facets } = state;
+  const { filters: activeFilters, rangeFilters } = state;
 
   const hasFilters =
     Object.keys(activeFilters).length > 0 ||
