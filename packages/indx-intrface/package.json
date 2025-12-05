@@ -1,6 +1,6 @@
 {
   "name": "@indxsearch/intrface",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "source": "./src/index.tsx",
   "main": "./dist/index.umd.js",
   "module": "./dist/index.es.js",
