@@ -1,6 +1,6 @@
 {
   "name": "@indxsearch/intrface",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "source": "./src/index.tsx",
   "main": "./dist/index.umd.js",
   "module": "./dist/index.es.js",
@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@indxsearch/systm": "^1.0.0",
-    "@indxsearch/pixl": "^1.1.0",
+    "@indxsearch/pixl": "^1.1.1",
     "react-range": "^1.10.0"
   },
   "publishConfig": {

@@ -1,6 +1,6 @@
 {
   "name": "@indxsearch/systm",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Base UI component library for indxSearch",
   "keywords": ["react", "components", "ui", "design-system"],
   "author": "Indx Search",
@@ -44,7 +44,7 @@
     "./styles.css": "./dist/systm.css"
   },
   "dependencies": {
-    "@indxsearch/pixl": "^1.1.0",
+    "@indxsearch/pixl": "^1.1.1",
     "@radix-ui/react-select": "^2.2.6",
     "react-range": "^1.10.0"
   },

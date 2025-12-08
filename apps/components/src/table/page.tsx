@@ -189,8 +189,10 @@ export default function TablePage() {
             <TableRow>
               <td>
                 <RadioButton
+                  id="plan-starter"
                   name="plan"
                   value="row1"
+                  label=""
                   checked={selectedRow === 'row1'}
                   onChange={() => setSelectedRow('row1')}
                 />
@@ -202,8 +204,10 @@ export default function TablePage() {
             <TableRow>
               <td>
                 <RadioButton
+                  id="plan-pro"
                   name="plan"
                   value="row2"
+                  label=""
                   checked={selectedRow === 'row2'}
                   onChange={() => setSelectedRow('row2')}
                 />
@@ -215,8 +219,10 @@ export default function TablePage() {
             <TableRow>
               <td>
                 <RadioButton
+                  id="plan-enterprise"
                   name="plan"
                   value="row3"
+                  label=""
                   checked={selectedRow === 'row3'}
                   onChange={() => setSelectedRow('row3')}
                 />
@@ -242,21 +248,21 @@ export default function TablePage() {
             <TableRow>
               <td>Max Width</td>
               <td>
-                <InputField size="micro" defaultValue="1200" />
+                <InputField type="text" defaultValue="1200" />
               </td>
               <td>px</td>
             </TableRow>
             <TableRow>
               <td>Line Height</td>
               <td>
-                <InputField size="micro" defaultValue="1.5" />
+                <InputField type="text" defaultValue="1.5" />
               </td>
               <td>em</td>
             </TableRow>
             <TableRow>
               <td>Font Size</td>
               <td>
-                <InputField size="micro" defaultValue="16" />
+                <InputField type="text" defaultValue="16" />
               </td>
               <td>px</td>
             </TableRow>
@@ -335,7 +341,7 @@ export default function TablePage() {
                 <TableValue>Alice Johnson</TableValue>
               </TableCell>
               <td>
-                <InputField size="micro" defaultValue="Admin" />
+                <InputField type="text" defaultValue="Admin" />
               </td>
               <TableCell>
                 <TableValue>Active</TableValue>
@@ -354,7 +360,7 @@ export default function TablePage() {
                 <TableValue>Bob Smith</TableValue>
               </TableCell>
               <td>
-                <InputField size="micro" defaultValue="Editor" />
+                <InputField type="text" defaultValue="Editor" />
               </td>
               <TableCell>
                 <TableValue>Pending</TableValue>
@@ -380,7 +386,7 @@ export default function TablePage() {
             <li>Use <code>TableCell</code> when you need label/content pairs within a cell</li>
             <li>Wrap icons with <code>TableIcon</code> to ensure consistent sizing (14px)</li>
             <li>Use <code>TableValue</code> for secondary text that needs subtle styling</li>
-            <li>For interactive elements, use <code>size="micro"</code> on Buttons and InputFields to maintain compact layout</li>
+            <li>For interactive elements, use <code>size="micro"</code> on Buttons to maintain compact layout</li>
           </ul>
 
           <h3 className={styles.readmeHeading}>Allowed Components in Cells</h3>
@@ -388,7 +394,7 @@ export default function TablePage() {
             <li><strong>Button</strong> - Use micro or default size for actions</li>
             <li><strong>Checkbox</strong> - For multi-select functionality</li>
             <li><strong>RadioButton</strong> - For single-select options (must share same name prop)</li>
-            <li><strong>InputField</strong> - For inline editing (use micro size)</li>
+            <li><strong>InputField</strong> - For inline editing</li>
             <li><strong>Slider</strong> - For range controls and adjustable values</li>
             <li><strong>ToggleSwitch</strong> - For boolean settings</li>
             <li><strong>Select</strong> - For dropdown options</li>
