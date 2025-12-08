@@ -54,6 +54,8 @@ Import the CSS file in your app entry point:
 import '@indxsearch/intrface/styles.css';
 ```
 
+**Note:** The intrface styles include scoped CSS resets to ensure consistent spacing and appearance regardless of your application's global styles. These resets are automatically applied to all intrface components and won't affect the rest of your application.
+
 ### 3. Basic Implementation
 
 ```typescript

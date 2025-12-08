@@ -1,4 +1,5 @@
 import '@indxsearch/systm/styles.css';
+import './global.css';
 export { SearchProvider } from './context/SearchContext';
 export { useSearchContext } from './context/SearchContext';
 export { useSearch } from './context/useSearch';

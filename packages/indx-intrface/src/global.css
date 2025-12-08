@@ -1,0 +1,48 @@
+/* CSS Resets for intrface components */
+/* These ensure consistent spacing regardless of the consumer's global styles */
+
+.indx-search-provider {
+  box-sizing: border-box;
+}
+
+.indx-search-provider *,
+.indx-search-provider *::before,
+.indx-search-provider *::after {
+  box-sizing: border-box;
+}
+
+/* Reset margins and padding for common elements */
+.indx-search-provider h1,
+.indx-search-provider h2,
+.indx-search-provider h3,
+.indx-search-provider h4,
+.indx-search-provider h5,
+.indx-search-provider h6,
+.indx-search-provider p,
+.indx-search-provider ol,
+.indx-search-provider ul {
+  margin: 0;
+  padding: 0;
+}
+
+/* Add back appropriate spacing */
+.indx-search-provider p {
+  margin-bottom: 1em;
+  line-height: 1.5;
+}
+
+.indx-search-provider h1,
+.indx-search-provider h2,
+.indx-search-provider h3,
+.indx-search-provider h4,
+.indx-search-provider h5,
+.indx-search-provider h6 {
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+}
+
+/* Ensure list items inside intrface components reset properly */
+.indx-search-provider ul,
+.indx-search-provider ol {
+  list-style: none;
+}
