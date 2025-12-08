@@ -1,0 +1,6 @@
+export { Table } from './Table'
+export { TableHeader } from './TableHeader'
+export { TableRow } from './TableRow'
+export { TableCell } from './TableCell'
+export { TableValue } from './TableValue'
+export { TableIcon } from './TableIcon'

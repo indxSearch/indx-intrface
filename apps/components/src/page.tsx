@@ -12,6 +12,7 @@ export default function Home() {
     { name: 'Slider', path: '/slider', desc: 'Range slider component' },
     { name: 'ToggleSwitch', path: '/toggle-switch', desc: 'Toggle switch input' },
     { name: 'Popover', path: '/popover', desc: 'Radix UI popover component' },
+    { name: 'Table', path: '/table', desc: 'Composable table component system' },
     { name: 'Base', path: '/base', desc: 'Base container component' },
     { name: 'FilterPanelBase', path: '/filter-panel-base', desc: 'Filter panel container' },
   ]

@@ -21,6 +21,7 @@ import ValueFilterPanelPage from './value-filter-panel/page';
 import RangeFilterPanelPage from './range-filter-panel/page';
 import SortByPanelPage from './sort-by-panel/page';
 import ActiveFiltersPanelPage from './active-filters-panel/page';
+import TablePage from './table/page';
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="/popover" element={<PopoverPage />} />
         <Route path="/base" element={<BasePage />} />
         <Route path="/filter-panel-base" element={<FilterPanelBasePage />} />
+        <Route path="/table" element={<TablePage />} />
         <Route path="/icons" element={<IconsPage />} />
         <Route path="/search-input" element={<SearchInputPage />} />
         <Route path="/value-filter-panel" element={<ValueFilterPanelPage />} />

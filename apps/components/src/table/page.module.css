@@ -1,0 +1,92 @@
+.main {
+  padding: 2rem;
+  max-width: var(--maxWidth);
+  margin: 0 auto;
+}
+
+.section {
+  margin-bottom: 3rem;
+}
+
+.title {
+  font: var(--text-2xl);
+  margin-bottom: 0.5rem;
+}
+
+.desc {
+  font: var(--text-base);
+  color: var(--lv4);
+}
+
+.heading {
+  font: var(--text-lg);
+  margin-bottom: 1rem;
+}
+
+.subtext {
+  font: var(--text-sm);
+  color: var(--lv4);
+  margin-bottom: 1rem;
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.readme {
+  background-color: var(--lv1);
+  border: 1px solid var(--lv3);
+  border-radius: 4px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+
+.readmeText {
+  font: var(--text-sm);
+  color: var(--lv5);
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.readmeText:last-child {
+  margin-bottom: 0;
+}
+
+.readmeHeading {
+  font: var(--text-base);
+  font-weight: var(--med);
+  margin: 1.5rem 0 0.75rem 0;
+  color: var(--lv6);
+}
+
+.readmeHeading:first-child {
+  margin-top: 0;
+}
+
+.readmeList {
+  font: var(--text-sm);
+  color: var(--lv5);
+  margin-left: 1.5rem;
+  line-height: 1.8;
+}
+
+.readmeList li {
+  margin-bottom: 0.5rem;
+}
+
+.readmeList code {
+  background-color: var(--lv2);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}

@@ -1,0 +1,62 @@
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font: var(--text-sm);
+    background-color: var(--lv0);
+}
+
+.table th,
+.table td {
+    text-align: left;
+    padding: 0 15px;
+    height: 40px;
+    border: 0.5px solid var(--lv3);
+}
+
+.headerRow {
+    background-color: var(--lv2);
+}
+
+.headerRow th {
+    font-weight: var(--med);
+}
+
+.dataRow {
+    background-color: transparent;
+}
+
+.dataRow td {
+    font-weight: var(--reg);
+}
+
+.cellInner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cellLabel {
+    min-width: 50%;
+    flex-shrink: 0;
+}
+
+.cellContent {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.value {
+    font: var(--text-xs);
+    font-weight: var(--book);
+    color: var(--lv5);
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    color: var(--lv6);
+}
