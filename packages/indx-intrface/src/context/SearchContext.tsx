@@ -1059,9 +1059,7 @@ const searchWithFacets = useCallback(() => {
         setSearchSettings
       }}
     >
-      <div className="indx-search-provider">
-        {children}
-      </div>
+      {children}
     </SearchContext.Provider>
   );
 };
