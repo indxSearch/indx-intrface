@@ -66,6 +66,40 @@ import '@indxsearch/systm/cursors.css'; // Optional custom cursors
 
 All cursors automatically adapt to dark mode via `prefers-color-scheme`.
 
+## Patterns (Optional)
+
+Systm includes optional SVG patterns as CSS custom properties. Import the patterns stylesheet to enable:
+
+```tsx
+import '@indxsearch/systm/styles.css';
+import '@indxsearch/systm/patterns.css'; // Optional SVG patterns
+```
+
+**Available patterns:**
+- `--pattern-checkerboard-light/dark` - 2x2 tight checkerboard
+- `--pattern-checkerboard-spaced-4-light/dark` - 1x1 squares with 1px spacing
+- `--pattern-checkerboard-spaced-6-light/dark` - 1x1 squares with 2px spacing
+- `--pattern-checkerboard-spaced-8-light/dark` - 1x1 squares with 3px spacing
+- `--pattern-checkerboard-spaced-10-light/dark` - 1x1 squares with 4px spacing
+- `--pattern-grid-6-light/dark` - 6x6 grid with 1x1 dot
+- `--pattern-grid-12-light/dark` - 12x12 grid with 1x1 dot
+- `--pattern-grid-24-light/dark` - 24x24 grid with 1x1 dot
+
+**Usage:**
+```css
+.element {
+  background-image: var(--pattern-checkerboard-light);
+  background-repeat: repeat;
+  background-size: 2px 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .element {
+    background-image: var(--pattern-checkerboard-dark);
+  }
+}
+```
+
 ## Dependencies
 
 - `@indxsearch/pixl` - Icon library
