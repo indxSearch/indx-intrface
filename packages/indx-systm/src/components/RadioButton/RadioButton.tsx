@@ -21,7 +21,7 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
   disabled = false,
 }) => {
   return (
-    <label className={`${styles.radioWrapper} ${disabled ? styles.disabled : ""}`}>
+    <label className={`${styles.radioWrapper} ${disabled ? styles.disabled : ""} ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
       <input
         id={id}
         type="radio"

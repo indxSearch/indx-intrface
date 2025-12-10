@@ -1,6 +1,6 @@
 {
   "name": "@indxsearch/systm",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Base UI component library for indxSearch",
   "keywords": ["react", "components", "ui", "design-system"],
   "author": "Indx Search",
@@ -41,7 +41,8 @@
       "import": "./dist/index.es.js",
       "require": "./dist/index.umd.js"
     },
-    "./styles.css": "./dist/systm.css"
+    "./styles.css": "./dist/systm.css",
+    "./cursors.css": "./dist/cursors.css"
   },
   "dependencies": {
     "@indxsearch/pixl": "^1.1.1",

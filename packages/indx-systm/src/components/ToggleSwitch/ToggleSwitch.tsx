@@ -22,7 +22,7 @@ export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
   return (
     <label
       htmlFor={switchId}
-      className={`${styles.switch} ${disabled ? styles.disabled : ''}`}
+      className={`${styles.switch} ${disabled ? styles.disabled : ''} ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
     >
       <input
         id={switchId}

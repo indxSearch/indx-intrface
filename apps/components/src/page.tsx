@@ -44,6 +44,10 @@ export default function Home() {
           <h3 className={styles.cardTitle}>Icon Gallery</h3>
           <p className={styles.cardDesc}>Browse all available icons with size preview</p>
         </Link>
+        <Link to="/cursors" className={styles.card}>
+          <h3 className={styles.cardTitle}>Custom Cursors</h3>
+          <p className={styles.cardDesc}>Demo of custom cursor styles for all interactions</p>
+        </Link>
       </div>
 
       <div style={{ marginTop: '4rem', marginBottom: '2rem' }}>

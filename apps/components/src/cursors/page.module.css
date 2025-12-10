@@ -1,0 +1,91 @@
+.container {
+  max-width: var(--maxWidth);
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.container h1 {
+  font: var(--text-3xl);
+  margin-bottom: 10px;
+}
+
+.container > p {
+  font: var(--text-base);
+  color: var(--lv6);
+  margin-bottom: 40px;
+}
+
+.section {
+  margin-bottom: 60px;
+}
+
+.section h2 {
+  font: var(--text-xl);
+  margin-bottom: 20px;
+  color: var(--lv7);
+}
+
+.demo {
+  background: var(--lv1);
+  border: 1px solid var(--lv2);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.box p {
+  font: var(--text-sm);
+  color: var(--lv7);
+  margin: 0;
+}
+
+.box input,
+.box textarea {
+  font: var(--text-sm);
+  padding: 10px;
+  border: 1px solid var(--lv3);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--lv7);
+}
+
+.box input:focus,
+.box textarea:focus {
+  outline: none;
+  border-color: var(--lv5);
+}
+
+.box button {
+  font: var(--text-sm);
+  padding: 10px 16px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--lv3);
+  color: var(--lv7);
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.box button:not(:disabled):hover {
+  background: var(--lv4);
+}
+
+.box button:disabled {
+  opacity: 0.5;
+}
+
+.box a {
+  font: var(--text-sm);
+  color: var(--lv7);
+  text-decoration: underline;
+  align-self: flex-start;
+}
+
+.box a:hover {
+  color: var(--lv6);
+}

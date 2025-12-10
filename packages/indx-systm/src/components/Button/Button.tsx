@@ -23,6 +23,7 @@ export function Button(
     styles.button,
     styles[size],
     styles[variant],
+    rest.disabled ? 'cursor-not-allowed' : 'cursor-pointer',
     className
   ].filter(Boolean).join(' ');
 

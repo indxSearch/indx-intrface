@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@indxsearch/systm": "^1.1.0",
+    "@indxsearch/systm": "^1.2.0",
     "@indxsearch/intrface": "^1.0.5",
     "@indxsearch/pixl": "^1.1.1",
     "react": "^19.0.0",

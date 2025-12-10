@@ -120,7 +120,7 @@ export const Slider: React.FC<SliderProps> = (props) => {
               <div
                 key={key}
                 {...restThumbProps}
-                className={`${styles.thumbs} ${disabled ? styles.disabled : ''}`}
+                className={`${styles.thumbs} ${disabled ? styles.disabled : ''} ${disabled ? 'cursor-not-allowed' : 'cursor-resize-col'}`}
                 style={{
                   ...restThumbProps.style,
                   zIndex: '3'
@@ -211,7 +211,7 @@ export const Slider: React.FC<SliderProps> = (props) => {
               <div
                 key={key}
                 {...restThumbProps}
-                className={`${styles.thumbs} ${disabled ? styles.disabled : ''}`}
+                className={`${styles.thumbs} ${disabled ? styles.disabled : ''} ${disabled ? 'cursor-not-allowed' : 'cursor-resize-col'}`}
                 style={{
                   ...restThumbProps.style,
                   zIndex: '3'

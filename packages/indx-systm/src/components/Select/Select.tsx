@@ -27,7 +27,7 @@ export const Select: React.FC<SelectProps> = ({
 }) => {
   return (
     <RadixSelect.Root value={value} onValueChange={onValueChange} disabled={disabled}>
-      <RadixSelect.Trigger className={`${styles.trigger} ${className}`}>
+      <RadixSelect.Trigger className={`${styles.trigger} ${className} cursor-pointer`}>
         <RadixSelect.Value placeholder={placeholder} />
         <RadixSelect.Icon className={styles.icon}>
           <Chevron_down size={14} color="currentColor" />

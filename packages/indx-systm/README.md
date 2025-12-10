@@ -41,6 +41,31 @@ function App() {
 - **Base** - Base container component
 - **FilterPanelBase** - Filter panel container
 
+## Custom Cursors (Optional)
+
+Systm includes an optional custom cursor system with 13 cursor utilities. Import the cursors stylesheet to enable:
+
+```tsx
+import '@indxsearch/systm/styles.css';
+import '@indxsearch/systm/cursors.css'; // Optional custom cursors
+```
+
+**Available cursor utilities:**
+- `.cursor-pointer` - Hand cursor for clickable elements
+- `.cursor-text` - I-beam cursor for text selection
+- `.cursor-resize-col` - Column resize cursor
+- `.cursor-resize-ew` - Horizontal resize (↔)
+- `.cursor-resize-ns` - Vertical resize (↕)
+- `.cursor-resize-nwse` - Diagonal resize (↖↘)
+- `.cursor-resize-nesw` - Diagonal resize (↗↙)
+- `.cursor-move` - Four-way move cursor
+- `.cursor-crosshair` - Crosshair for precise selection
+- `.cursor-help` - Help cursor
+- `.cursor-wait` - Loading cursor
+- `.cursor-not-allowed` - Disabled state cursor
+
+All cursors automatically adapt to dark mode via `prefers-color-scheme`.
+
 ## Dependencies
 
 - `@indxsearch/pixl` - Icon library

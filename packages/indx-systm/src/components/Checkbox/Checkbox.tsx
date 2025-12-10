@@ -13,7 +13,7 @@ export const Checkbox = ({ label, score, className = '', ...props }: CheckboxPro
   return (
     <label
       htmlFor={id}
-      className={`${styles.checkboxWrapper} ${className} ${isDisabled ? styles.disabled : ''}`}
+      className={`${styles.checkboxWrapper} ${className} ${isDisabled ? styles.disabled : ''} ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
     >
       <input id={id} type="checkbox" className={styles.checkbox} {...props} />
       {label && <span className={styles.label}>{label}</span>}
