@@ -29,7 +29,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ fields, resultsPer
   };
 
   if (isFetchingInitial || resultsSuppressed || results === null) {
-    return <div className={styles.placeholder}><Indx size={350} color="var(--lv5)"/></div>;
+    return <div className={styles.placeholder}><Indx size={200} color="var(--lv5)"/></div>;
   }
   if (results.length === 0) {
     return <div className={styles.invalid}><p>No results found.</p></div>;

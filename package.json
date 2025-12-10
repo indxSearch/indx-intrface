@@ -7,7 +7,7 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "npm run build:packages && concurrently \"npm run dev:demo\" \"npm run dev:components\"",
+    "dev": "npm run build:packages && concurrently \"npm run dev:packages\" \"npm run dev:demo\" \"npm run dev:components\"",
     "dev:demo": "npm run dev --workspace=demo",
     "dev:components": "npm run dev --workspace=components-viewer",
     "dev:packages": "concurrently \"npm run dev:systm\" \"npm run dev:intrface\"",
