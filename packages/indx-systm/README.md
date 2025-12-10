@@ -66,13 +66,12 @@ import '@indxsearch/systm/cursors.css'; // Optional custom cursors
 
 All cursors automatically adapt to dark mode via `prefers-color-scheme`.
 
-## Patterns (Optional)
+## Patterns
 
-Systm includes optional SVG patterns as CSS custom properties. Import the patterns stylesheet to enable:
+Systm includes SVG patterns as CSS custom properties, automatically bundled in `styles.css`:
 
 ```tsx
-import '@indxsearch/systm/styles.css';
-import '@indxsearch/systm/patterns.css'; // Optional SVG patterns
+import '@indxsearch/systm/styles.css'; // Patterns included by default
 ```
 
 **Available patterns:**

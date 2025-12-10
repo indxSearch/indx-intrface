@@ -1,4 +1,5 @@
 import './globals/globals.css';
+import './globals/patterns.css';
 export { Button } from './components/Button/Button';
 export { Checkbox } from './components/Checkbox/Checkbox';
 export { Base, type BaseProps } from './components/Base/Base';
