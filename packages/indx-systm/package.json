@@ -42,7 +42,8 @@
       "require": "./dist/index.umd.js"
     },
     "./styles.css": "./dist/systm.css",
-    "./cursors.css": "./dist/cursors.css"
+    "./cursors.css": "./dist/cursors.css",
+    "./patterns.css": "./dist/patterns.css"
   },
   "dependencies": {
     "@indxsearch/pixl": "^1.1.1",

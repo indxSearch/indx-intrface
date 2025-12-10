@@ -16,13 +16,18 @@ export default defineConfig({
       exclude: ['dist/**', 'node_modules/**'],
     }),
     {
-      name: 'copy-cursors-css',
+      name: 'copy-global-css',
       closeBundle() {
         // Copy cursors.css to dist after build
-        const cssSource = resolve(__dirname, 'src/globals/cursors.css');
-        const cssDest = resolve(__dirname, 'dist/cursors.css');
-        mkdirSync(dirname(cssDest), { recursive: true });
-        copyFileSync(cssSource, cssDest);
+        const cursorsSource = resolve(__dirname, 'src/globals/cursors.css');
+        const cursorsDest = resolve(__dirname, 'dist/cursors.css');
+        mkdirSync(dirname(cursorsDest), { recursive: true });
+        copyFileSync(cursorsSource, cursorsDest);
+
+        // Copy patterns.css to dist after build
+        const patternsSource = resolve(__dirname, 'src/globals/patterns.css');
+        const patternsDest = resolve(__dirname, 'dist/patterns.css');
+        copyFileSync(patternsSource, patternsDest);
       }
     }
   ],

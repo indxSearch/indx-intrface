@@ -23,6 +23,7 @@ import SortByPanelPage from './sort-by-panel/page';
 import ActiveFiltersPanelPage from './active-filters-panel/page';
 import TablePage from './table/page';
 import CursorsPage from './cursors/page';
+import PatternsPage from './patterns/page';
 
 export default function App() {
   return (
@@ -49,6 +50,7 @@ export default function App() {
         <Route path="/sort-by-panel" element={<SortByPanelPage />} />
         <Route path="/active-filters-panel" element={<ActiveFiltersPanelPage />} />
         <Route path="/cursors" element={<CursorsPage />} />
+        <Route path="/patterns" element={<PatternsPage />} />
       </Routes>
     </>
   );

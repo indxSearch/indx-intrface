@@ -44,10 +44,6 @@ export default function Home() {
           <h3 className={styles.cardTitle}>Icon Gallery</h3>
           <p className={styles.cardDesc}>Browse all available icons with size preview</p>
         </Link>
-        <Link to="/cursors" className={styles.card}>
-          <h3 className={styles.cardTitle}>Custom Cursors</h3>
-          <p className={styles.cardDesc}>Demo of custom cursor styles for all interactions</p>
-        </Link>
       </div>
 
       <div style={{ marginTop: '4rem', marginBottom: '2rem' }}>
@@ -66,6 +62,22 @@ export default function Home() {
             <p className={styles.cardDesc}>{component.desc}</p>
           </Link>
         ))}
+      </div>
+
+      <div style={{ marginTop: '4rem', marginBottom: '2rem' }}>
+        <h2 className={styles.sectionTitle}>Systm Assets</h2>
+        <p className={styles.sectionDesc}>Global styles and patterns for systm</p>
+      </div>
+
+      <div className={styles.grid}>
+        <Link to="/cursors" className={styles.card}>
+          <h3 className={styles.cardTitle}>Custom Cursors</h3>
+          <p className={styles.cardDesc}>Demo of custom cursor styles for all interactions</p>
+        </Link>
+        <Link to="/patterns" className={styles.card}>
+          <h3 className={styles.cardTitle}>Patterns</h3>
+          <p className={styles.cardDesc}>SVG patterns as CSS custom properties</p>
+        </Link>
       </div>
 
       <div style={{ marginTop: '4rem', marginBottom: '2rem' }}>
