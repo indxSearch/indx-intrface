@@ -367,7 +367,7 @@ const documents = await docsRes.json();
 
 ### CORS
 - API server must have CORS configured to allow requests from your frontend origin
-- Common localhost ports: 3000 (demo app), 3001 (components app), 38171 (API server)
+- Common localhost ports: 3000 (demo app), 3001 (components app), 5001 (API server)
 
 ### Error Handling
 - Initial blank search may fail (500) if dataset not fully ready - handle gracefully
@@ -408,12 +408,12 @@ The `SearchContext.tsx` file in `packages/indx-intrface/src/context/` implements
 ### Required Environment Variables (.env.local)
 ```bash
 # For Vite apps (demo, components)
-VITE_INDX_URL=http://localhost:38171
+VITE_INDX_URL=http://localhost:5001
 VITE_INDX_EMAIL=your-email@example.com
 VITE_INDX_PASSWORD=your-password
 
 # For Next.js apps
-NEXT_PUBLIC_INDX_URL=http://localhost:38171
+NEXT_PUBLIC_INDX_URL=http://localhost:5001
 NEXT_PUBLIC_INDX_EMAIL=your-email@example.com
 NEXT_PUBLIC_INDX_PASSWORD=your-password
 ```

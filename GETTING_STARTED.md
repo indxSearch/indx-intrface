@@ -22,7 +22,7 @@ Create a file named `.env.local` in your project root:
 
 ```bash
 # INDX Server Configuration
-VITE_INDX_URL=http://localhost:38171
+VITE_INDX_URL=http://localhost:5001
 
 # Authentication Credentials
 VITE_INDX_EMAIL=your@email.com
@@ -202,14 +202,14 @@ Open your browser and navigate to your search page. You should see a working sea
 **Console shows:**
 ```
 [Auth] ❌ Network error - cannot connect to INDX server
-[Auth] 💡 Check if the server is running at: http://localhost:38171
+[Auth] 💡 Check if the server is running at: http://localhost:5001
 [Auth] 💡 Check your VITE_INDX_URL in .env.local
 ```
 
 **Fix:**
 1. Verify your INDX server is running
 2. Check the URL in `.env.local` is correct
-3. For local development, it should be `http://localhost:38171`
+3. For local development, it should be `http://localhost:5001`
 
 ### Missing credentials
 
@@ -246,7 +246,7 @@ Now that you have a basic search working:
 
 ### Environment Variables Template
 ```bash
-VITE_INDX_URL=http://localhost:38171
+VITE_INDX_URL=http://localhost:5001
 VITE_INDX_EMAIL=your@email.com
 VITE_INDX_PASSWORD=yourpassword
 ```

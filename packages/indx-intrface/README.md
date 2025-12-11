@@ -22,29 +22,31 @@ npm install @indxsearch/intrface @indxsearch/systm @indxsearch/pixl
 
 ### 1. Set Up Environment Variables
 
-Create a `.env.local` file in your project root with your INDX credentials:
+Create a `.env.local` file in your project root:
 
+**Option A: Using Bearer Token (Recommended for Production)**
 ```bash
-# INDX Server Configuration
 VITE_INDX_URL=https://your-indx-server.com
+VITE_INDX_TOKEN=your-jwt-bearer-token-here
+```
 
-# Authentication Credentials
+**Option B: Using Email/Password (Quick Start)**
+```bash
+VITE_INDX_URL=https://your-indx-server.com
 VITE_INDX_EMAIL=your@email.com
 VITE_INDX_PASSWORD=yourpassword
 ```
 
 **For local development:**
 ```bash
-VITE_INDX_URL=http://localhost:38171
-VITE_INDX_EMAIL=your@email.com
-VITE_INDX_PASSWORD=yourpassword
+VITE_INDX_URL=http://localhost:5001
+# Then add either token or email/password as shown above
 ```
 
 **Security Notes:**
 - Never commit `.env.local` to version control
-- Store credentials securely in environment variables
-- The library automatically calls the Login API on initialization to get a fresh session token
-- Session tokens are managed internally and refreshed as needed
+- Store credentials/tokens securely in environment variables
+- For production deployments, prefer bearer token authentication
 
 ### 2. Import Styles
 
@@ -101,36 +103,74 @@ export default function SearchPage() {
 
 ## Authentication
 
-The library uses **session-based authentication** that automatically logs in when the app initializes.
+The library supports **two authentication methods**: bearer token and email/password login.
 
-### How It Works
+### Method 1: Bearer Token (Recommended for Production)
 
-1. You provide your email and password to `SearchProvider`
-2. On mount, the library automatically calls the Login API endpoint
-3. A fresh session token is obtained and used for all subsequent requests
-4. No need to manually manage tokens - it's all handled internally
+Use a pre-authenticated JWT bearer token. This is ideal when you have a backend that generates tokens for your users.
 
+**Environment setup:**
+```bash
+VITE_INDX_URL=https://your-indx-server.com
+VITE_INDX_TOKEN=your-jwt-bearer-token-here
+```
+
+**Usage:**
 ```typescript
 <SearchProvider
-  url="https://your-indx-server.com"
-  email="your@email.com"
-  password="yourpassword"
+  url={import.meta.env.VITE_INDX_URL}
+  preAuthenticatedToken={import.meta.env.VITE_INDX_TOKEN}
   dataset="products"
 >
   {/* Your search UI */}
 </SearchProvider>
 ```
 
-**Authentication Benefits:**
-- ✅ Automatic login on app initialization
-- ✅ Fresh session tokens on every app load
-- ✅ No manual token management required
-- ✅ Works reliably after server restarts
+**When to use:**
+- ✅ Production applications with backend authentication
+- ✅ When you have existing token infrastructure
+- ✅ For better security (tokens can have expiration, limited scope)
+- ✅ When you want to avoid storing passwords client-side
+
+### Method 2: Email/Password (Quick Start & Development)
+
+Automatically logs in when the app initializes using email and password.
+
+**Environment setup:**
+```bash
+VITE_INDX_URL=https://your-indx-server.com
+VITE_INDX_EMAIL=your@email.com
+VITE_INDX_PASSWORD=yourpassword
+```
+
+**Usage:**
+```typescript
+<SearchProvider
+  url={import.meta.env.VITE_INDX_URL}
+  email={import.meta.env.VITE_INDX_EMAIL}
+  password={import.meta.env.VITE_INDX_PASSWORD}
+  dataset="products"
+>
+  {/* Your search UI */}
+</SearchProvider>
+```
+
+**How it works:**
+1. You provide email and password to `SearchProvider`
+2. On mount, the library automatically calls the Login API endpoint
+3. A fresh session token is obtained and used for all subsequent requests
+4. No manual token management required
+
+**When to use:**
+- ✅ Quick prototyping and development
+- ✅ Demo applications
+- ✅ When you don't have token infrastructure yet
 
 **Security Best Practices:**
-- Store credentials in environment variables (`.env.local`)
-- Never commit credentials to version control
+- Store credentials/tokens in environment variables (`.env.local`)
+- Never commit `.env.local` to version control
 - Use secure HTTPS connections in production
+- For production, prefer bearer token authentication
 
 ## Error Handling
 
@@ -139,8 +179,8 @@ The library includes comprehensive error handling with helpful console messages:
 ### Automatic Error Detection
 
 The SearchProvider automatically validates:
-- ✅ Authentication credentials (email/password)
-- ✅ Login success and token retrieval
+- ✅ Authentication (bearer token or email/password)
+- ✅ Login success and token retrieval (when using email/password)
 - ✅ Dataset existence and status
 - ✅ Dataset readiness (indexing complete)
 - ✅ Empty dataset warnings
@@ -316,8 +356,9 @@ export default function AdvancedSearch() {
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `url` | `string` | ✅ | - | INDX server URL |
-| `email` | `string` | ✅ | - | User email for authentication |
-| `password` | `string` | ✅ | - | User password for authentication |
+| `preAuthenticatedToken` | `string` | ⚠️ | - | Bearer token for authentication (either this OR email/password) |
+| `email` | `string` | ⚠️ | - | User email for authentication (either this OR token) |
+| `password` | `string` | ⚠️ | - | User password for authentication (either this OR token) |
 | `dataset` | `string` | ✅ | - | Dataset name |
 | `allowEmptySearch` | `boolean` | ❌ | `false` | Show results without query |
 | `enableFacets` | `boolean` | ❌ | `true` | Enable faceted search |
@@ -325,6 +366,7 @@ export default function AdvancedSearch() {
 | `facetDebounceDelayMillis` | `number` | ❌ | `500` | Debounce delay for facet updates |
 | `coverageDepth` | `number` | ❌ | `500` | Search depth for fuzzy matching |
 | `removeDuplicates` | `boolean` | ❌ | `false` | Remove duplicate results |
+| `enableDebugLogs` | `boolean` | ❌ | `false` | Enable detailed console logging |
 
 ### SearchInput Props
 
@@ -376,14 +418,16 @@ export default function AdvancedSearch() {
 3. Ensure the INDX server URL is correct
 4. Check browser console for detailed error messages
 
-### "401 Unauthorized" errors after successful login
+### "401 Unauthorized" errors
 
-**Problem:** Session token became invalid
+**Problem:** Authentication failed or token is invalid
 
 **Solutions:**
-1. Refresh the page to get a new session token (automatic login)
-2. Verify the server is running and accessible
-3. Check server logs for authentication issues
+1. **If using bearer token:** Verify the token is valid and not expired. Generate a new token if needed.
+2. **If using email/password:** Refresh the page to get a new session token (automatic login)
+3. Check that the token/credentials are correctly set in your environment variables
+4. Verify the server is running and accessible
+5. Check server logs for authentication issues
 
 ### "Failed to fetch" errors
 
@@ -391,7 +435,7 @@ export default function AdvancedSearch() {
 
 **Solutions:**
 1. Verify the server URL is correct
-2. Check if the server is running (for local: `http://localhost:38171`)
+2. Check if the server is running (for local: `http://localhost:5001`)
 3. Ensure CORS is configured on the server
 4. Check browser console for detailed error
 

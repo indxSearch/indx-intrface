@@ -749,14 +749,12 @@ const searchWithFacets = useCallback(() => {
       try {
         let sessionToken: string;
 
-        // If pre-authenticated token is provided, skip login/createOrOpen
+        // If pre-authenticated token is provided, skip login but still open dataset
         if (preAuthenticatedToken) {
           if (enableDebugLogs) {
             console.log('[Auth] ✅ Using pre-authenticated token');
           }
           sessionToken = preAuthenticatedToken;
-          setToken(preAuthenticatedToken);
-          // Continue to field fetching below...
         } else {
           // Standard authentication flow - validate required credentials
           if (!email || !password) {
@@ -817,31 +815,30 @@ const searchWithFacets = useCallback(() => {
           if (enableDebugLogs) {
             console.log('[Auth] ✅ Login successful, bearer token received (length:', sessionToken.length, ')');
           }
+        }
 
-          // STEP 2: Call CreateOrOpen to establish dataset session
-          if (enableDebugLogs) {
-            console.log('[Auth] 🔓 Opening dataset session...');
-          }
-          const createOrOpenRes = await fetch(`${url}/api/CreateOrOpen/${dataset}/400`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${sessionToken}`
-            },
-            credentials: 'include',
-            body: '""'
-          });
+        // STEP 2: Call CreateOrOpen to establish dataset session (for both auth paths)
+        if (enableDebugLogs) {
+          console.log('[Auth] 🔓 Opening dataset session...');
+        }
+        const createOrOpenRes = await fetch(`${url}/api/CreateOrOpen/${dataset}/400`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionToken}`
+          },
+          body: '""'
+        });
 
-          if (!createOrOpenRes.ok) {
-            console.error('[Auth] ❌ CreateOrOpen failed:', createOrOpenRes.status, await createOrOpenRes.text());
-            throw new Error('Failed to open dataset session.');
-          }
+        if (!createOrOpenRes.ok) {
+          console.error('[Auth] ❌ CreateOrOpen failed:', createOrOpenRes.status, await createOrOpenRes.text());
+          throw new Error('Failed to open dataset session.');
+        }
 
-          setToken(sessionToken); // Store the JWT token for subsequent calls
+        setToken(sessionToken); // Store the JWT token for subsequent calls
 
-          if (enableDebugLogs) {
-            console.log('[Auth] ✅ Dataset session established');
-          }
+        if (enableDebugLogs) {
+          console.log('[Auth] ✅ Dataset session established');
         }
 
         // Fetch filterable, facetable, sortable fields
@@ -1024,7 +1021,7 @@ const searchWithFacets = useCallback(() => {
           console.error('[Auth] ❌ Network error - cannot connect to INDX server');
           console.error('[Auth] 💡 Check if the server is running at:', url);
           console.error('[Auth] 💡 Check your NEXT_PUBLIC_INDX_URL in .env.local');
-          console.error('[Auth] 💡 For local development, it should be: http://localhost:38171');
+          console.error('[Auth] 💡 For local development, it should be: http://localhost:5001');
         }
 
         // Re-throw to prevent the component from rendering with bad state

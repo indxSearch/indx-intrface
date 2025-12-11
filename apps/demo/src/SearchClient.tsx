@@ -26,15 +26,13 @@ export function SearchClient({
   showFilters = true
 }: SearchClientProps) {
   const url = import.meta.env.VITE_INDX_URL;
-  const email = import.meta.env.VITE_INDX_EMAIL;
-  const password = import.meta.env.VITE_INDX_PASSWORD;
+  const token = import.meta.env.VITE_INDX_TOKEN;
 
   return (
     <SearchProvider
       url={url}
       dataset={dataset}
-      email={email}
-      password={password}
+      preAuthenticatedToken={token}
       allowEmptySearch={true}
       enableFacets={true}
       maxResults={30}
