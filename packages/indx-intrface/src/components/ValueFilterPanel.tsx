@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './ValueFilterPanel.module.css';
 import { useSearchContext } from '../context/SearchContext';
 import { Checkbox, Button, ToggleSwitch, FilterPanelBase } from '@indxsearch/systm';
@@ -50,7 +50,12 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   } = useSearchContext();
 
   const preservedFacetValuesRef = useRef<Record<string, number | null> | null>(null);
-  const [expanded, setExpanded] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(limit);
+
+  // Reset visible count when facets change (e.g., new search results or filters applied)
+  useEffect(() => {
+    setVisibleCount(limit);
+  }, [facets?.[field], limit]);
 
   // Don't show if query is empty and allowEmptySearch is false
   if (!allowEmptySearch && !query) {
@@ -162,9 +167,6 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
     // Display just the number if > 0
     const countLabel = showCount && (trueCount ?? 0) > 0 ? `${trueCount}` : '';
 
-    // If panel itself is not collapsible, override collapsed to false
-    const actualCollapsed = collapsible ? startCollapsed : false;
-
     // For boolean facet, the panel should always be non-collapsible
     return (
       <FilterPanelBase collapsible={false}>
@@ -238,8 +240,7 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
   // 9) Limit list length
 
   const shouldCollapse = typeof limit === 'number' && allEntries.length > limit;
-  const visibleEntries =
-    shouldCollapse && !expanded ? allEntries.slice(0, limit) : allEntries;
+  const visibleEntries = shouldCollapse ? allEntries.slice(0, visibleCount) : allEntries;
 
   const renderControl = (key: string, count: number | null) => {
     const isSelected = selectedValues.includes(key);
@@ -336,19 +337,21 @@ export const ValueFilterPanel: React.FC<ValueFilterPanelProps> = ({
         {visibleEntries.map(([key, count]) => (
           <li key={key}>{renderControl(key, count)}</li>
         ))}
-        {shouldCollapse && (
-          <li className={styles.toggleItem}>
-            <Button
-              variant="ghost"
-              size="micro"
-              onClick={() => setExpanded((prev) => !prev)}
-            >
-              {expanded
-                ? 'Show less'
-                : `Show ${allEntries.length - (limit ?? 0)} more`}
-            </Button>
-          </li>
-        )}
+        {shouldCollapse && visibleCount < allEntries.length && (() => {
+          const remaining = allEntries.length - visibleCount;
+          const toShow = Math.min(50, remaining);
+          return (
+            <li className={styles.toggleItem}>
+              <Button
+                variant="ghost"
+                size="micro"
+                onClick={() => setVisibleCount((prev) => prev + 50)}
+              >
+                {`Show ${toShow} more of ${allEntries.length} total`}
+              </Button>
+            </li>
+          );
+        })()}
       </ul>
     </FilterPanelBase>
   );

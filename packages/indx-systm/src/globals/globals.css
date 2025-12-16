@@ -17,16 +17,19 @@
   --CTeal: #72F5C6;
   --CPureBlue: #0000ff;
 
+  /* FONT FAMILY */
+  --font-family: 'Inter', sans-serif;
+
   /* TEXT */
-  --text-2xs: 350 10px/1 'FunktionalGrotesk', sans-serif;
-  --text-xs: 350 11px/1 'FunktionalGrotesk', sans-serif;
-  --text-sm: 350 13px/1 'FunktionalGrotesk', sans-serif;
-  --text-base: 350 15px/1 'FunktionalGrotesk', sans-serif;
-  --text-lg: 350 17px/1 'FunktionalGrotesk', sans-serif;
-  --text-xl: 350 19px/1 'FunktionalGrotesk', sans-serif;
-  --text-2xl: 350 24px/1 'FunktionalGrotesk', sans-serif;
-  --text-3xl: 350 30px/1 'FunktionalGrotesk', sans-serif;
-  --text-4xl: 350 36px/1 'FunktionalGrotesk', sans-serif;
+  --text-2xs: 350 10px/1 var(--font-family);
+  --text-xs: 350 11px/1 var(--font-family);
+  --text-sm: 350 13px/1 var(--font-family);
+  --text-base: 350 15px/1 var(--font-family);
+  --text-lg: 350 17px/1 var(--font-family);
+  --text-xl: 350 19px/1 var(--font-family);
+  --text-2xl: 350 24px/1 var(--font-family);
+  --text-3xl: 350 30px/1 var(--font-family);
+  --text-4xl: 350 36px/1 var(--font-family);
 
   --light: 300;
   --book: 350;
@@ -54,112 +57,4 @@
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* Light */
-@font-face {
-  font-family: 'FunktionalGrotesk';
-  src: url('../assets/fonts/FunktionalGrotesk-Light.woff2') format('woff2');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-  descent-override: 10%;
-}
-@font-face {
-  font-family: 'FunktionalGrotesk';
-  src: url('../assets/fonts/FunktionalGrotesk-LightItalic.woff2') format('woff2');
-  font-weight: 300;
-  font-style: italic;
-  font-display: swap;
-  descent-override: 10%;
-}
-
-/* Book */
-@font-face {
-  font-family: 'FunktionalGrotesk';
-  src: url('../assets/fonts/FunktionalGrotesk-Book.woff2') format('woff2');
-  font-weight: 350;
-  font-style: normal;
-  font-display: swap;
-  descent-override: 10%;
-}
-@font-face {
-  font-family: 'FunktionalGrotesk';
-  src: url('../assets/fonts/FunktionalGrotesk-BookItalic.woff2') format('woff2');
-  font-weight: 350;
-  font-style: italic;
-  font-display: swap;
-  descent-override: 10%;
-}
-
-/* Regular */
-@font-face {
-  font-family: 'FunktionalGrotesk';
-  src: url('../assets/fonts/FunktionalGrotesk-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  descent-override: 10%;
-}
-@font-face {
-  font-family: 'FunktionalGrotesk';
-  src: url('../assets/fonts/FunktionalGrotesk-RegularItalic.woff2') format('woff2');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-  descent-override: 10%;
-}
-
-/* Medium */
-@font-face {
-  font-family: 'FunktionalGrotesk';
-  src: url('../assets/fonts/FunktionalGrotesk-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-  descent-override: 10%;
-}
-@font-face {
-  font-family: 'FunktionalGrotesk';
-  src: url('../assets/fonts/FunktionalGrotesk-MediumItalic.woff2') format('woff2');
-  font-weight: 500;
-  font-style: italic;
-  font-display: swap;
-  descent-override: 10%;
-}
-
-/* Semibold */
-@font-face {
-  font-family: 'FunktionalGrotesk';
-  src: url('../assets/fonts/FunktionalGrotesk-Semibold.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-  descent-override: 10%;
-}
-@font-face {
-  font-family: 'FunktionalGrotesk';
-  src: url('../assets/fonts/FunktionalGrotesk-SemiboldItalic.woff2') format('woff2');
-  font-weight: 600;
-  font-style: italic;
-  font-display: swap;
-  descent-override: 10%;
-}
-
-/* Bold */
-@font-face {
-  font-family: 'FunktionalGrotesk';
-  src: url('../assets/fonts/FunktionalGrotesk-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-  descent-override: 10%;
-}
-@font-face {
-  font-family: 'FunktionalGrotesk';
-  src: url('../assets/fonts/FunktionalGrotesk-BoldItalic.woff2') format('woff2');
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-  descent-override: 10%;
 }
