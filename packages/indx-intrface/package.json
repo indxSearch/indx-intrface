@@ -1,6 +1,6 @@
 {
   "name": "@indxsearch/intrface",
-  "version": "1.1.2",
+  "version": "1.1.4",
   "description": "Indx Search interface components for React. Provides ready-to-use filter panels, search inputs, faceted navigation, and sorting components. Built on @indxsearch/systm.",
   "keywords": [
     "indx",
@@ -24,7 +24,8 @@
   "module": "./dist/index.es.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "build": "vite build",
