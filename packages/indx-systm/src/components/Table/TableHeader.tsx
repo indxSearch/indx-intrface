@@ -10,7 +10,7 @@ export function TableHeader({ children }: TableHeaderProps) {
   const headerCells = React.Children.map(children, (child) => {
     if (React.isValidElement(child) && child.type === 'td') {
       // If it's a td, convert to th with scope
-      return <th scope="col" {...child.props} />;
+      return <th scope="col" {...(child.props as React.HTMLAttributes<HTMLTableCellElement>)} />;
     }
     // If it's already a th or another element, render as-is
     return child;
