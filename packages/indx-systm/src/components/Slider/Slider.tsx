@@ -18,6 +18,9 @@ interface BaseSliderProps {
   highlightFaceted?: boolean;
   onChange: (val: SingleValue | RangeValue) => void;
   onFinalChange?: (val: SingleValue | RangeValue) => void;
+  label?: string;
+  'aria-label'?: string;
+  id?: string;
 }
 
 type SliderProps =
@@ -37,7 +40,20 @@ export const Slider: React.FC<SliderProps> = (props) => {
     highlightFaceted = true,
     onChange,
     onFinalChange,
+    label,
+    'aria-label': ariaLabel,
+    id,
   } = props as BaseSliderProps;
+
+  const generatedId = React.useId();
+  const sliderId = id || generatedId;
+
+  // Warn in development if there's no label or aria-label
+  if (process.env.NODE_ENV !== 'production') {
+    if (!label && !ariaLabel) {
+      console.warn('Slider: Component should have either a label or aria-label for accessibility.');
+    }
+  }
 
   if ('isRange' in props && props.isRange) {
     // ─────────── Two-thumb "range" mode ───────────
@@ -46,6 +62,11 @@ export const Slider: React.FC<SliderProps> = (props) => {
 
     return (
       <div className={className}>
+        {label && (
+          <label htmlFor={sliderId} className={styles.label}>
+            {label}
+          </label>
+        )}
         <Range
           step={step}
           min={min}
@@ -114,17 +135,23 @@ export const Slider: React.FC<SliderProps> = (props) => {
               </div>
             );
           }}
-          renderThumb={({ props: thumbProps }) => {
+          renderThumb={({ props: thumbProps, index }) => {
             const { key, ...restThumbProps } = (thumbProps as any);
+            const currentValue = index === 0 ? v0 : v1;
             return (
               <div
                 key={key}
                 {...restThumbProps}
+                id={index === 0 ? sliderId : undefined}
                 className={`${styles.thumbs} ${disabled ? styles.disabled : ''} ${disabled ? 'cursor-not-allowed' : 'cursor-resize-col'}`}
                 style={{
                   ...restThumbProps.style,
                   zIndex: '3'
                 }}
+                aria-label={ariaLabel || (index === 0 ? 'Minimum value' : 'Maximum value')}
+                aria-valuemin={min}
+                aria-valuemax={max}
+                aria-valuenow={currentValue}
               />
             );
           }}
@@ -137,6 +164,11 @@ export const Slider: React.FC<SliderProps> = (props) => {
 
     return (
       <div className={className}>
+        {label && (
+          <label htmlFor={sliderId} className={styles.label}>
+            {label}
+          </label>
+        )}
         <Range
           step={step}
           min={min}
@@ -211,11 +243,16 @@ export const Slider: React.FC<SliderProps> = (props) => {
               <div
                 key={key}
                 {...restThumbProps}
+                id={sliderId}
                 className={`${styles.thumbs} ${disabled ? styles.disabled : ''} ${disabled ? 'cursor-not-allowed' : 'cursor-resize-col'}`}
                 style={{
                   ...restThumbProps.style,
                   zIndex: '3'
                 }}
+                aria-label={ariaLabel}
+                aria-valuemin={min}
+                aria-valuemax={max}
+                aria-valuenow={singleValue}
               />
             );
           }}

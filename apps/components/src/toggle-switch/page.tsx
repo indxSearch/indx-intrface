@@ -19,10 +19,12 @@ export default function ToggleSwitchPage() {
         <h2 className={styles.heading}>Basic</h2>
         <div className={styles.column}>
           <ToggleSwitch
+            aria-label="Toggle option 1"
             checked={toggle1}
             onChange={setToggle1}
           />
           <ToggleSwitch
+            aria-label="Toggle option 2"
             checked={toggle2}
             onChange={setToggle2}
           />

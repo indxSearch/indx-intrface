@@ -9,17 +9,32 @@ export interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElem
   variant?: 'default' | 'borderBottom';
 }
 
-export function InputField({ label, error, className = '', isValid = true, variant = 'default', ...props }: InputFieldProps) {
+export function InputField({ label, error, className = '', isValid = true, variant = 'default', id: providedId, ...props }: InputFieldProps) {
+  const generatedId = React.useId();
+  const inputId = providedId || generatedId;
+  const errorId = `${inputId}-error`;
   const hasError = error || !isValid;
 
   return (
     <div className={`${styles.wrapper} ${className}`}>
-      {label && <label className={styles.label}>{label}</label>}
+      {label && (
+        <label htmlFor={inputId} className={styles.label}>
+          {label}
+          {props.required && <span aria-label="required"> *</span>}
+        </label>
+      )}
       <input
+        id={inputId}
         className={`${styles.input} ${variant === 'borderBottom' ? styles.borderBottom : ''} ${hasError ? styles.error : ''}`}
+        aria-invalid={hasError ? 'true' : 'false'}
+        aria-describedby={error ? errorId : undefined}
         {...props}
       />
-      {error && <span className={styles.errorText}>{error}</span>}
+      {error && (
+        <span id={errorId} className={styles.errorText} role="alert">
+          {error}
+        </span>
+      )}
     </div>
   );
 };

@@ -36,9 +36,14 @@ export function SearchField({
   inputSize = 'default',
   showFocusBorder = false,
   children,
+  id: providedId,
+  type = 'search',
   ...props
 }: SearchFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const generatedId = React.useId();
+  const inputId = providedId || generatedId;
+  const errorId = `${inputId}-error`;
 
   const iconSize = iconSizeMap[inputSize];
   const inlineStyles: React.CSSProperties & { [key: string]: string } = {};
@@ -54,10 +59,14 @@ export function SearchField({
 
   return (
     <div className={`${styles.wrapper} ${className}`}>
-      {label && <label className={styles.label}>{label}</label>}
+      {label && (
+        <label htmlFor={inputId} className={styles.label}>
+          {label}
+        </label>
+      )}
       <div className={`${styles.inputContainer} ${sizeClass}`}>
         {showSearchIcon && (
-          <span className={styles.searchIcon}>
+          <span className={styles.searchIcon} aria-hidden="true">
             {React.cloneElement(iconToRender, {
               size: iconSize,
               color: searchIconColor ?? fallbackIconColor,
@@ -66,13 +75,21 @@ export function SearchField({
         )}
         <input
           ref={inputRef}
+          id={inputId}
+          type={type}
           className={`${styles.input} ${showFocusBorder ? styles.focus : ''} ${error ? styles.error : ''}`}
           style={inlineStyles}
+          aria-invalid={error ? 'true' : 'false'}
+          aria-describedby={error ? errorId : undefined}
           {...props}
         />
         {children && <div className={styles.rightContent}>{children}</div>}
       </div>
-      {error && <span className={styles.errorText}>{error}</span>}
+      {error && (
+        <span id={errorId} className={styles.errorText} role="alert">
+          {error}
+        </span>
+      )}
     </div>
   );
 }

@@ -9,6 +9,7 @@ type RadioButtonProps = {
   checked?: boolean;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
+  'aria-label'?: string;
 };
 
 export const RadioButton: React.FC<RadioButtonProps> = ({
@@ -19,9 +20,10 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
   checked = false,
   onChange,
   disabled = false,
+  'aria-label': ariaLabel,
 }) => {
   return (
-    <label className={`${styles.radioWrapper} ${disabled ? styles.disabled : ""} ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+    <label htmlFor={id} className={`${styles.radioWrapper} ${disabled ? styles.disabled : ""} ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
       <input
         id={id}
         type="radio"
@@ -30,6 +32,7 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
         checked={checked}
         onChange={onChange}
         disabled={disabled}
+        aria-label={ariaLabel}
         className={styles.radioInput}
       />
       <span className={styles.customRadio}></span>

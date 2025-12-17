@@ -8,6 +8,7 @@ type Props = {
   className?: string;
   collapsible?: boolean;
   collapsed?: boolean;
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
 };
 
 export function FilterPanelBase({
@@ -16,8 +17,10 @@ export function FilterPanelBase({
   className = '',
   collapsible = true,
   collapsed = false,
+  headingLevel = 3,
 }: Props) {
   const [expanded, setExpanded] = useState(() => !collapsed);
+  const titleId = React.useId();
 
   useEffect(() => {
     if (collapsible) {
@@ -39,20 +42,23 @@ export function FilterPanelBase({
             type="button"
             className={styles.header}
             onClick={handleToggle}
-            aria-label={expanded ? 'Collapse panel' : 'Expand panel'}
+            aria-label={`${title}: ${expanded ? 'Collapse panel' : 'Expand panel'}`}
             aria-expanded={expanded}
+            aria-controls={titleId}
           >
-            <div className={styles.title} role="heading" aria-level={3}>
+            <div className={styles.title} role="heading" aria-level={headingLevel}>
               {title}
             </div>
-            {expanded
-              ? <Minus color="var(--lv5)" size={14} />
-              : <Plus  color="var(--lv5)" size={14} />
-            }
+            <span aria-hidden="true">
+              {expanded
+                ? <Minus color="var(--lv5)" size={14} />
+                : <Plus  color="var(--lv5)" size={14} />
+              }
+            </span>
           </button>
         ) : (
           <div className={styles.header}>
-            <div className={styles.title} role="heading" aria-level={3}>
+            <div className={styles.title} role="heading" aria-level={headingLevel}>
               {title}
             </div>
           </div>
@@ -60,7 +66,7 @@ export function FilterPanelBase({
       )}
 
       {(!collapsible || expanded) && (
-        <div className={styles.body}>
+        <div id={titleId} className={styles.body} role="region" aria-label={title || 'Filter panel content'}>
           {children}
         </div>
       )}

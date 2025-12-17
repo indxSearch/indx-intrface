@@ -38,8 +38,8 @@ export default function CheckboxPage() {
       <div className={styles.section}>
         <h2 className={styles.heading}>Without Label</h2>
         <div className={styles.column}>
-          <Checkbox />
-          <Checkbox defaultChecked />
+          <Checkbox aria-label="Unchecked checkbox" />
+          <Checkbox aria-label="Checked checkbox" defaultChecked />
         </div>
       </div>
     </main>

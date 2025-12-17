@@ -15,6 +15,9 @@ export interface SelectProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  label?: string;
+  'aria-label'?: string;
+  id?: string;
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -24,18 +27,36 @@ export const Select: React.FC<SelectProps> = ({
   placeholder = 'Select...',
   className = '',
   disabled = false,
+  label,
+  'aria-label': ariaLabel,
+  id,
 }) => {
-  return (
+  const generatedId = React.useId();
+  const selectId = id || generatedId;
+  const labelId = `${selectId}-label`;
+
+  const selectComponent = (
     <RadixSelect.Root value={value} onValueChange={onValueChange} disabled={disabled}>
-      <RadixSelect.Trigger className={`${styles.trigger} ${className} cursor-pointer`}>
+      <RadixSelect.Trigger
+        id={selectId}
+        className={`${styles.trigger} ${className} cursor-pointer`}
+        aria-label={ariaLabel}
+        aria-labelledby={label ? labelId : undefined}
+      >
         <RadixSelect.Value placeholder={placeholder} />
-        <RadixSelect.Icon className={styles.icon}>
+        <RadixSelect.Icon className={styles.icon} aria-hidden="true">
           <Chevron_down size={14} color="currentColor" />
         </RadixSelect.Icon>
       </RadixSelect.Trigger>
 
       <RadixSelect.Portal>
-        <RadixSelect.Content className={styles.content} position="popper" sideOffset={4}>
+        <RadixSelect.Content
+          className={styles.content}
+          position="popper"
+          side="bottom"
+          align="start"
+          sideOffset={4}
+        >
           <RadixSelect.Viewport className={styles.viewport}>
             {options.map((option) => (
               <RadixSelect.Item
@@ -51,4 +72,18 @@ export const Select: React.FC<SelectProps> = ({
       </RadixSelect.Portal>
     </RadixSelect.Root>
   );
+
+  // Only wrap with div if there's a label
+  if (label) {
+    return (
+      <div className={styles.wrapper}>
+        <label id={labelId} htmlFor={selectId} className={styles.label}>
+          {label}
+        </label>
+        {selectComponent}
+      </div>
+    );
+  }
+
+  return selectComponent;
 };

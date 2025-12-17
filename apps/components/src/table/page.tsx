@@ -154,19 +154,19 @@ export default function TablePage() {
           </TableHeader>
           <tbody>
             <TableRow>
-              <td><Checkbox /></td>
+              <td><Checkbox aria-label="Select update documentation task" /></td>
               <td>Update documentation</td>
               <td>High</td>
               <td>In Progress</td>
             </TableRow>
             <TableRow>
-              <td><Checkbox defaultChecked /></td>
+              <td><Checkbox aria-label="Select fix navigation bug task" defaultChecked /></td>
               <td>Fix navigation bug</td>
               <td>Critical</td>
               <td>Completed</td>
             </TableRow>
             <TableRow>
-              <td><Checkbox /></td>
+              <td><Checkbox aria-label="Select add dark mode task" /></td>
               <td>Add dark mode</td>
               <td>Medium</td>
               <td>Planned</td>
@@ -193,6 +193,7 @@ export default function TablePage() {
                   name="plan"
                   value="row1"
                   label=""
+                  aria-label="Select Starter Plan"
                   checked={selectedRow === 'row1'}
                   onChange={() => setSelectedRow('row1')}
                 />
@@ -208,6 +209,7 @@ export default function TablePage() {
                   name="plan"
                   value="row2"
                   label=""
+                  aria-label="Select Pro Plan"
                   checked={selectedRow === 'row2'}
                   onChange={() => setSelectedRow('row2')}
                 />
@@ -223,6 +225,7 @@ export default function TablePage() {
                   name="plan"
                   value="row3"
                   label=""
+                  aria-label="Select Enterprise Plan"
                   checked={selectedRow === 'row3'}
                   onChange={() => setSelectedRow('row3')}
                 />
@@ -248,21 +251,21 @@ export default function TablePage() {
             <TableRow>
               <td>Max Width</td>
               <td>
-                <InputField type="text" defaultValue="1200" />
+                <InputField aria-label="Max Width" type="text" defaultValue="1200" />
               </td>
               <td>px</td>
             </TableRow>
             <TableRow>
               <td>Line Height</td>
               <td>
-                <InputField type="text" defaultValue="1.5" />
+                <InputField aria-label="Line Height" type="text" defaultValue="1.5" />
               </td>
               <td>em</td>
             </TableRow>
             <TableRow>
               <td>Font Size</td>
               <td>
-                <InputField type="text" defaultValue="16" />
+                <InputField aria-label="Font Size" type="text" defaultValue="16" />
               </td>
               <td>px</td>
             </TableRow>
@@ -284,6 +287,7 @@ export default function TablePage() {
               <td>Volume</td>
               <td style={{ width: '300px' }}>
                 <Slider
+                  aria-label="Volume"
                   min={0}
                   max={100}
                   step={1}
@@ -297,6 +301,7 @@ export default function TablePage() {
               <td>Brightness</td>
               <td style={{ width: '300px' }}>
                 <Slider
+                  aria-label="Brightness"
                   min={0}
                   max={100}
                   step={5}
@@ -310,6 +315,7 @@ export default function TablePage() {
               <td>Contrast</td>
               <td style={{ width: '300px' }}>
                 <Slider
+                  aria-label="Contrast"
                   min={0}
                   max={100}
                   step={10}
@@ -336,12 +342,12 @@ export default function TablePage() {
           </TableHeader>
           <tbody>
             <TableRow>
-              <td><Checkbox defaultChecked /></td>
+              <td><Checkbox aria-label="Select Alice Johnson" defaultChecked /></td>
               <TableCell label="Name">
                 <TableValue>Alice Johnson</TableValue>
               </TableCell>
               <td>
-                <InputField type="text" defaultValue="Admin" />
+                <InputField aria-label="Role for Alice Johnson" type="text" defaultValue="Admin" />
               </td>
               <TableCell>
                 <TableValue>Active</TableValue>
@@ -355,12 +361,12 @@ export default function TablePage() {
               </td>
             </TableRow>
             <TableRow>
-              <td><Checkbox /></td>
+              <td><Checkbox aria-label="Select Bob Smith" /></td>
               <TableCell label="Name">
                 <TableValue>Bob Smith</TableValue>
               </TableCell>
               <td>
-                <InputField type="text" defaultValue="Editor" />
+                <InputField aria-label="Role for Bob Smith" type="text" defaultValue="Editor" />
               </td>
               <TableCell>
                 <TableValue>Pending</TableValue>

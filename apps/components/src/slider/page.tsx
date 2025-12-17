@@ -35,6 +35,7 @@ export default function SliderPage() {
         <h2 className={styles.heading}>Single Value</h2>
         <div className={styles.sliderContainer}>
           <Slider
+            aria-label="Single value slider"
             min={0}
             max={100}
             value={singleValue}
@@ -48,6 +49,7 @@ export default function SliderPage() {
         <h2 className={styles.heading}>Range (Two Thumbs)</h2>
         <div className={styles.sliderContainer}>
           <Slider
+            aria-label="Range slider"
             min={0}
             max={100}
             value={rangeValue}
@@ -62,6 +64,7 @@ export default function SliderPage() {
         <h2 className={styles.heading}>With Step</h2>
         <div className={styles.sliderContainer}>
           <Slider
+            aria-label="Slider with step"
             min={0}
             max={100}
             step={10}
@@ -76,6 +79,7 @@ export default function SliderPage() {
         <h2 className={styles.heading}>With Live Range Overlay</h2>
         <div className={styles.sliderContainer}>
           <Slider
+            aria-label="Slider with live range overlay"
             min={0}
             max={100}
             value={liveRangeValue}
@@ -94,6 +98,7 @@ export default function SliderPage() {
         <h2 className={styles.heading}>Faceted Range</h2>
         <div className={styles.sliderContainer}>
           <Slider
+            aria-label="Faceted range slider"
             min={0}
             max={100}
             value={[20, 90]}
@@ -111,6 +116,7 @@ export default function SliderPage() {
         <h2 className={styles.heading}>Disabled State</h2>
         <div className={styles.sliderContainer}>
           <Slider
+            aria-label="Disabled slider"
             min={0}
             max={100}
             value={50}

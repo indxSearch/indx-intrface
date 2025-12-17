@@ -36,6 +36,7 @@ export default function SelectPage() {
         <h2 className={styles.heading}>Basic</h2>
         <div className={styles.column}>
           <Select
+            aria-label="Choose a fruit"
             value={fruit}
             onValueChange={setFruit}
             options={fruitOptions}
@@ -49,6 +50,7 @@ export default function SelectPage() {
         <h2 className={styles.heading}>Sort Options</h2>
         <div className={styles.column}>
           <Select
+            aria-label="Sort by"
             value={sort}
             onValueChange={setSort}
             options={sortOptions}
@@ -62,6 +64,7 @@ export default function SelectPage() {
         <h2 className={styles.heading}>With Placeholder</h2>
         <div className={styles.column}>
           <Select
+            aria-label="Select an option"
             value={controlled}
             onValueChange={setControlled}
             options={fruitOptions}
@@ -77,6 +80,7 @@ export default function SelectPage() {
         <h2 className={styles.heading}>Disabled State</h2>
         <div className={styles.column}>
           <Select
+            aria-label="Disabled select"
             value="banana"
             onValueChange={() => {}}
             options={fruitOptions}
@@ -89,12 +93,14 @@ export default function SelectPage() {
         <h2 className={styles.heading}>Different Widths</h2>
         <div className={styles.column}>
           <Select
+            aria-label="Small select"
             value={fruit}
             onValueChange={setFruit}
             options={fruitOptions}
             className={styles.smallSelect}
           />
           <Select
+            aria-label="Large select"
             value={sort}
             onValueChange={setSort}
             options={sortOptions}

@@ -11,6 +11,8 @@ export interface PopoverProps {
   side?: 'top' | 'right' | 'bottom' | 'left';
   sideOffset?: number;
   className?: string;
+  'aria-label'?: string;
+  'aria-describedby'?: string;
 }
 
 export const Popover: React.FC<PopoverProps> = ({
@@ -22,6 +24,8 @@ export const Popover: React.FC<PopoverProps> = ({
   side = 'bottom',
   sideOffset = 5,
   className = '',
+  'aria-label': ariaLabel,
+  'aria-describedby': ariaDescribedBy,
 }) => {
   return (
     <RadixPopover.Root open={open} onOpenChange={onOpenChange}>
@@ -34,6 +38,8 @@ export const Popover: React.FC<PopoverProps> = ({
           align={align}
           side={side}
           sideOffset={sideOffset}
+          aria-label={ariaLabel}
+          aria-describedby={ariaDescribedBy}
         >
           {children}
         </RadixPopover.Content>

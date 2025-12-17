@@ -7,6 +7,7 @@ type ToggleSwitchProps = {
   onChange: (checked: boolean) => void;
   disabled?: boolean;
   label?: string;
+  'aria-label'?: string;
 };
 
 export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
@@ -15,6 +16,7 @@ export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
   onChange,
   disabled = false,
   label,
+  'aria-label': ariaLabel,
 }) => {
   const generatedId = React.useId();
   const switchId = id || generatedId;
@@ -27,11 +29,14 @@ export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
       <input
         id={switchId}
         type="checkbox"
+        role="switch"
+        aria-checked={checked}
+        aria-label={ariaLabel}
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
         disabled={disabled}
       />
-      <span className={styles.slider}></span>
+      <span className={styles.slider} aria-hidden="true"></span>
       {label && <span className={styles.label}>{label}</span>}
     </label>
   );

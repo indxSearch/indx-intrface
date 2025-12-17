@@ -15,7 +15,7 @@
 
 .desc {
   font: var(--text-base);
-  color: var(--lv4);
+  color: var(--lv5);
 }
 
 .heading {
@@ -25,7 +25,7 @@
 
 .subtext {
   font: var(--text-sm);
-  color: var(--lv4);
+  color: var(--lv5);
   margin-bottom: 1rem;
 }
 

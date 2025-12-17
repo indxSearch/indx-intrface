@@ -5,6 +5,15 @@
     background-color: var(--lv0);
 }
 
+.caption {
+    caption-side: top;
+    text-align: left;
+    padding: 10px 15px;
+    font: var(--text-sm);
+    font-weight: var(--med);
+    color: var(--lv7);
+}
+
 .table th,
 .table td {
     text-align: left;

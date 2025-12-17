@@ -8,11 +8,19 @@ interface IconProps {
 
 interface TableIconProps {
   children: React.ReactElement<IconProps>
+  'aria-label'?: string
 }
 
-export function TableIcon({ children }: TableIconProps) {
+export function TableIcon({ children, 'aria-label': ariaLabel }: TableIconProps) {
+  // If no aria-label is provided, the icon is decorative
+  const isDecorative = !ariaLabel;
+
   return (
-    <span className={styles.icon}>
+    <span
+      className={styles.icon}
+      aria-hidden={isDecorative ? 'true' : undefined}
+      aria-label={ariaLabel}
+    >
       {React.cloneElement(children, { size: '14px', color: 'currentColor' })}
     </span>
   )
