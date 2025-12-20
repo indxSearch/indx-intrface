@@ -97,7 +97,9 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ fields, resultsPer
             size="micro"
             onClick={handleLoadMore}
           >
-            Load more {truncationIndex}
+            {truncationIndex !== -1 && truncationIndex !== undefined && truncationIndex > 0
+              ? `Load results ${visibleCount + 1}-${Math.min(visibleCount + pageSize, results.length, truncationIndex)} of ${truncationIndex}`
+              : 'Load more'}
           </Button>
         </div>
       )}
