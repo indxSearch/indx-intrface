@@ -51,6 +51,7 @@ export interface SearchState {
   sortAscending?: boolean; // Whether the current sort is ascending (true) or descending (false)
   searchSettings: SearchSettings;
   truncationIndex?: number;
+  totalDocumentCount?: number; // Total number of documents in the dataset
 }
 
 export interface SearchContextType {
@@ -1027,6 +1028,7 @@ const searchWithFacets = useCallback(() => {
         setState(prev => ({
           ...prev,
           facetStats: newFacetStats,
+          totalDocumentCount: recordCount,
         }));
 
         if (enableDebugLogs) {

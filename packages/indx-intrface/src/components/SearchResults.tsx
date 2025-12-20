@@ -13,7 +13,7 @@ export interface SearchResultsProps {
 
 export const SearchResults: React.FC<SearchResultsProps> = ({ fields, resultsPerPage, children }) => {
   const {
-    state: { results, resultsSuppressed, searchSettings, truncationIndex, query, filters, rangeFilters },
+    state: { results, resultsSuppressed, searchSettings, truncationIndex, query, filters, rangeFilters, totalDocumentCount },
     isFetchingInitial,
     fetchMoreResults,
   } = useSearchContext();
@@ -125,9 +125,21 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ fields, resultsPer
             size="micro"
             onClick={handleLoadMore}
           >
-            {truncationIndex !== -1 && truncationIndex !== undefined && truncationIndex > 0
-              ? `Load results ${visibleCount + 1}-${Math.min(visibleCount + pageSize, results.length, truncationIndex)} of ${truncationIndex}`
-              : 'Load more'}
+            {(() => {
+              const isEmptySearch = query.trim() === '';
+
+              // For empty searches, just show "Load more" without count
+              if (isEmptySearch) {
+                return 'Load more';
+              }
+
+              // For text searches, show pagination with truncationIndex
+              if (truncationIndex !== -1 && truncationIndex !== undefined && truncationIndex > 0) {
+                return `Load results ${visibleCount + 1}-${Math.min(visibleCount + pageSize, results.length, truncationIndex)} of ${truncationIndex}`;
+              }
+
+              return 'Load more';
+            })()}
           </Button>
         </div>
       )}
