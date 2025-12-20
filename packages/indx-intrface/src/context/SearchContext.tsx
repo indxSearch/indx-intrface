@@ -65,6 +65,7 @@ export interface SearchContextType {
   setSort: (field: string | null, ascending: boolean) => void; // Sets the sort field and direction
   setDebounceDelay?: (ms: number) => void; // Optional: Updates the debounce delay for faceted searches
   setSearchSettings: (settings: Partial<SearchSettings>) => void;
+  fetchMoreResults: (newMax: number) => void; // Fetches more results by increasing maxNumberOfRecordsToReturn
 }
 
 // Create the search context
@@ -119,6 +120,7 @@ export const SearchProvider: React.FC<{
   const performSearchRef = useRef<((options: { enableFacets: boolean }) => Promise<void>) | undefined>(undefined); // Stable ref to latest performSearch
   const hasInitialized = useRef(false); // Track if initial search has completed
   const filterEffectHasRun = useRef(false); // Track if filter effect has run at least once
+  const shouldFetchMore = useRef(false); // Track if we should fetch more results
   const [state, setState] = useState<SearchState>({
     query: '',
     results: null,
@@ -211,8 +213,12 @@ export const SearchProvider: React.FC<{
       query,
       filters: {},
       rangeFilters: {},
+      searchSettings: {
+        ...prev.searchSettings,
+        maxNumberOfRecordsToReturn: maxResults,
+      },
     }));
-  }, []);
+  }, [maxResults]);
 
   // Function to update the debounce delay for faceted searches
   const setDebounceDelay = useCallback((ms: number) => {
@@ -232,6 +238,17 @@ export const SearchProvider: React.FC<{
           ...prev.searchSettings.coverageSetup,
           ...(settings.coverageSetup || {}),
         },
+      },
+    }));
+  }, []);
+
+  const fetchMoreResults = useCallback((newMax: number) => {
+    shouldFetchMore.current = true;
+    setState(prev => ({
+      ...prev,
+      searchSettings: {
+        ...prev.searchSettings,
+        maxNumberOfRecordsToReturn: newMax,
       },
     }));
   }, []);
@@ -744,6 +761,16 @@ const searchWithFacets = useCallback(() => {
     }
   }, [sortBy, sortAscending]);
 
+  // Effect for fetchMoreResults - immediate search without facets
+  useEffect(() => {
+    if (!hasInitialized.current || !token) return;
+
+    if (shouldFetchMore.current) {
+      shouldFetchMore.current = false;
+      performSearchRef.current?.({ enableFacets: false });
+    }
+  }, [settingsMaxResults, token]);
+
   useEffect(() => {
     const authenticate = async () => {
       try {
@@ -1053,7 +1080,8 @@ const searchWithFacets = useCallback(() => {
         resetSingleFilter,
         setSort,
         setDebounceDelay,
-        setSearchSettings
+        setSearchSettings,
+        fetchMoreResults
       }}
     >
       {children}

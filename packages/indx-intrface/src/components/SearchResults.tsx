@@ -1,5 +1,5 @@
 // SearchResults.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './SearchResults.module.css';
 import { useSearchContext } from '../context/SearchContext';
 import { Indx } from '@indxsearch/pixl';
@@ -13,19 +13,47 @@ export interface SearchResultsProps {
 
 export const SearchResults: React.FC<SearchResultsProps> = ({ fields, resultsPerPage, children }) => {
   const {
-    state: { results, resultsSuppressed, searchSettings, truncationIndex },
+    state: { results, resultsSuppressed, searchSettings, truncationIndex, query, filters, rangeFilters },
     isFetchingInitial,
+    fetchMoreResults,
   } = useSearchContext();
 
   const pageSize = resultsPerPage ?? 30;
   const [visibleCount, setVisibleCount] = useState(pageSize);
+  const previousResultsLength = useRef<number>(0);
+  const previousQuery = useRef<string>('');
+
   useEffect(() => {
-    setVisibleCount(pageSize);
-  }, [results]);
+    // Reset visibleCount if:
+    // 1. Results went to null (loading state)
+    // 2. Results shrunk (new search with fewer results)
+    // 3. Query changed (new search)
+    const queryChanged = query !== previousQuery.current;
+
+    if (!results || (results.length < previousResultsLength.current) || queryChanged) {
+      setVisibleCount(pageSize);
+    }
+
+    previousResultsLength.current = results?.length ?? 0;
+    previousQuery.current = query;
+  }, [results, pageSize, query]);
+
   const canLoadMore = results && results.length > visibleCount;
 
   const handleLoadMore = () => {
-    setVisibleCount(prev => prev + pageSize);
+    const newVisibleCount = visibleCount + pageSize;
+    setVisibleCount(newVisibleCount);
+
+    // Check if we need to fetch more results from the server
+    // Fetch if: we're about to show all cached results AND there might be more available
+    if (results && newVisibleCount >= results.length) {
+      // Check if there are potentially more results (truncationIndex > current results or undefined/-1)
+      const mightHaveMore = !truncationIndex || truncationIndex === -1 || truncationIndex > results.length;
+
+      if (mightHaveMore) {
+        fetchMoreResults(results.length + pageSize);
+      }
+    }
   };
 
   if (isFetchingInitial || resultsSuppressed || results === null) {
