@@ -84,8 +84,8 @@ function debounce<F extends (...args: any[]) => void>(fn: F, delay: number) {
 // SearchProvider component that manages the search state and provides the search context
 export const SearchProvider: React.FC<{
   children: React.ReactNode;
-  email: string;
-  password: string;
+  email?: string;
+  password?: string;
   url: string;
   dataset: string;
   allowEmptySearch?: boolean;

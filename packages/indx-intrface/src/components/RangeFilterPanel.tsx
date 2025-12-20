@@ -256,6 +256,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
           }}
         >
           <InputField
+            label="Min:"
             type="number"
             value={isDisabled ? queryMin : sliderValue[0]}
             min={queryMin}
@@ -266,6 +267,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
             isValid={isDisabled || !isMinInvalid}
           />
           <InputField
+            label="Max:"
             type="number"
             value={isDisabled ? queryMax : sliderValue[1]}
             min={Math.max(liveDataMin, sliderValue[0] + 1)}

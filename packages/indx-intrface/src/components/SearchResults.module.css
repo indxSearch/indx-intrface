@@ -19,7 +19,7 @@
     border-bottom: 1px solid var(--lv0);
     font: var(--text-xs);
     position: relative;
-    color: var(--lv4);
+    color: var(--lv5);
 }
 
 @media (prefers-color-scheme: dark) {
