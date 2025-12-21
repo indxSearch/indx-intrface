@@ -40,8 +40,7 @@ export const Select: React.FC<SelectProps> = ({
       <RadixSelect.Trigger
         id={selectId}
         className={`${styles.trigger} ${className} cursor-pointer`}
-        aria-label={ariaLabel}
-        aria-labelledby={label ? labelId : undefined}
+        {...(label ? { 'aria-labelledby': labelId } : ariaLabel ? { 'aria-label': ariaLabel } : {})}
       >
         <RadixSelect.Value placeholder={placeholder} />
         <RadixSelect.Icon className={styles.icon} aria-hidden="true">

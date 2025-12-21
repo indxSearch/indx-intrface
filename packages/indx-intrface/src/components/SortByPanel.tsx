@@ -51,6 +51,7 @@ export const SortByPanel: React.FC<SortByPanelProps> = ({ displayType = 'dropdow
             onValueChange={handleChange}
             options={options}
             placeholder="Select sort..."
+            aria-label="Sort by"
           />
         ) : (
           <div className={styles.radioGroup}>

@@ -8,7 +8,6 @@ type Props = {
   className?: string;
   collapsible?: boolean;
   collapsed?: boolean;
-  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
 };
 
 export function FilterPanelBase({
@@ -17,7 +16,6 @@ export function FilterPanelBase({
   className = '',
   collapsible = true,
   collapsed = false,
-  headingLevel = 3,
 }: Props) {
   const [expanded, setExpanded] = useState(() => !collapsed);
   const titleId = React.useId();
@@ -46,7 +44,7 @@ export function FilterPanelBase({
             aria-expanded={expanded}
             aria-controls={titleId}
           >
-            <div className={styles.title} role="heading" aria-level={headingLevel}>
+            <div className={styles.title}>
               {title}
             </div>
             <span aria-hidden="true">
@@ -58,7 +56,7 @@ export function FilterPanelBase({
           </button>
         ) : (
           <div className={styles.header}>
-            <div className={styles.title} role="heading" aria-level={headingLevel}>
+            <div className={styles.title}>
               {title}
             </div>
           </div>
