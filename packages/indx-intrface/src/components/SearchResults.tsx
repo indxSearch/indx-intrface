@@ -13,7 +13,7 @@ export interface SearchResultsProps {
 
 export const SearchResults: React.FC<SearchResultsProps> = ({ fields, resultsPerPage, children }) => {
   const {
-    state: { results, resultsSuppressed, searchSettings, truncationIndex, query, filters, rangeFilters, totalDocumentCount },
+    state: { results, resultsSuppressed, searchSettings, truncationIndex, query },
     isFetchingInitial,
     fetchMoreResults,
   } = useSearchContext();

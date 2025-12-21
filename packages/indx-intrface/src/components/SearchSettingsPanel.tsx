@@ -94,6 +94,7 @@ export function SearchSettingsPanel() {
                     // val is a SingleValue (number)
                     setSearchSettings({ minimumScore: val as number });
                     }}
+                    aria-label="Minimum score"
                 />
             </div>
         </li>

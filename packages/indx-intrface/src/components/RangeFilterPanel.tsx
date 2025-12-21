@@ -244,6 +244,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
             activeMax={liveDataMax}
             isFaceted={isFaceted}
             highlightFaceted={isSelfActive}
+            aria-label={label || `Filter by ${field}`}
           />
         </div>
         <div
