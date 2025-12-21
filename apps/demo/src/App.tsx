@@ -51,7 +51,7 @@ const Tag: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 const renderResult = (item: any) => {
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', font: 'var(--text-base)', color: 'var(--lv8)', marginBottom: '0.5rem' }}>
         {item.name}
         {item.is_legendary && <Spark color="gold" size={14} />}
         {item.type1 && <Tag>{item.type1}</Tag>}

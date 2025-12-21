@@ -30,10 +30,6 @@
 .row:last-child {
     border-bottom: none;
 }
-.row h2 {
-    font: var(--text-base);
-    color: var(--lv8);
-}
 .row > div {
     display: flex;
     flex-direction: column;
