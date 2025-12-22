@@ -6,16 +6,28 @@ interface IconProps {
   color?: string;
 }
 
-export function Button(
-  props: Omit<React.ComponentProps<'button'>, 'className'> & {
-    size?: 'micro' | 'default' | 'large';
-    variant?: 'primary' | 'secondary' | 'ghost';
-    iconLeft?: React.ReactElement<IconProps>;
-    iconRight?: React.ReactElement<IconProps>;
-    className?: string;
-  }
-) {
-  const { size = 'default', variant = 'primary', iconLeft, iconRight, className, children, type = 'button', ...rest } = props;
+type ButtonBaseProps = {
+  size?: 'micro' | 'default' | 'large';
+  variant?: 'primary' | 'secondary' | 'ghost';
+  iconLeft?: React.ReactElement<IconProps>;
+  iconRight?: React.ReactElement<IconProps>;
+  className?: string;
+};
+
+type ButtonAsButton = ButtonBaseProps & Omit<React.ComponentProps<'button'>, keyof ButtonBaseProps> & {
+  href?: never;
+};
+
+type ButtonAsLink = ButtonBaseProps & Omit<React.ComponentProps<'a'>, keyof ButtonBaseProps> & {
+  href: string;
+};
+
+export type ButtonProps = ButtonAsButton | ButtonAsLink;
+
+export function Button(props: ButtonProps) {
+  const { size = 'default', variant = 'primary', iconLeft, iconRight, className, children, ...rest } = props;
+  const { href } = rest as { href?: string };
+  const disabled = 'disabled' in rest ? rest.disabled : false;
 
   const iconSize = size === 'micro' ? '14px' : size === 'large' ? '21px' : '14px';
 
@@ -23,7 +35,7 @@ export function Button(
     styles.button,
     styles[size],
     styles[variant],
-    rest.disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+    disabled ? 'cursor-not-allowed' : 'cursor-pointer',
     className
   ].filter(Boolean).join(' ');
 
@@ -36,11 +48,33 @@ export function Button(
     }
   }
 
-  return (
-    <button className={buttonClassName} type={type} {...rest}>
+  const content = (
+    <>
       {iconLeft && React.cloneElement(iconLeft, { size: iconSize, color: 'currentColor' })}
       {children}
       {iconRight && React.cloneElement(iconRight, { size: iconSize, color: 'currentColor' })}
+    </>
+  );
+
+  if (href) {
+    const { type, disabled: _, ...anchorProps } = rest as any;
+    return (
+      <a
+        className={buttonClassName}
+        href={href}
+        {...anchorProps}
+        aria-disabled={disabled ? 'true' : undefined}
+        onClick={disabled ? (e) => e.preventDefault() : anchorProps.onClick}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  const { type = 'button', ...buttonProps } = rest as any;
+  return (
+    <button className={buttonClassName} type={type} {...buttonProps}>
+      {content}
     </button>
   );
 }
