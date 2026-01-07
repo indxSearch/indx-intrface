@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import '@indxsearch/systm/styles.css';
 import '@indxsearch/systm/cursors.css';
 import '@indxsearch/systm/patterns.css';
-import '@indxsearch/fonts/fonts.css';
+// import '@indxsearch/fonts/fonts.css';
 import './globals.css';
 import App from './App';
 
