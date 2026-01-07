@@ -69,7 +69,7 @@ This is a monorepo containing multiple packages:
 |---------|-------------|---------|-----|
 | **[@indxsearch/intrface](./packages/indx-intrface)** | Search UI components (featured above) | Apache-2.0 | `npm i @indxsearch/intrface` |
 | **[@indxsearch/systm](./packages/indx-systm)** | Design system with tokens, UI components, patterns, cursors | [Custom¹](#licensing) | `npm i @indxsearch/systm` |
-| **[@indxsearch/pixl](https://www.npmjs.com/package/@indxsearch/pixl)** | Icon library (separate package, v1.2) | Apache-2.0 | `npm i @indxsearch/pixl` |
+| **[@indxsearch/pixl](https://www.npmjs.com/package/@indxsearch/pixl)** | Icon library (separate package) | Apache-2.0 | `npm i @indxsearch/pixl` |
 
 **¹ See [Licensing](#licensing) below**
 
