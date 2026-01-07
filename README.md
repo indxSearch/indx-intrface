@@ -1,6 +1,6 @@
 # Indx Interface
 
-**Build powerful search interfaces in minutes.** React components for full-text search, faceted filtering, and dynamic results powered by the INDX Search API.
+**A complete React UI kit for building search interfaces with Indx.** Everything you need to add full-text search, faceted filtering, and dynamic results to your React application.
 
 ```typescript
 <SearchProvider url={url} email={email} password={password} dataset="products">
@@ -77,6 +77,14 @@ function App() {
 - TypeScript support with full type safety
 - React 19 compatible
 
+---
+
+**📖 [View Full Documentation →](./packages/indx-intrface/README.md)**
+
+Complete API reference, examples, authentication methods, troubleshooting, and more.
+
+---
+
 ## Part of the Indx Search Ecosystem
 
 This library is designed to work with the **Indx Search** platform:
@@ -86,12 +94,6 @@ This library is designed to work with the **Indx Search** platform:
 - **indx-intrface** (this repo) - React UI components for building search interfaces
 
 **Compatibility:** This version is compatible with **IndxCloudApi v1.0**.
-
-## Documentation
-
-- **[Getting Started Guide](./GETTING_STARTED.md)** - Step-by-step setup tutorial
-- **[Full API Reference](./packages/indx-intrface/README.md)** - Complete component documentation
-- **[API Guide](./INDX_API_GUIDE.md)** - INDX server API documentation
 
 ## Repository Structure
 
@@ -103,87 +105,6 @@ This is a monorepo containing multiple packages:
 | **[@indxsearch/systm](./packages/indx-systm)** | Design system with tokens, UI components, patterns, cursors | [Custom¹](#licensing) | `npm i @indxsearch/systm` |
 
 **¹ See [Licensing](#licensing) below**
-
-## Examples
-
-### E-commerce Search
-
-```typescript
-<SearchProvider
-  url={url}
-  email={email}
-  password={password}
-  dataset="products"
->
-  <div className="search-page">
-    <SearchInput placeholder="Search products..." />
-
-    <aside className="filters">
-      <ActiveFiltersPanel />
-      <ValueFilterPanel field="category" label="Category" />
-      <ValueFilterPanel field="brand" label="Brand" displayType="button" />
-      <RangeFilterPanel field="price" label="Price" min={0} max={1000} />
-    </aside>
-
-    <main>
-      <SortByPanel />
-      <SearchResults fields={['name', 'price', 'image']} resultsPerPage={24}>
-        {(product) => <ProductCard {...product} />}
-      </SearchResults>
-    </main>
-  </div>
-</SearchProvider>
-```
-
-### Document Search
-
-```typescript
-<SearchProvider
-  url={url}
-  email={email}
-  password={password}
-  dataset="docs"
->
-  <SearchInput placeholder="Search documentation..." />
-
-  <ValueFilterPanel field="category" label="Category" />
-  <ValueFilterPanel field="tags" label="Tags" displayType="button" layout="grid" />
-
-  <SearchResults fields={['title', 'content', 'url']} resultsPerPage={10}>
-    {(doc) => (
-      <article>
-        <h2><a href={doc.url}>{doc.title}</a></h2>
-        <p>{doc.content.substring(0, 200)}...</p>
-      </article>
-    )}
-  </SearchResults>
-</SearchProvider>
-```
-
-## Authentication
-
-Two methods supported:
-
-**Bearer Token (Production)**
-```typescript
-<SearchProvider
-  url={url}
-  preAuthenticatedToken={token}
-  dataset="products"
->
-```
-
-**Email/Password (Development)**
-```typescript
-<SearchProvider
-  url={url}
-  email={email}
-  password={password}
-  dataset="products"
->
-```
-
-Authentication happens automatically. Just provide credentials and start searching.
 
 ## Licensing
 
@@ -198,7 +119,6 @@ This repository uses **multiple licenses**:
   - ✅ Free for non-commercial use
   - ✅ Personal projects, education, open source
   - ❌ Cannot resell or use in competing commercial products
-  - 📧 [Contact us](mailto:post@indx.co) for commercial licensing
 
 **See [LICENSES.md](./LICENSES.md) for full details.**
 
@@ -214,6 +134,11 @@ Run locally:
 npm install
 npm run dev
 ```
+
+## Additional Resources
+
+- **[Getting Started Guide](./GETTING_STARTED.md)** - Step-by-step tutorial for first-time setup
+- **[API Guide](./INDX_API_GUIDE.md)** - IndxCloudApi server API documentation
 
 ---
 
