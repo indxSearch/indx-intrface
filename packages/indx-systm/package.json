@@ -20,6 +20,11 @@
   ],
   "author": "Indx Search",
   "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/indxSearch/indx-intrface.git",
+    "directory": "packages/indx-systm"
+  },
   "type": "module",
   "main": "dist/index.umd.js",
   "module": "dist/index.es.js",

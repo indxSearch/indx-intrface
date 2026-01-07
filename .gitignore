@@ -33,3 +33,6 @@ pnpm-debug.log*
 
 packages/**/dist
 dist/
+
+# Claude Code configuration
+.claude/
