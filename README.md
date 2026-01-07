@@ -2,6 +2,8 @@
 
 **A complete React UI kit for building search interfaces with Indx.** Everything you need to add full-text search, faceted filtering, and dynamic results to your React application.
 
+ **[View live demo here](https://www.indx.co)** and **[View all components here](https://indx-components.vercel.app)**
+
 ```typescript
 <SearchProvider url={url} email={email} password={password} dataset="products">
   <SearchInput placeholder="Search products..." />
