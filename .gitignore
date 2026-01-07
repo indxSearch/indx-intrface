@@ -23,6 +23,7 @@ apps/demo/.env.local
 # Misc
 .DS_Store
 *.pem
+*.tgz
 
 # Debug logs
 npm-debug.log*

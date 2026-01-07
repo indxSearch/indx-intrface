@@ -1,0 +1,54 @@
+# Indx Design System License
+
+Version 1.0
+
+Copyright (c) Indx
+
+## 1. Grant of License
+
+Subject to the terms of this license, permission is hereby granted to any
+person obtaining a copy of this software and associated files (the "Software")
+to use, copy, modify, and distribute the Software **for non-commercial purposes only**.
+
+This includes:
+- Personal projects
+- Internal company use
+- Educational use
+- Open-source projects
+- Evaluation and prototyping
+
+## 2. Restrictions
+
+You may **not**, without prior written permission from Indx:
+
+- Sell, license, or sublicense the Software
+- Use the Software as part of a commercial product or service that is sold,
+  licensed, or offered for a fee
+- Use the Software to create or offer a competing product or service
+- Redistribute the Software as part of a UI kit, design system, or theme
+- Use the Software in a way that implies endorsement by Indx
+
+## 3. Branding
+
+This license does not grant permission to use Indx trademarks, logos,
+or brand identifiers except as included within the Software for
+non-commercial use.
+
+## 4. Attribution
+
+You must retain all copyright notices and this license in any copies
+or substantial portions of the Software.
+
+## 5. Disclaimer
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+## 6. Termination
+
+This license is automatically terminated if you violate its terms.
+
+---
+
+For commercial licensing inquiries, please contact: licensing@indx.dev
