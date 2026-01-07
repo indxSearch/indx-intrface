@@ -23,40 +23,6 @@
 - **Fully Customizable** - Use our styles or bring your own
 - **Type Safe** - Built with TypeScript for great DX
 
-## Quick Start
-
-```bash
-npm install @indxsearch/intrface @indxsearch/systm @indxsearch/pixl
-```
-
-```typescript
-import { SearchProvider, SearchInput, SearchResults } from '@indxsearch/intrface';
-import '@indxsearch/intrface/styles.css';
-
-function App() {
-  return (
-    <SearchProvider
-      url="https://your-indx-server.com"
-      email="your@email.com"
-      password="yourpassword"
-      dataset="products"
-    >
-      <SearchInput />
-      <SearchResults fields={['name', 'description']} resultsPerPage={10}>
-        {(item) => (
-          <div>
-            <h3>{item.name}</h3>
-            <p>{item.description}</p>
-          </div>
-        )}
-      </SearchResults>
-    </SearchProvider>
-  );
-}
-```
-
-**That's it.** You now have a working search interface with fuzzy matching, debouncing, and automatic authentication.
-
 ## Features
 
 ### Core Search
@@ -79,7 +45,7 @@ function App() {
 
 ---
 
-**📖 [View Full Documentation →](./packages/indx-intrface/README.md)**
+**📖 [README →](./packages/indx-intrface/README.md)**
 
 Complete API reference, examples, authentication methods, troubleshooting, and more.
 
