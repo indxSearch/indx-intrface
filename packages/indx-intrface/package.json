@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "@indxsearch/systm": "^1.2.0",
-    "@indxsearch/pixl": "^1.1.1",
+    "@indxsearch/pixl": "^1.2.0",
     "react-range": "^1.10.0"
   },
   "publishConfig": {
