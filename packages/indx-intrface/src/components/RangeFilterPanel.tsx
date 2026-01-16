@@ -113,8 +113,8 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
     const filterTimer = setTimeout(() => {
       if (isValidMin && isValidMax) {
         if (finalMin === queryMin && finalMax === queryMax) {
-          // Slider at full query bounds, no filtering needed
-          resetSingleFilter(field);
+          // Slider at full query bounds, no filtering needed (not a user action)
+          resetSingleFilter(field, undefined, false);
         } else {
           // Store as intended values (these will be sent to API)
           setRangeFilter(field, finalMin, finalMax);
@@ -154,10 +154,10 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
     const clampedMin = Math.max(queryMin, Math.min(liveDataMax, values[0]));
     const clampedMax = Math.max(liveDataMin, Math.min(queryMax, values[1]));
 
-    // If dragged to full range, immediately clear the filter
+    // If dragged to full range, immediately clear the filter (IS a user action)
     if (clampedMin === queryMin && clampedMax === queryMax) {
       setSliderValue([queryMin, queryMax]);
-      resetSingleFilter(field);
+      resetSingleFilter(field, undefined, true);
     } else {
       setSliderValue([clampedMin, clampedMax]);
     }

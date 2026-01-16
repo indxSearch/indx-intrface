@@ -12,8 +12,8 @@
   "dependencies": {
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
-    "@indxsearch/intrface": "^1.0.5",
-    "@indxsearch/systm": "^1.2.0",
+    "@indxsearch/intrface": "^2.0.1",
+    "@indxsearch/systm": "^2.0.0",
     "@indxsearch/pixl": "^1.2.0"
   },
   "devDependencies": {
