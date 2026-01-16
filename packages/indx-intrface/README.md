@@ -12,6 +12,17 @@ A powerful, flexible React search UI library for INDX Search API.
 - 🎨 **Customizable rendering** - Full control over result display
 - 🔒 **Secure authentication** - Session-based authentication with automatic login
 
+## Compatibility
+
+| Package | Version |
+|---------|---------|
+| **IndxCloudApi** | `1.0.0` |
+| **React** | `^19.0.0` |
+| **React DOM** | `^19.0.0` |
+| **Node.js** | `>=16.0.0` |
+
+> **Note:** This library is designed specifically for IndxCloudApi version 1.0.0. Different API versions may have incompatible changes.
+
 ## Installation
 
 ```bash

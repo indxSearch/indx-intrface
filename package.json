@@ -19,7 +19,8 @@
     "build:demo": "npm run build --workspace=demo",
     "build:components": "npm run build --workspace=components-viewer",
     "build": "npm run build:packages && npm run build:demo && npm run build:components",
-    "start:demo": "npm run start --workspace=demo"
+    "start:demo": "npm run preview --workspace=demo",
+    "preview:demo": "npm run preview --workspace=demo"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

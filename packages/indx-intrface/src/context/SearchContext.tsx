@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 
 export interface SearchSettings {
   maxNumberOfRecordsToReturn: number;
@@ -62,7 +62,7 @@ export interface SearchContextType {
   toggleFilter: (field: string, value: string) => void; // Toggles a value filter on/off for a given field
   setRangeFilter: (field: string, min: number, max: number) => void; // Sets min/max values for a range filter
   resetFilters: () => void; // Clears all active filters and range filters
-  resetSingleFilter: (field: string, value?: string) => void; // Resets a specific value filter or range filter
+  resetSingleFilter: (field: string, value?: string, isUserAction?: boolean) => void; // Resets a specific value filter or range filter
   setSort: (field: string | null, ascending: boolean) => void; // Sets the sort field and direction
   setDebounceDelay?: (ms: number) => void; // Optional: Updates the debounce delay for faceted searches
   setSearchSettings: (settings: Partial<SearchSettings>) => void;
@@ -122,6 +122,7 @@ export const SearchProvider: React.FC<{
   const hasInitialized = useRef(false); // Track if initial search has completed
   const filterEffectHasRun = useRef(false); // Track if filter effect has run at least once
   const shouldFetchMore = useRef(false); // Track if we should fetch more results
+  const filtersChangedByUser = useRef(false); // Track if filters were changed by user action (not query change)
   const [state, setState] = useState<SearchState>({
     query: '',
     results: null,
@@ -209,16 +210,23 @@ export const SearchProvider: React.FC<{
 
   // Function to update the search query text
   const setQuery = useCallback((query: string) => {
-    setState(prev => ({
-      ...prev,
-      query,
-      filters: {},
-      rangeFilters: {},
-      searchSettings: {
-        ...prev.searchSettings,
-        maxNumberOfRecordsToReturn: maxResults,
-      },
-    }));
+    filtersChangedByUser.current = false; // Query change clears filters, not a user filter action
+    setState(prev => {
+      // Preserve empty filter references to avoid triggering filter effect unnecessarily
+      const hasFilters = Object.keys(prev.filters).length > 0;
+      const hasRangeFilters = Object.keys(prev.rangeFilters).length > 0;
+
+      return {
+        ...prev,
+        query,
+        filters: hasFilters ? {} : prev.filters,
+        rangeFilters: hasRangeFilters ? {} : prev.rangeFilters,
+        searchSettings: {
+          ...prev.searchSettings,
+          maxNumberOfRecordsToReturn: maxResults,
+        },
+      };
+    });
   }, [maxResults]);
 
   // Function to update the debounce delay for faceted searches
@@ -230,17 +238,25 @@ export const SearchProvider: React.FC<{
   }, []);
 
   const setSearchSettings = useCallback((settings: Partial<SearchSettings>) => {
-    setState(prev => ({
-      ...prev,
-      searchSettings: {
-        ...prev.searchSettings,
-        ...settings,
-        coverageSetup: {
+    setState(prev => {
+      const newSettings = { ...prev.searchSettings, ...settings };
+
+      // Preserve coverageSetup reference if not explicitly provided
+      if (!settings.coverageSetup) {
+        newSettings.coverageSetup = prev.searchSettings.coverageSetup;
+      } else {
+        // Merge with existing when provided
+        newSettings.coverageSetup = {
           ...prev.searchSettings.coverageSetup,
-          ...(settings.coverageSetup || {}),
-        },
-      },
-    }));
+          ...settings.coverageSetup,
+        };
+      }
+
+      return {
+        ...prev,
+        searchSettings: newSettings,
+      };
+    });
   }, []);
 
   const fetchMoreResults = useCallback((newMax: number) => {
@@ -256,6 +272,7 @@ export const SearchProvider: React.FC<{
 
   // Function to toggle a value filter on/off for a given field
   const toggleFilter = useCallback((field: string, value: string) => {
+    filtersChangedByUser.current = true; // User explicitly toggled a filter
     setState(prev => {
       const updatedFilters = { ...prev.filters };
       const currentValues = updatedFilters[field] || [];
@@ -278,6 +295,7 @@ export const SearchProvider: React.FC<{
 
   // Function to set min/max values for a range filter
   const setRangeFilter = useCallback((field: string, min: number, max: number) => {
+    filtersChangedByUser.current = true; // User explicitly set a range filter
     setState(prev => ({
       ...prev,
       rangeFilters: {
@@ -289,6 +307,7 @@ export const SearchProvider: React.FC<{
 
   // Function to clear all active filters and range filters
   const resetFilters = useCallback(() => {
+    filtersChangedByUser.current = true; // User explicitly reset all filters
     setState(prev => ({
       ...prev,
       filters: {},
@@ -297,7 +316,11 @@ export const SearchProvider: React.FC<{
   }, []);
 
   // Function to reset a specific value filter or range filter
-  const resetSingleFilter = useCallback((field: string, value?: string) => {
+  const resetSingleFilter = useCallback((field: string, value?: string, isUserAction: boolean = true) => {
+    // Only set flag if this is a user-initiated action
+    if (isUserAction) {
+      filtersChangedByUser.current = true;
+    }
     setState(prev => {
       const updatedFilters = { ...prev.filters };
       const updatedRangeFilters = { ...prev.rangeFilters };
@@ -366,21 +389,8 @@ export const SearchProvider: React.FC<{
   const sortBy = state.sortBy;
   const sortAscending = state.sortAscending;
 
-  // Memoize coverageSetup to prevent unnecessary re-renders
-  const settingsCoverageSetup = useMemo(() => state.searchSettings.coverageSetup, [
-    state.searchSettings.coverageSetup.levenshteinMaxWordSize,
-    state.searchSettings.coverageSetup.minWordSize,
-    state.searchSettings.coverageSetup.coverageMinWordHitsAbs,
-    state.searchSettings.coverageSetup.coverageMinWordHitsRelative,
-    state.searchSettings.coverageSetup.coverageQLimitForErrorTolerance,
-    state.searchSettings.coverageSetup.coverageLcsErrorToleranceRelativeq,
-    state.searchSettings.coverageSetup.coverWholeQuery,
-    state.searchSettings.coverageSetup.coverWholeWords,
-    state.searchSettings.coverageSetup.coverFuzzyWords,
-    state.searchSettings.coverageSetup.coverJoinedWords,
-    state.searchSettings.coverageSetup.coverPrefixSuffix,
-    state.searchSettings.coverageSetup.truncate,
-  ]);
+  // coverageSetup reference is now stable (only changes when explicitly updated)
+  const settingsCoverageSetup = state.searchSettings.coverageSetup;
 
   // Function to perform the actual search
   const performSearch = useCallback(
@@ -622,14 +632,6 @@ export const SearchProvider: React.FC<{
     performSearchRef.current = performSearch;
   }, [performSearch]);
 
-  // Function to perform a basic search (no facets) - stable, doesn't depend on performSearch
-  const searchBasic = useCallback(() => {
-    if (enableDebugLogs) {
-      console.log('Search fired');
-    }
-    performSearchRef.current?.({ enableFacets: false });
-  }, []); // Don't include enableDebugLogs - we just need to check it, not recreate the callback
-
   // Function to perform a search with facets - stable debounced function
   const searchWithFacetsDebounced = useRef<ReturnType<typeof debounce> | null>(null);
 
@@ -650,10 +652,6 @@ useEffect(() => {
     searchWithFacetsDebounced.current?.cancel();
   };
 }, [state.facetDebounceDelayMillis]); // Don't include enableDebugLogs - only recreate when delay changes
-
-const searchWithFacets = useCallback(() => {
-  searchWithFacetsDebounced.current?.();
-}, []);
 
   // Effect for initial blank search after authentication completes
   useEffect(() => {
@@ -716,23 +714,21 @@ const searchWithFacets = useCallback(() => {
 
   // Effect for filter changes - immediate search with facets
   useEffect(() => {
+    // Capture the flag value and immediately reset it to prevent stale state
+    const wasChangedByUser = filtersChangedByUser.current;
+    filtersChangedByUser.current = false;
+
     // Skip if this is before initialization completes or no token yet
     if (!hasInitialized.current || !token) return;
 
     // Skip on first run (let initialization complete first)
     if (!filterEffectHasRun.current) {
       filterEffectHasRun.current = true;
-      if (enableDebugLogs) {
-        console.log('[Filter effect] First run, skipping');
-      }
       return;
     }
 
-    // Skip if query changed (query effect will handle the search)
-    if (state.query !== lastQueryText) {
-      if (enableDebugLogs) {
-        console.log('[Filter effect] Skipping because query changed');
-      }
+    // ONLY run if filters were changed by user action (not by facet updates during search)
+    if (!wasChangedByUser) {
       return;
     }
 
@@ -741,9 +737,6 @@ const searchWithFacets = useCallback(() => {
     const shouldSkipSearch = !allowEmptySearch && trimmedQuery === '';
 
     if (facetsEnabled && !shouldSkipSearch) {
-      if (enableDebugLogs) {
-        console.log('[Filter effect] Firing search');
-      }
       performSearchRef.current?.({ enableFacets: true });
     }
   }, [state.filters, state.rangeFilters]);
