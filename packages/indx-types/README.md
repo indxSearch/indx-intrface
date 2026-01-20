@@ -97,8 +97,9 @@ const coverageSetup: CoverageSetup = {
   coverWholeWords: true,
   coverFuzzyWords: true,
   minWordSize: 3,
+  levenshteinMaxWordSize: 20,
   truncate: true,
-  truncationScore: 0.8
+  truncationScore: 255
 };
 
 const query: CloudQuery = {
