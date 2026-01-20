@@ -1,12 +1,16 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import type { CoverageSetup, ScoreEntry } from '@indxsearch/indx-types';
+import { SystemState } from '@indxsearch/indx-types';
+
+// Internal type with all CoverageSetup properties required (SearchContext always provides defaults)
+export type RequiredCoverageSetup = Required<CoverageSetup>;
 
 export interface SearchSettings {
   maxNumberOfRecordsToReturn: number;
   coverageDepth: number;
   enableCoverage: boolean;
   removeDuplicates: boolean;
-  coverageSetup: CoverageSetup;
+  coverageSetup: RequiredCoverageSetup;
   minimumScore: number;
   showScore: boolean;
   placeholderText: string;
@@ -14,7 +18,7 @@ export interface SearchSettings {
 
 export interface SearchResult {
   document: any; // The actual document
-  documentKey: string; // The document key
+  documentKey: number; // The document key
   score: number; // The search score
 }
 
@@ -127,19 +131,19 @@ export const SearchProvider: React.FC<{
       showScore: true,
       placeholderText: 'Type to search',
       coverageSetup: {
-        // ALL DEFAULT VALUES
-        levenshteinMaxWordSize: 20,
-        minWordSize: 2,
-        coverageMinWordHitsAbs: 1,
-        coverageMinWordHitsRelative: 0,
-        coverageQLimitForErrorTolerance: 5,
-        coverageLcsErrorToleranceRelativeq: 0.2,
+        // Default values matching Swagger specification
         coverWholeQuery: true,
         coverWholeWords: true,
         coverFuzzyWords: true,
         coverJoinedWords: true,
         coverPrefixSuffix: true,
         truncate: true,
+        includePatternMatches: true,
+        minWordSize: 2,
+        levenshteinMaxWordSize: 20,
+        truncateWordHitLimit: 1,
+        truncateWordHitTolerance: 0,
+        truncationScore: 255,
         ...initialCoverageSetup, // Allow prop-based override
       },
     },
@@ -888,9 +892,9 @@ useEffect(() => {
           console.log('[Auth] 📊 Dataset status:', statusData);
         }
 
-        // Check if dataset is ready (if state field exists)
-        if (statusData.state && statusData.state !== 'Ready') {
-          console.warn('[Auth] ⚠️ Dataset is not ready yet. Current state:', statusData.state);
+        // Check if dataset is ready (if systemState field exists)
+        if (statusData.systemState !== undefined && statusData.systemState !== SystemState.Ready) {
+          console.warn('[Auth] ⚠️ Dataset is not ready yet. Current state:', SystemState[statusData.systemState]);
           console.warn('[Auth] 💡 Wait for indexing to complete before searching');
         }
 

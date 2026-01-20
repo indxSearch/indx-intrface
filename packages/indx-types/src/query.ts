@@ -7,15 +7,13 @@ export interface CoverageSetup {
   coverFuzzyWords?: boolean;
   coverJoinedWords?: boolean;
   coverPrefixSuffix?: boolean;
-  levenshteinMaxWordSize?: number;
-  minWordSize?: number;
   truncate?: boolean;
   includePatternMatches?: boolean;
+  minWordSize?: number;
+  levenshteinMaxWordSize?: number;
+  truncateWordHitLimit?: number;
+  truncateWordHitTolerance?: number;
   truncationScore?: number;
-  coverageMinWordHitsAbs?: number;
-  coverageMinWordHitsRelative?: number;
-  coverageQLimitForErrorTolerance?: number;
-  coverageLcsErrorToleranceRelativeq?: number;
 }
 
 export interface CloudQuery {

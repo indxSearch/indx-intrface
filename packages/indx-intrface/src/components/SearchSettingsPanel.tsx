@@ -175,9 +175,16 @@ export function SearchSettingsPanel() {
             </li>
             <li>
               <ToggleSwitch
-                label="Truncate list"
+                label="Truncate"
                 checked={searchSettings.coverageSetup.truncate}
                 onChange={(value: boolean) => handleCoverageSetupToggle('truncate', value)}
+              />
+            </li>
+            <li>
+              <ToggleSwitch
+                label="Include Pattern Matches"
+                checked={searchSettings.coverageSetup.includePatternMatches}
+                onChange={(value: boolean) => handleCoverageSetupToggle('includePatternMatches', value)}
               />
             </li>
             <li>
@@ -198,34 +205,18 @@ export function SearchSettingsPanel() {
             </li>
             <li>
               <InputField
-                label="Coverage Min Word Hits Abs"
+                label="Truncate Word Hit Limit"
                 type="number"
-                value={searchSettings.coverageSetup.coverageMinWordHitsAbs.toString()}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCoverageSetupNumberChange('coverageMinWordHitsAbs', e.target.value)}
+                value={searchSettings.coverageSetup.truncateWordHitLimit.toString()}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCoverageSetupNumberChange('truncateWordHitLimit', e.target.value)}
               />
             </li>
             <li>
               <InputField
-                label="Coverage Min Word Hits Relative"
+                label="Truncate Word Hit Tolerance"
                 type="number"
-                value={searchSettings.coverageSetup.coverageMinWordHitsRelative.toString()}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCoverageSetupNumberChange('coverageMinWordHitsRelative', e.target.value)}
-              />
-            </li>
-            <li>
-              <InputField
-                label="Coverage Q Limit For Error Tolerance"
-                type="number"
-                value={searchSettings.coverageSetup.coverageQLimitForErrorTolerance.toString()}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCoverageSetupNumberChange('coverageQLimitForErrorTolerance', e.target.value)}
-              />
-            </li>
-            <li>
-              <InputField
-                label="Coverage LCS Error Tolerance Relative Q"
-                type="number"
-                value={searchSettings.coverageSetup.coverageLcsErrorToleranceRelativeq.toString()}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCoverageSetupNumberChange('coverageLcsErrorToleranceRelativeq', e.target.value)}
+                value={searchSettings.coverageSetup.truncateWordHitTolerance.toString()}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCoverageSetupNumberChange('truncateWordHitTolerance', e.target.value)}
               />
             </li>
           </>
