@@ -1,6 +1,6 @@
 # @indxsearch/intrface
 
-A powerful, flexible React search UI library for INDX Search API.
+A powerful, flexible React search UI library for Indx Search with [IndxCloudApi](https://github.com/indxSearch/IndxCloudApi).
 
 ## Features
 
@@ -16,18 +16,20 @@ A powerful, flexible React search UI library for INDX Search API.
 
 | Package | Version |
 |---------|---------|
-| **IndxCloudApi** | `1.0.0` |
+| **IndxCloudApi** | `1.0.2` |
 | **React** | `^19.0.0` |
 | **React DOM** | `^19.0.0` |
 | **Node.js** | `>=16.0.0` |
 
-> **Note:** This library is designed specifically for IndxCloudApi version 1.0.0. Different API versions may have incompatible changes.
+> **Note:** This library is designed specifically for IndxCloudApi version 1.0.2. Different API versions may have incompatible changes.
 
 ## Installation
 
 ```bash
 npm install @indxsearch/intrface @indxsearch/systm @indxsearch/pixl
 ```
+
+> **Note:** TypeScript type definitions for IndxCloudApi are automatically included via the `@indxsearch/indx-types` dependency.
 
 ## Quick Start
 
@@ -373,10 +375,12 @@ export default function AdvancedSearch() {
 | `dataset` | `string` | ✅ | - | Dataset name |
 | `allowEmptySearch` | `boolean` | ❌ | `false` | Show results without query |
 | `enableFacets` | `boolean` | ❌ | `true` | Enable faceted search |
+| `enableCoverage` | `boolean` | ❌ | `true` | Enable coverage-based fuzzy matching |
 | `maxResults` | `number` | ❌ | `10` | Max results per search |
-| `facetDebounceDelayMillis` | `number` | ❌ | `500` | Debounce delay for facet updates |
+| `facetDebounceDelayMillis` | `number` | ❌ | `500` | Debounce delay for facet updates (ms) |
 | `coverageDepth` | `number` | ❌ | `500` | Search depth for fuzzy matching |
-| `removeDuplicates` | `boolean` | ❌ | `false` | Remove duplicate results |
+| `removeDuplicates` | `boolean` | ❌ | `true` | Remove duplicate results |
+| `initialCoverageSetup` | `Partial<CoverageSetup>` | ❌ | `{}` | Override default coverage settings |
 | `enableDebugLogs` | `boolean` | ❌ | `false` | Enable detailed console logging |
 
 ### SearchInput Props

@@ -5,6 +5,46 @@ All notable changes to @indxsearch/intrface will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-01-21
+
+### Added
+- Added dependency on `@indxsearch/indx-types` for centralized API type definitions
+- Added `RequiredCoverageSetup` type for internal use (all properties guaranteed present)
+- Added new CoverageSetup properties: `truncateWordHitLimit`, `truncateWordHitTolerance`, `includePatternMatches`
+- Added "Include Pattern Matches" toggle to SearchSettingsPanel
+
+### Fixed
+- **BREAKING FIX**: Fixed `SystemStatus.state` → `systemStatus.systemState` to match actual API response
+- **BREAKING FIX**: Fixed `SearchResult.documentKey` type from `string` to `number` (Int32) to match API
+- Fixed SystemState enum usage with proper numeric comparisons
+- Updated CoverageSetup defaults to match IndxCloudApi v1.0.2 specification
+- Fixed `truncationScore` default value: 254 → 255
+
+### Changed
+- **BREAKING**: Updated CoverageSetup interface to match IndxCloudApi v1.0.2
+  - Removed obsolete properties: `coverageMinWordHitsAbs`, `coverageMinWordHitsRelative`, `coverageLcsErrorToleranceRelativeq`, `coverageQLimitForErrorTolerance`
+  - These properties no longer exist in the API specification
+- Updated SearchSettingsPanel UI to reflect new CoverageSetup parameters
+- Removed `truncationScore` input from SearchSettingsPanel UI (still sent to API with default value)
+- Now imports `CoverageSetup` and `ScoreEntry` types from `@indxsearch/indx-types`
+- Imports `SystemState` enum as value (not just type) for runtime comparisons
+
+### Technical Details
+This release aligns `@indxsearch/intrface` with the official IndxCloudApi v1.0.2 Swagger specification. The breaking changes fix discrepancies between the package and the actual API that could cause runtime errors or unexpected behavior.
+
+### Migration Guide
+If upgrading from 2.0.x:
+
+1. **SystemStatus access**: Change `statusData.state` to `statusData.systemState`
+2. **DocumentKey**: If you're manipulating `documentKey` values, they are now numbers instead of strings
+3. **CoverageSetup**: Remove any usage of the deleted properties listed above
+
+### Compatibility
+- Requires IndxCloudApi v1.0.2
+- Requires `@indxsearch/indx-types` ^1.0.0
+- React ^19.0.0
+- React DOM ^19.0.0
+
 ## [2.0.1] - 2026-01-16
 
 ### Fixed
@@ -59,5 +99,5 @@ npm install @indxsearch/intrface@latest
 Or with a specific version:
 
 ```bash
-npm install @indxsearch/intrface@2.0.1
+npm install @indxsearch/intrface@2.1.0
 ```
