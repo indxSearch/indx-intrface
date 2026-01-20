@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import type { CoverageSetup, ScoreEntry } from '@indxsearch/indx-types';
 
 export interface SearchSettings {
   maxNumberOfRecordsToReturn: number;
@@ -9,21 +10,6 @@ export interface SearchSettings {
   minimumScore: number;
   showScore: boolean;
   placeholderText: string;
-}
-
-export interface CoverageSetup {
-  levenshteinMaxWordSize: number;
-  minWordSize: number;
-  coverageMinWordHitsAbs: number;
-  coverageMinWordHitsRelative: number;
-  coverageQLimitForErrorTolerance: number;
-  coverageLcsErrorToleranceRelativeq: number;
-  coverWholeQuery: boolean;
-  coverWholeWords: boolean;
-  coverFuzzyWords: boolean;
-  coverJoinedWords: boolean;
-  coverPrefixSuffix: boolean;
-  truncate: boolean;
 }
 
 export interface SearchResult {

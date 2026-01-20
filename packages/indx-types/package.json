@@ -1,0 +1,48 @@
+{
+  "name": "@indxsearch/indx-types",
+  "version": "1.0.0",
+  "description": "TypeScript type definitions for IndxCloudApi v1.0.2. Provides complete types for search queries, filters, boosts, results, and system status based on the official Swagger specification.",
+  "keywords": [
+    "indx",
+    "typescript",
+    "types",
+    "type-definitions",
+    "api",
+    "search",
+    "cloud-api",
+    "swagger"
+  ],
+  "author": "Indx Search",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/indxSearch/indx-intrface.git",
+    "directory": "packages/indx-types"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

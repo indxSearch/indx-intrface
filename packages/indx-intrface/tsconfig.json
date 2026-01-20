@@ -12,6 +12,7 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@indxsearch/indx-types": ["../indx-types/src"],
       "@indxsearch/systm": ["../indx-systm/src"],
       "@indxsearch/pixl": ["../../node_modules/@indxsearch/pixl"]
     }

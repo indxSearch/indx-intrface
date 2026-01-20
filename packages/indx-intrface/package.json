@@ -61,6 +61,7 @@
     "./styles.css": "./dist/intrface.css"
   },
   "dependencies": {
+    "@indxsearch/indx-types": "^1.0.0",
     "@indxsearch/systm": "^1.2.0",
     "@indxsearch/pixl": "^1.2.0",
     "react-range": "^1.10.0"
