@@ -5,6 +5,13 @@ All notable changes to @indxsearch/intrface will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] - 2026-01-21
+
+### Fixed
+- **CRITICAL**: Fixed missing TypeScript declaration files (.d.ts) in published package
+  - v2.1.0 was published without declaration files, causing TypeScript compilation errors
+  - All type definitions are now properly included in the npm package
+
 ## [2.1.0] - 2026-01-21
 
 ### Added
