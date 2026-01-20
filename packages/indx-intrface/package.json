@@ -21,7 +21,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/indxSearch/indx-intrface.git",
+    "url": "git+https://github.com/indxSearch/indx-intrface.git",
     "directory": "packages/indx-intrface"
   },
   "source": "./src/index.tsx",

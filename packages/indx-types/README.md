@@ -30,8 +30,6 @@ import type { CloudQuery, Result } from '@indxsearch/indx-types';
 const query: CloudQuery = {
   text: 'search term',
   maxNumberOfRecordsToReturn: 10,
-  enableCoverage: true,
-  coverageDepth: 3
 };
 
 // Use with your API client
@@ -96,7 +94,7 @@ const coverageSetup: CoverageSetup = {
   coverWholeQuery: true,
   coverWholeWords: true,
   coverFuzzyWords: true,
-  minWordSize: 3,
+  minWordSize: 2,
   levenshteinMaxWordSize: 20,
   truncate: true,
   truncationScore: 255
