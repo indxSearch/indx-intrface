@@ -58,7 +58,8 @@ Complete API reference, examples, authentication methods, troubleshooting, and m
 This library is designed to work with the **Indx Search** platform:
 
 - **[IndxCloudApi](https://github.com/indxSearch/IndxCloudApi)** - Fast search server with fuzzy matching, facets, and aggregations
-- **[IndxCloudLoader](https://github.com/indxSearch/IndxCloudLoader)** - C# desktop app for loading JSON datasets
+- **[IndxCloudLoader](https://github.com/indxSearch/IndxCloudLoader)** - C# console app for loading JSON datasets
+- **[IndxNodeLoader](https://github.com/indxSearch/IndxNodeLoader)** - Node.js console app for loading JSON datasets
 - **indx-intrface** (this repo) - React UI components for building search interfaces
 
 **Compatibility:** This version is compatible with **IndxCloudApi v1.0**.
