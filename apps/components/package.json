@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@indxsearch/indx-types": "^1.0.0",
     "@indxsearch/systm": "^1.2.0",
     "@indxsearch/intrface": "^1.0.5",
     "@indxsearch/pixl": "^1.2.0",
