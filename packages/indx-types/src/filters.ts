@@ -18,3 +18,14 @@ export interface CombinedFilterProxy {
   b: FilterProxy;
   useAndOperation: boolean;
 }
+
+export interface UpdateFieldProxy {
+  fieldName?: string | null;
+  value?: any | null;
+}
+
+export interface FilterFieldUpdateProxy {
+  filter?: FilterProxy | null;
+  fieldName?: string | null;
+  value?: any | null;
+}

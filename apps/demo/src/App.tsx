@@ -1,5 +1,6 @@
 import '@indxsearch/intrface/styles.css';
 import './globals.css';
+import React, { useState } from 'react';
 import { SearchClient } from './SearchClient';
 import {
   ActiveFiltersPanel,
@@ -78,12 +79,33 @@ const renderResult = (item: any) => {
 };
 
 export default function App() {
+  const [tab, setTab] = useState<'text' | 'hybrid'>('text');
+
+  const tabStyle = (active: boolean): React.CSSProperties => ({
+    padding: '0.4rem 1rem',
+    cursor: 'pointer',
+    color: active ? 'var(--lv8)' : 'var(--lv5)',
+    background: 'none',
+    border: 'none',
+    borderBottom: active ? '2px solid var(--lv8)' : '2px solid transparent',
+    fontFamily: 'inherit',
+    fontSize: '0.9rem',
+  });
+
   return (
-    <SearchClient
-      dataset="pokedex"
-      fields={fields}
-      filters={filters}
-      renderResult={renderResult}
-    />
+    <div>
+      <div style={{ display: 'flex', gap: '0.5rem', padding: '1rem 1.5rem 0', borderBottom: '1px solid var(--lv2)' }}>
+        <button style={tabStyle(tab === 'text')} onClick={() => setTab('text')}>Text search</button>
+        <button style={tabStyle(tab === 'hybrid')} onClick={() => setTab('hybrid')}>Hybrid / Vector</button>
+      </div>
+
+      <SearchClient
+        dataset="pokedex"
+        fields={fields}
+        filters={filters}
+        renderResult={renderResult}
+        activeTab={tab}
+      />
+    </div>
   );
 }

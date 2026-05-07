@@ -9,6 +9,7 @@ import {
   SearchProvider
 } from '@indxsearch/intrface';
 import { Base, Button, Popover } from '@indxsearch/systm';
+import { HybridDemo } from './HybridDemo';
 
 type SearchClientProps = {
   dataset: string;
@@ -16,6 +17,7 @@ type SearchClientProps = {
   renderResult: (item: any) => React.ReactNode;
   filters: React.ReactNode;
   showFilters?: boolean;
+  activeTab?: 'text' | 'hybrid';
 };
 
 export function SearchClient({
@@ -23,7 +25,8 @@ export function SearchClient({
   fields,
   renderResult,
   filters,
-  showFilters = true
+  showFilters = true,
+  activeTab = 'text',
 }: SearchClientProps) {
   const url = import.meta.env.VITE_INDX_URL;
   const token = import.meta.env.VITE_INDX_TOKEN;
@@ -39,12 +42,16 @@ export function SearchClient({
       facetDebounceDelayMillis={100}
       enableDebugLogs={true}
     >
-      <SearchLayout
-        fields={fields}
-        renderResult={renderResult}
-        filters={filters}
-        showFilters={showFilters}
-      />
+      {activeTab === 'text' ? (
+        <SearchLayout
+          fields={fields}
+          renderResult={renderResult}
+          filters={filters}
+          showFilters={showFilters}
+        />
+      ) : (
+        <HybridDemo />
+      )}
     </SearchProvider>
   );
 }

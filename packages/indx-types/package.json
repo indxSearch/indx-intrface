@@ -1,7 +1,7 @@
 {
   "name": "@indxsearch/indx-types",
-  "version": "1.0.1",
-  "description": "TypeScript type definitions for IndxCloudApi v1.0.2. Provides complete types for search queries, filters, boosts, results, and system status based on the official Swagger specification.",
+  "version": "2.0.0",
+  "description": "TypeScript type definitions for IndxCloudApi v5. Provides complete types for search queries, filters, boosts, results, and system status based on the official Swagger specification.",
   "keywords": [
     "indx",
     "typescript",

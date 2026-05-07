@@ -10,3 +10,7 @@ export { ActiveFiltersPanel } from './components/ActiveFiltersPanel';
 export { SortByPanel } from './components/SortByPanel';
 export { SearchSettingsPanel } from './components/SearchSettingsPanel';
 export { SearchErrorBoundary } from './components/SearchErrorBoundary';
+export { useVectorSearch } from './hooks/useVectorSearch';
+export type { EmbeddingResult, UseVectorSearchOptions } from './hooks/useVectorSearch';
+export { useHybridSearch } from './hooks/useHybridSearch';
+export type { UseHybridSearchOptions } from './hooks/useHybridSearch';

@@ -48,6 +48,9 @@ export interface SearchContextType {
   state: SearchState; // The current search state containing all search-related data
   isFetchingInitial: boolean; // Whether the initial data (fields, facets) is still being loaded
   allowEmptySearch: boolean; // Whether empty searches are allowed
+  url: string;
+  dataset: string;
+  authenticatedFetch: (url: string, options?: RequestInit) => Promise<Response>;
   setQuery: (query: string) => void; // Updates the search query text
   toggleFilter: (field: string, value: string) => void; // Toggles a value filter on/off for a given field
   setRangeFilter: (field: string, min: number, max: number) => void; // Sets min/max values for a range filter
@@ -143,7 +146,7 @@ export const SearchProvider: React.FC<{
         levenshteinMaxWordSize: 20,
         truncateWordHitLimit: 1,
         truncateWordHitTolerance: 0,
-        truncationScore: 255,
+        truncationScore: 65024,
         ...initialCoverageSetup, // Allow prop-based override
       },
     },
@@ -356,7 +359,7 @@ export const SearchProvider: React.FC<{
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ A: current, B: filters[i], useAndOperation: true }),
+        body: JSON.stringify({ a: current, b: filters[i], useAndOperation: true }),
       });
       if (!response.ok) { // If the response is not ok, throw an error
         const err = await response.json(); // Get the error message
@@ -401,7 +404,7 @@ export const SearchProvider: React.FC<{
                   headers: {
                     'Content-Type': 'application/json',
                   },
-                  body: JSON.stringify({ FieldName: field, Value: value }),
+                  body: JSON.stringify({ fieldName: field, value }),
                 }).then(res => res.json())
               )
             )
@@ -418,7 +421,7 @@ export const SearchProvider: React.FC<{
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ FieldName: field, LowerLimit: min, UpperLimit: max }),
+              body: JSON.stringify({ fieldName: field, lowerLimit: min, upperLimit: max }),
             }).then(res => res.json())
           )
         );
@@ -1058,6 +1061,9 @@ useEffect(() => {
         },
         isFetchingInitial,
         allowEmptySearch,
+        url,
+        dataset,
+        authenticatedFetch,
         setQuery,
         toggleFilter,
         setRangeFilter,

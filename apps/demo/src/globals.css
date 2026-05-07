@@ -26,6 +26,7 @@ body {
 body {
   color: var(--lv8);
   background: var(--lv0);
+  font: var(--text-sm);
 }
 
 a {
