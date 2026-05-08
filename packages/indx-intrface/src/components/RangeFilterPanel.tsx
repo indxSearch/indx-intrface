@@ -25,7 +25,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
   const {
     state: { rangeFilters, rangeBounds, facetStats, query, facetDebounceDelayMillis },
     setRangeFilter,
-    resetSingleFilter,
+    resetRangeFilter,
     allowEmptySearch,
     isFetchingInitial
   } = useSearchContext();
@@ -114,7 +114,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
       if (isValidMin && isValidMax) {
         if (finalMin === queryMin && finalMax === queryMax) {
           // Slider at full query bounds, no filtering needed (not a user action)
-          resetSingleFilter(field, undefined, false);
+          resetRangeFilter(field, false);
         } else {
           // Store as intended values (these will be sent to API)
           setRangeFilter(field, finalMin, finalMax);
@@ -127,7 +127,7 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
       clearTimeout(invalidTimer);
       clearTimeout(filterTimer);
     };
-  }, [finalMin, finalMax, isValidMin, isValidMax, queryMin, queryMax, field, resetSingleFilter, setRangeFilter, facetDebounceDelayMillis, isDisabled]);
+  }, [finalMin, finalMax, isValidMin, isValidMax, queryMin, queryMax, field, resetRangeFilter, setRangeFilter, facetDebounceDelayMillis, isDisabled]);
 
   // ─────────────────────────────────────────────────────────────────────────────
   // 7) Sync sliderValue with display values when they change
@@ -157,11 +157,11 @@ export const RangeFilterPanel: React.FC<RangeFilterPanelProps> = ({
     // If dragged to full range, immediately clear the filter (IS a user action)
     if (clampedMin === queryMin && clampedMax === queryMax) {
       setSliderValue([queryMin, queryMax]);
-      resetSingleFilter(field, undefined, true);
+      resetRangeFilter(field, true);
     } else {
       setSliderValue([clampedMin, clampedMax]);
     }
-  }, [isDisabled, queryMin, queryMax, liveDataMin, liveDataMax, field, resetSingleFilter]);
+  }, [isDisabled, queryMin, queryMax, liveDataMin, liveDataMax, field, resetRangeFilter]);
 
   // 8) Manual number‐input handlers
   // Min can't exceed liveDataMax (can't filter above what exists)

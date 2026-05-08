@@ -36,6 +36,7 @@ export function ActiveFiltersPanel() {
     state: { filters, rangeFilters },
     resetFilters,
     resetSingleFilter,
+    resetRangeFilter,
   } = useSearchContext();
 
   const filterEntries = useMemo(() => 
@@ -74,7 +75,7 @@ export function ActiveFiltersPanel() {
             field={field}
             min={min}
             max={max}
-            onReset={() => resetSingleFilter(field)}
+            onReset={() => resetRangeFilter(field)}
           />
         ))}
         <li>
