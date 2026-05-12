@@ -17,6 +17,8 @@
     "build:types": "npm run build --workspace=@indxsearch/indx-types",
     "build:systm": "npm run build --workspace=@indxsearch/systm",
     "build:intrface": "npm run build --workspace=@indxsearch/intrface",
+    "test": "npm test --workspace=@indxsearch/intrface",
+    "test:watch": "npm run test:watch --workspace=@indxsearch/intrface",
     "build:packages": "npm run build:types && npm run build:systm && npm run build:intrface",
     "build:demo": "npm run build --workspace=demo",
     "build:components": "npm run build --workspace=components-viewer",

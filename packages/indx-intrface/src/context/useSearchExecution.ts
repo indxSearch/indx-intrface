@@ -45,7 +45,6 @@ export function useSearchExecution({
   const latestRequestId = useRef(0);
   const performSearchRef = useRef<((options: { enableFacets: boolean }) => Promise<void>) | undefined>(undefined);
   const hasInitialized = useRef(false);
-  const filterEffectHasRun = useRef(false);
 
   const [fixedFacetStats, setFixedFacetStats] = useState<Record<string, { min: number; max: number }>>({});
   const [lastQueryText, setLastQueryText] = useState<string>('');
@@ -330,12 +329,6 @@ export function useSearchExecution({
     filtersChangedByUser.current = false;
 
     if (!hasInitialized.current || !auth.token) return;
-
-    if (!filterEffectHasRun.current) {
-      filterEffectHasRun.current = true;
-      return;
-    }
-
     if (!wasChangedByUser) return;
 
     const trimmedQuery = state.query.trim();
